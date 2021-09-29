@@ -1,0 +1,64 @@
+[package]
+name = "rollo"
+version = "0.1.0"
+edition = "2018"
+
+[features]
+default = ["server", "game"]
+full = [
+    "server",
+    "flat_buffers_helpers",
+    "math"
+]
+
+server = [
+    "rustls",
+    "tokio-rustls",
+    "bytes",
+    "async-trait",
+    "rayon",
+    "tokio",
+    "game",
+]
+
+game = [
+    "parking_lot",
+    "multimap",
+    "crossbeam",
+    "rand",
+    "lazy_static",
+    "rand_pcg"
+]
+
+math = [
+    "glam" 
+]
+
+precise_time = []
+
+flat_buffers_helpers = [
+    "flatbuffers",
+    "crossbeam-queue"
+]
+
+[dependencies]
+tracing = "0.1"
+tokio = { version = "1.8.0", features = ["full"], optional = true }
+async-trait = {version = "0.1.5", optional = true }
+tokio-rustls = {version = "0.22.0", optional = true}
+rustls = {version = "0.19.1", optional = true}
+bytes = {version = "1.0.1", optional = true}
+crossbeam = {version = "0.8.1", optional = true}
+rayon = {version = "1.5", optional = true}
+multimap = {version = "0.8.3", optional = true}
+parking_lot = {version = "0.11.1", optional = true}
+rand = {version = "0.8.4", optional = true}
+lazy_static = {version = "1.4.0", optional = true }
+rand_pcg = {version = "0.3.1", optional = true }
+flatbuffers = {version = "2.0.0", optional = true }
+crossbeam-queue = {version = "0.3.2", optional = true }
+chrono = "0.4"
+glam = { version = "0.18", optional = true }
+
+#[cfg(any(test, feature = "precise_time"))]
+spin_sleep = "1.0.0"

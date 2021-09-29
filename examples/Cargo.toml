@@ -1,0 +1,19 @@
+[package]
+name = "examples"
+version = "0.0.0"
+publish = false
+edition = "2018"
+
+[dependencies]
+rollo = { path = "../rollo", features = ["full"]}
+async-trait = "0.1.50"
+tokio = { version = "1.8.0", features = ["full"] }
+tracing-subscriber = "0.2.0"
+
+[[example]]
+name = "hello_world"
+path = "hello_world.rs"
+
+[[example]]
+name = "complex"
+path = "complex.rs"
