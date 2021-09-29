@@ -57,7 +57,7 @@ mod tests {
 
     #[test]
     fn test_drop() {
-        assert_eq!(ACTIVE_SOCKETS.load(Ordering::Relaxed), 20);
+        assert_eq!(ACTIVE_SOCKETS.load(Ordering::Relaxed), 0);
         assert_eq!(BUILDERS.len(), 0);
 
         {
