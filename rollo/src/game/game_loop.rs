@@ -1,3 +1,4 @@
+#[cfg(any(test, feature = "precise_time"))]
 use spin_sleep::SpinSleeper;
 use std::{
     sync::atomic::{AtomicI64, Ordering},
