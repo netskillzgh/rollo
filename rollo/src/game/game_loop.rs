@@ -1,3 +1,4 @@
+use spin_sleep::SpinSleeper;
 use std::{
     sync::atomic::{AtomicI64, Ordering},
     time::Duration,
@@ -43,7 +44,7 @@ impl GameLoop {
         let new_date = chrono::offset::Local::now();
         let execution_diff = new_date.timestamp_millis() - self.date.load(Ordering::SeqCst);
 
-        if self.interval >= execution_diff {
+        if self.interval > execution_diff {
             self.interval - execution_diff
         } else {
             0
@@ -72,7 +73,7 @@ impl GameLoop {
             #[cfg(all(not(test), not(feature = "precise_time")))]
             sleep(Duration::from_millis(self.get_sleep_time() as u64)).await;
             #[cfg(any(test, feature = "precise_time"))]
-            spin_sleep::sleep(Duration::from_millis(self.get_sleep_time() as u64));
+            SpinSleeper::default().sleep(Duration::from_millis(self.get_sleep_time() as u64));
         }
     }
 }
@@ -107,22 +108,23 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
     async fn test_sleep_loop() {
-        let timer = Instant::now();
         let mut game_loop = GameLoop::new(25);
+        let timer = Instant::now();
         game_loop.sleep_until_interval().await;
         let sleep_time = timer.elapsed().as_millis();
-        assert!((20..=25).contains(&sleep_time));
+        assert!((21..=30).contains(&sleep_time));
+
         game_loop.update_game_time();
 
         game_loop.sleep_until_interval().await;
         let sleep_time = timer.elapsed().as_millis();
-        assert!((45..=50).contains(&sleep_time));
+        assert!((44..=55).contains(&sleep_time));
+
         game_loop.update_game_time();
 
         game_loop.sleep_until_interval().await;
         let sleep_time = timer.elapsed().as_millis();
-        println!("ss {}", sleep_time);
-        assert!((70..=75).contains(&sleep_time));
+        assert!((70..=83).contains(&sleep_time));
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
