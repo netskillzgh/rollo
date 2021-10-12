@@ -9,6 +9,11 @@ A multiplayer framework based on Rust.
 - Interval Manager.
 - Dos protection/detection.
 
+```toml
+[dependencies]
+rollo = { version = "0.1.0", features = ["full"] }
+```
+
 ## Example
 
 - Implement the world (server).

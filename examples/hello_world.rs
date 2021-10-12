@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use rollo::tokio;
 use rollo::{
     error::Error,
     packet::Packet,
