@@ -2,6 +2,12 @@
 name = "rollo"
 version = "0.1.0"
 edition = "2018"
+license = "MIT"
+readme = "README.md"
+description = "A multiplayer framework based on Rust 🦀."
+keywords = ["game", "gamedev", "server", "network"]
+repository = "https://github.com/netskillzgh/rollo"
+authors = ["Netskillz <netskillz@protonmail.com>"]
 
 [features]
 default = ["server", "game"]
