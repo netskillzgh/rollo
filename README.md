@@ -1,5 +1,12 @@
 # Rollo
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](
+https://github.com/netskillzgh/rollo#license)
+[![Cargo](https://img.shields.io/crates/v/rollo.svg)](
+https://crates.io/crates/rollo)
+[![Documentation](https://docs.rs/rollo/badge.svg)](
+https://docs.rs/rollo)
+
 A multiplayer framework based on Rust.
 
 - Tcp/Tls.
@@ -8,13 +15,6 @@ A multiplayer framework based on Rust.
 - Event Manager.
 - Interval Manager.
 - Dos protection/detection.
-
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](
-https://github.com/netskillzgh/rollo#license)
-[![Cargo](https://img.shields.io/crates/v/rollo.svg)](
-https://crates.io/crates/rollo)
-[![Documentation](https://docs.rs/rollo/badge.svg)](
-https://docs.rs/rollo)
 
 ```toml
 [dependencies]
