@@ -200,7 +200,6 @@ where
         }
 
         if size == 0 {
-            info!("No payload");
             Ok(Packet::new(cmd, None))
         } else {
             let payload = reader.read_payload(size).await?;
