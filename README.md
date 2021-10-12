@@ -9,7 +9,7 @@ https://docs.rs/rollo)
 
 A multiplayer framework based on Rust.
 
-- Tcp/Tls.
+- Tcp (support Tls).
 - Packet Manager (message command/payload).
 - Game Loop (tick rate).
 - Event Manager.
