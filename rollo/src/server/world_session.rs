@@ -20,7 +20,7 @@ use crate::{
 use super::world_socket::WriterMessage;
 
 #[async_trait]
-pub trait WorldSessionI<T> {
+pub trait WorldSession<T> {
     /// On Connection Open
     async fn on_open(socket_tools: SocketTools, world: &'static T) -> Result<Arc<Self>, Error>;
     fn socket_tools(&self) -> &SocketTools;

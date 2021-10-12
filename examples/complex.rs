@@ -6,8 +6,8 @@ use rollo::{
     packet::Packet,
     server::{
         dos_protection::DosPolicy,
-        world::WorldI,
-        world_session::{SocketTools, WorldSessionI},
+        world::World,
+        world_session::{SocketTools, WorldSession},
         world_socket_mgr::{ListenerSecurity, WorldSocketMgr},
     },
 };
@@ -39,7 +39,7 @@ struct MyWorld {
     elapsed: AtomicI64,
 }
 
-impl WorldI for MyWorld {
+impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
     fn update(&'static self, diff: i64) {
         self.bg.timer.update(diff, &self.bg);
@@ -61,7 +61,7 @@ struct MyWorldSession {
 }
 
 #[async_trait]
-impl WorldSessionI<MyWorld> for MyWorldSession {
+impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_open(
         tools: SocketTools,
         _world: &'static MyWorld,

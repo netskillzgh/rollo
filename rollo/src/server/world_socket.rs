@@ -3,8 +3,8 @@ use crate::io::read::{Reader, MAX_SIZE};
 use crate::packet::Packet;
 
 use super::dos_protection::{DosPolicy, DosProtection};
-use super::world::WorldI;
-use super::world_session::WorldSessionI;
+use super::world::World;
+use super::world_session::WorldSession;
 use super::world_socket_mgr::ACTIVE_SOCKETS;
 use bytes::Bytes;
 use std::convert::TryInto;
@@ -26,8 +26,8 @@ use tracing::{error, info};
 #[derive(Debug)]
 pub(crate) struct WorldSocket<T, S, W>
 where
-    T: WorldSessionI<W> + 'static + Send + Sync,
-    W: 'static + Send + Sync + WorldI,
+    T: WorldSession<W> + 'static + Send + Sync,
+    W: 'static + Send + Sync + World,
 {
     world_session: Arc<T>,
     world: &'static W,
@@ -37,9 +37,9 @@ where
 
 impl<T, S, W> WorldSocket<T, S, W>
 where
-    T: WorldSessionI<W> + 'static + Send + Sync,
+    T: WorldSession<W> + 'static + Send + Sync,
     S: AsyncRead + AsyncWrite,
-    W: 'static + Send + Sync + WorldI,
+    W: 'static + Send + Sync + World,
 {
     pub(crate) fn new(world_session: Arc<T>, world: &'static W) -> Self {
         Self {
@@ -180,7 +180,7 @@ where
             .evaluate_cmd(cmd, limit, self.world.time())
         {
             error!("Dos Protection Activated");
-            WorldSessionI::on_dos_trigger(&self.world_session, self.world, cmd).await;
+            WorldSession::on_dos_trigger(&self.world_session, self.world, cmd).await;
             match policy {
                 DosPolicy::Close => {
                     if let Err(error) = self.world_session.socket_tools().close() {

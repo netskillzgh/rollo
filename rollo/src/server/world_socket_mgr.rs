@@ -6,8 +6,8 @@ cfg_game! {
 
 use super::{
     tls::load_config,
-    world::WorldI,
-    world_session::{SocketTools, WorldSessionI},
+    world::World,
+    world_session::{SocketTools, WorldSession},
     world_socket::WorldSocket,
 };
 use lazy_static::lazy_static;
@@ -34,7 +34,7 @@ lazy_static! {
 #[derive(Debug, Clone)]
 pub struct WorldSocketMgr<W>
 where
-    W: Send + Sync + 'static + WorldI,
+    W: Send + Sync + 'static + World,
 {
     world: &'static W,
     counter: u64,
@@ -43,7 +43,7 @@ where
 
 impl<W> WorldSocketMgr<W>
 where
-    W: Send + Sync + 'static + WorldI,
+    W: Send + Sync + 'static + World,
 {
     /// Create WorldSocketMgr with default configuration
     pub fn new(world: &'static W) -> Self {

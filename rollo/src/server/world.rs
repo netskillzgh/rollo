@@ -1,7 +1,7 @@
-use super::{dos_protection::DosPolicy, world_session::WorldSessionI};
+use super::{dos_protection::DosPolicy, world_session::WorldSession};
 
-pub trait WorldI: Sized + Sync {
-    type WorldSessionimplementer: WorldSessionI<Self> + 'static + Send + Sync;
+pub trait World: Sized + Sync {
+    type WorldSessionimplementer: WorldSession<Self> + 'static + Send + Sync;
 
     cfg_game! {
         /// Tick

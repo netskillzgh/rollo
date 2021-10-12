@@ -8,7 +8,7 @@ use tokio::task::yield_now;
 #[cfg(all(not(test), not(feature = "precise_time")))]
 use tokio::time::sleep;
 
-use crate::server::world::WorldI;
+use crate::server::world::World;
 
 pub struct GameLoop {
     date: AtomicI64,
@@ -25,7 +25,7 @@ impl GameLoop {
     }
 
     /// Start the Game Loop
-    pub async fn start(&mut self, world: &'static impl WorldI) {
+    pub async fn start(&mut self, world: &'static impl World) {
         loop {
             let last_time = self.date.load(Ordering::Acquire);
             let current = self.update_game_time();
@@ -33,7 +33,7 @@ impl GameLoop {
 
             world.update_time(current);
 
-            WorldI::update(world, diff);
+            World::update(world, diff);
 
             self.sleep_until_interval().await;
 
@@ -83,7 +83,7 @@ impl GameLoop {
 mod tests {
     use std::{sync::Arc, time::Instant};
 
-    use crate::server::{dos_protection::DosPolicy, world_session::WorldSessionI};
+    use crate::server::{dos_protection::DosPolicy, world_session::WorldSession};
 
     use super::*;
     use async_trait::async_trait;
@@ -157,7 +157,7 @@ mod tests {
     struct SessionTest;
 
     #[async_trait]
-    impl WorldSessionI<TestGameLoop> for SessionTest {
+    impl WorldSession<TestGameLoop> for SessionTest {
         async fn on_open(
             _socket_tools: crate::server::world_session::SocketTools,
             _world: &'static TestGameLoop,
@@ -191,7 +191,7 @@ mod tests {
 
     struct TestGameLoop;
 
-    impl WorldI for TestGameLoop {
+    impl World for TestGameLoop {
         type WorldSessionimplementer = SessionTest;
 
         fn update(&'static self, _diff: i64) {

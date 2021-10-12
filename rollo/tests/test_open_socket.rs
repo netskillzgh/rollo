@@ -11,8 +11,8 @@ use rollo::{
     error::Error,
     packet::Packet,
     server::{
-        world::WorldI,
-        world_session::{SocketTools, WorldSessionI},
+        world::World,
+        world_session::{SocketTools, WorldSession},
         world_socket_mgr::{ListenerSecurity, WorldSocketMgr},
     },
 };
@@ -56,7 +56,7 @@ struct MyWorldSession {
 }
 
 #[async_trait]
-impl WorldSessionI<MyWorld> for MyWorldSession {
+impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_open(
         tools: SocketTools,
         _world: &'static MyWorld,
@@ -86,7 +86,7 @@ struct MyWorld {
     elapsed: AtomicU64,
 }
 
-impl WorldI for MyWorld {
+impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
     fn time(&self) -> i64 {
         self.elapsed.load(Ordering::Acquire) as i64

@@ -16,14 +16,43 @@ rollo = { version = "0.1.0", features = ["full"] }
 
 ## Example
 
-- Implement the world (server).
-
 ````rust,no_run
+use rollo::{
+    async_trait,
+    server::{
+        dos_protection::DosPolicy,
+        world::World,
+        world_session::{SocketTools, WorldSession},
+        world_socket_mgr::{ListenerSecurity, WorldSocketMgr},
+    },
+    tokio,
+};
+
+use std::sync::{
+    atomic::{AtomicI64, Ordering},
+    Arc,
+};
+
+#[tokio::main]
+async fn main() {
+    let world = Box::new(MyWorld {
+        elapsed: AtomicI64::new(0),
+    });
+    let world = Box::leak(world);
+
+    let mut socket_manager = WorldSocketMgr::new(world);
+    socket_manager
+        .start_game_loop(15)
+        .start_network("127.0.0.1:6666", ListenerSecurity::Tcp)
+        .await
+        .unwrap();
+}
+
 struct MyWorld {
     elapsed: AtomicI64,
 }
 
-impl WorldI for MyWorld {
+impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
     fn update(&'static self, _diff: i64) {}
 
@@ -39,51 +68,34 @@ impl WorldI for MyWorld {
         (10, 1024 * 10, DosPolicy::Log)
     }
 }
-````
 
-- Implement the WorldSession (player session).
-
-```rust,no_run
 struct MyWorldSession {
     socket_tools: SocketTools,
 }
 
 #[async_trait]
 impl WorldSession<MyWorld> for MyWorldSession {
-    async fn on_open(tools: SocketTools) -> Result<std::sync::Arc<Self>, Error> {
-        Ok(Arc::new(Self {
-            socket_tools: tools,
-        }))
+    async fn on_dos_trigger(_world_session: &Arc<Self>, _world: &'static MyWorld, _cmd: u16) {}
+
+    async fn on_open(
+        socket_tools: rollo::server::world_session::SocketTools,
+        _world: &'static MyWorld,
+    ) -> Result<std::sync::Arc<Self>, rollo::error::Error> {
+        Ok(Arc::new(Self { socket_tools }))
     }
 
-    fn socket_tools(&self) -> &SocketTools {
+    fn socket_tools(&self) -> &rollo::server::world_session::SocketTools {
         &self.socket_tools
     }
 
-    async fn on_message(_world_session: &Arc<Self>, _world: &Arc<MyWorld>, _packet: Packet) {
-        println!("Message");
+    async fn on_message(
+        _world_session: &std::sync::Arc<Self>,
+        _world: &'static MyWorld,
+        _packet: rollo::packet::Packet,
+    ) {
     }
 
-    async fn on_close(_world_session: &Arc<Self>, _world: &Arc<MyWorld>) {}
-}
-````
-
-- Start the server.
-
-````rust,no_run
-#[tokio::main]
-async fn main() {
-    let world = Box::new(MyWorld {
-        elapsed: AtomicI64::new(0),
-    });
-    let world = Box::leak(world);
-
-    let mut socket_manager = WorldSocketMgr::new(world);
-    socket_manager
-        .start_game_loop(15)
-        .start_network("127.0.0.1:6666", ListenerSecurity::Tcp)
-        .await
-        .unwrap();
+    async fn on_close(_world_session: &std::sync::Arc<Self>, _world: &'static MyWorld) {}
 }
 ````
 
