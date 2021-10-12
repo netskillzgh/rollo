@@ -1,8 +1,15 @@
 # Rollo
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](
+https://github.com/netskillzgh/rollo#license)
+[![Cargo](https://img.shields.io/crates/v/rollo.svg)](
+https://crates.io/crates/rollo)
+[![Documentation](https://docs.rs/rollo/badge.svg)](
+https://docs.rs/rollo)
+
 A multiplayer framework based on Rust.
 
-- Tcp/Tls.
+- Tcp (support Tls).
 - Packet Manager (message command/payload).
 - Game Loop (tick rate).
 - Event Manager.
@@ -102,3 +109,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
 ## Packet composition
 
 [Payload size(u32), Command(u16), payload(x)]
+
+## License
+
+MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
