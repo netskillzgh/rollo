@@ -11,14 +11,14 @@ use rollo::{
     },
 };
 use std::sync::{
-    atomic::{AtomicU64, Ordering},
+    atomic::{AtomicI64, Ordering},
     Arc,
 };
 
 #[tokio::main]
 async fn main() {
     let world = Box::new(MyWorld {
-        elapsed: AtomicU64::new(0),
+        elapsed: AtomicI64::new(0),
         bg: BattlegroundManager {
             timer: IntervalTimerMgr::new(20),
         },
@@ -35,7 +35,7 @@ async fn main() {
 
 struct MyWorld {
     bg: BattlegroundManager,
-    elapsed: AtomicU64,
+    elapsed: AtomicI64,
 }
 
 impl WorldI for MyWorld {

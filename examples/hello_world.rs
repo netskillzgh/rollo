@@ -10,7 +10,7 @@ use rollo::{
     },
 };
 use std::sync::{
-    atomic::{AtomicU64, Ordering},
+    atomic::{AtomicI64, Ordering},
     Arc,
 };
 
@@ -18,7 +18,7 @@ use std::sync::{
 async fn main() {
     tracing_subscriber::fmt::init();
     let world = Box::new(MyWorld {
-        elapsed: AtomicU64::new(0),
+        elapsed: AtomicI64::new(0),
     });
     let world = Box::leak(world);
 
@@ -31,7 +31,7 @@ async fn main() {
 }
 
 struct MyWorld {
-    elapsed: AtomicU64,
+    elapsed: AtomicI64,
 }
 
 impl WorldI for MyWorld {
@@ -39,10 +39,12 @@ impl WorldI for MyWorld {
     fn update(&'static self, _diff: i64) {}
 
     fn time(&self) -> i64 {
-        self.elapsed.load(Ordering::Acquire) as i64
+        self.elapsed.load(Ordering::Acquire)
     }
 
-    fn update_time(&self, _new_time: i64) {}
+    fn update_time(&self, new_time: i64) {
+        self.elapsed.store(new_time, Ordering::Release);
+    }
 
     fn get_packet_limits(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
         (10, 1024 * 10, DosPolicy::Log)

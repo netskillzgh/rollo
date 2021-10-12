@@ -15,17 +15,19 @@ A multiplayer framework based on Rust.
 
 ````rust,no_run
 struct MyWorld {
-    elapsed: AtomicU64,
+    elapsed: AtomicI64,
 }
 
-impl World for MyWorld {
+impl WorldI for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
-    fn update(world: &Arc<Self>, _diff: u128, elapsed: u128) {
-        world.elapsed.store(elapsed as u64, Ordering::Release);
+    fn update(&'static self, _diff: i64) {}
+
+    fn time(&self) -> i64 {
+        self.elapsed.load(Ordering::Acquire)
     }
 
-    fn elapsed(&self) -> u128 {
-        self.elapsed.load(Ordering::Acquire) as u128
+    fn update_time(&self, new_time: i64) {
+        self.elapsed.store(new_time, Ordering::Release);
     }
 
     fn get_packet_limits(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
@@ -66,9 +68,13 @@ impl WorldSession<MyWorld> for MyWorldSession {
 ````rust,no_run
 #[tokio::main]
 async fn main() {
-    let mut socket_manager = WorldSocketMgr::new(Arc::new(MyWorld {
-        elapsed: AtomicU64::new(0),
-    }));
+    tracing_subscriber::fmt::init();
+    let world = Box::new(MyWorld {
+        elapsed: AtomicI64::new(0),
+    });
+    let world = Box::leak(world);
+
+    let mut socket_manager = WorldSocketMgr::new(world);
     socket_manager
         .start_game_loop(15)
         .start_network("127.0.0.1:6666", ListenerSecurity::Tcp)
