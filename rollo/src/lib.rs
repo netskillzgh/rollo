@@ -19,7 +19,3 @@ cfg_server! {
     pub use async_trait::async_trait;
     pub mod server;
 }
-
-cfg_math! {
-    pub mod math;
-}

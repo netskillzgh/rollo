@@ -26,12 +26,3 @@ macro_rules! cfg_flat_buffers_helpers {
         )*
     }
 }
-
-macro_rules! cfg_math {
-    ($($item:item)*) => {
-        $(
-            #[cfg(all(feature = "math"))]
-            $item
-        )*
-    }
-}
