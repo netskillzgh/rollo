@@ -14,6 +14,8 @@ default = ["server", "game"]
 full = [
     "server",
     "flat_buffers_helpers",
+    "game",
+    "precise_time"
 ]
 
 server = [
