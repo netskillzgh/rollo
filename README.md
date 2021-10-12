@@ -109,3 +109,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
 ## Packet composition
 
 [Payload size(u32), Command(u16), payload(x)]
+
+## License
+
+MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
