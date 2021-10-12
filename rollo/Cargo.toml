@@ -8,7 +8,6 @@ default = ["server", "game"]
 full = [
     "server",
     "flat_buffers_helpers",
-    "math"
 ]
 
 server = [
@@ -28,10 +27,6 @@ game = [
     "rand",
     "lazy_static",
     "rand_pcg"
-]
-
-math = [
-    "glam" 
 ]
 
 precise_time = []
@@ -58,7 +53,6 @@ rand_pcg = {version = "0.3.1", optional = true }
 flatbuffers = {version = "2.0.0", optional = true }
 crossbeam-queue = {version = "0.3.2", optional = true }
 chrono = "0.4"
-glam = { version = "0.18", optional = true }
 
 #[cfg(any(test, feature = "precise_time"))]
 spin_sleep = "1.0.0"
