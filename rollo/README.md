@@ -68,7 +68,6 @@ impl WorldSession<MyWorld> for MyWorldSession {
 ````rust,no_run
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt::init();
     let world = Box::new(MyWorld {
         elapsed: AtomicI64::new(0),
     });
