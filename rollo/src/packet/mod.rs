@@ -22,7 +22,7 @@ impl Packet {
 const HEADER_SIZE: usize = mem::size_of::<u32>() + mem::size_of::<u16>();
 
 /// Cmd + Payload to BytesMut.
-pub fn to_bytes(cmd: u16, payload: Option<impl AsRef<[u8]>>) -> Result<BytesMut, Error> {
+pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> Result<BytesMut, Error> {
     let payload_size = payload.as_ref().map_or_else(|| 0, |p| p.as_ref().len());
     let mut buffer = BytesMut::with_capacity(HEADER_SIZE + payload_size);
 

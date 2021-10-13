@@ -52,7 +52,7 @@ impl SocketTools {
         }
     }
 
-    pub fn send(&self, cmd: u16, payload: Option<impl AsRef<[u8]>>) {
+    pub fn send(&self, cmd: u16, payload: Option<&[u8]>) {
         if !self.is_closed() {
             if let Ok(bytes) = to_bytes(cmd, payload) {
                 if let Err(error) = self.tx.send(WriterMessage::Bytes(bytes.freeze())) {

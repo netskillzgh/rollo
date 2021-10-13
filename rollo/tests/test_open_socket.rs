@@ -64,7 +64,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
         assert_eq!(tools.id, 1);
 
         let age: u16 = 25;
-        tools.send(10, Some(age.to_be_bytes()));
+        tools.send(10, Some(&age.to_be_bytes()));
 
         Ok(Arc::new(Self {
             socket_tools: tools,

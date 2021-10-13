@@ -91,7 +91,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_message(world_session: &Arc<Self>, _world: &'static MyWorld, packet: Packet) {
         world_session
             .socket_tools
-            .send(packet.cmd, Some(packet.payload.unwrap()));
+            .send(packet.cmd, Some(&packet.payload.unwrap()));
     }
 
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}

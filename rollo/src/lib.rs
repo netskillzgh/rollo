@@ -27,7 +27,7 @@
 //!     },
 //!     tokio,
 //! };
-//!
+//! use rollo::packet::to_bytes;
 //! use std::sync::{
 //!     atomic::{AtomicI64, Ordering},
 //!     Arc,
@@ -35,10 +35,9 @@
 //!
 //! #[tokio::main]
 //! async fn main() {
-//!     let world = Box::new(MyWorld {
+//!     let world = Box::leak(Box::new(MyWorld {
 //!         elapsed: AtomicI64::new(0),
-//!     });
-//!     let world = Box::leak(world);
+//!     }));
 //!
 //!     let mut socket_manager = WorldSocketMgr::new(world);
 //!     socket_manager
@@ -89,10 +88,16 @@
 //!     }
 //!
 //!     async fn on_message(
-//!         _world_session: &std::sync::Arc<Self>,
+//!         world_session: &std::sync::Arc<Self>,
 //!         _world: &'static MyWorld,
 //!         _packet: rollo::packet::Packet,
 //!     ) {
+//!         // Create the packet without payload
+//!         let packet = to_bytes(10, None);
+//!         if let Ok(packet) = packet {
+//!             // Send it to the player
+//!             world_session.socket_tools.send_data(packet.freeze());
+//!         }
 //!     }
 //!
 //!     async fn on_close(_world_session: &std::sync::Arc<Self>, _world: &'static MyWorld) {}
