@@ -35,6 +35,7 @@ use rollo::{
     tokio,
 };
 use rollo::packet::to_bytes;
+
 use std::sync::{
     atomic::{AtomicI64, Ordering},
     Arc,
@@ -100,7 +101,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
         // If the message received is Login(1), send a response to the player.
         if packet.cmd == 1 {
             // Create a packet without payload (2 is the Cmd).
-            let new_packet = to_bytes(2, None);
+            let new_packet = to_bytes(10, None);
             if let Ok(new_packet) = new_packet {
                 // Send it to the player
                 world_session.socket_tools.send_data(new_packet.freeze());
@@ -112,10 +113,10 @@ impl WorldSession<MyWorld> for MyWorldSession {
 }
 ````
 
-## Packet composition
+## Packet
 
-[Payload size(u32), Command(u16), payload(x)]
+[Payload size(u32); Command(u16); Payload]
 
 ## License
 
-MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+MIT license ([LICENSE-MIT](LICENSE-MIT))
