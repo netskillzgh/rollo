@@ -71,12 +71,15 @@ impl WorldSession<MyWorld> for MyWorldSession {
         &self.socket_tools
     }
 
-    async fn on_message(world_session: &Arc<Self>, _world: &'static MyWorld, _packet: Packet) {
-        // Create the packet without payload
-        let packet = to_bytes(10, None);
-        if let Ok(packet) = packet {
-            // Send it to the player
-            world_session.socket_tools.send_data(packet.freeze());
+    async fn on_message(world_session: &Arc<Self>, _world: &'static MyWorld, packet: Packet) {
+        // If the message received is Login(1), send a response to the player.
+        if packet.cmd == 1 {
+            // Create a packet without payload
+            let new_packet = to_bytes(10, None);
+            if let Ok(new_packet) = new_packet {
+                // Send it to the player
+                world_session.socket_tools.send_data(new_packet.freeze());
+            }
         }
     }
 
