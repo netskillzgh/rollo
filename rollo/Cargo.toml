@@ -5,7 +5,7 @@ edition = "2018"
 license = "MIT"
 readme = "README.md"
 description = "A multiplayer framework based on Rust 🦀."
-keywords = ["game", "gamedev", "server", "network"]
+keywords = ["game", "gamedev", "server", "network", "multiplayer", "mmo", "framework"]
 repository = "https://github.com/netskillzgh/rollo"
 authors = ["Netskillz <netskillz@protonmail.com>"]
 
