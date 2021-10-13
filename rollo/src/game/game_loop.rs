@@ -83,7 +83,7 @@ impl GameLoop {
 mod tests {
     use std::{sync::Arc, time::Instant};
 
-    use crate::server::{dos_protection::DosPolicy, world_session::WorldSession};
+    use crate::server::{dos_protection::DosPolicy, world::WorldTime, world_session::WorldSession};
 
     use super::*;
     use async_trait::async_trait;
@@ -198,14 +198,16 @@ mod tests {
             panic!("Test : update");
         }
 
+        fn get_packet_limits(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
+            (100, 1024 * 10, DosPolicy::Log)
+        }
+    }
+
+    impl WorldTime for TestGameLoop {
         fn time(&self) -> i64 {
             10
         }
 
         fn update_time(&self, _new_time: i64) {}
-
-        fn get_packet_limits(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
-            (100, 1024 * 10, DosPolicy::Log)
-        }
     }
 }

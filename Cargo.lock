@@ -157,6 +157,7 @@ version = "0.0.0"
 dependencies = [
  "async-trait",
  "rollo",
+ "rollo-macros",
  "tracing-subscriber",
 ]
 
@@ -537,6 +538,7 @@ dependencies = [
  "rand",
  "rand_pcg",
  "rayon",
+ "rollo-macros",
  "rustls",
  "spin_sleep",
  "tokio",
@@ -549,7 +551,6 @@ name = "rollo-macros"
 version = "0.1.0"
 dependencies = [
  "quote",
- "rollo",
  "syn",
 ]
 

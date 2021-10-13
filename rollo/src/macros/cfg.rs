@@ -9,6 +9,15 @@ macro_rules! cfg_server {
     }
 }
 
+macro_rules! cfg_macros {
+    ($($item:item)*) => {
+        $(
+            #[cfg(all(feature = "macros"))]
+            $item
+        )*
+    }
+}
+
 macro_rules! cfg_game {
     ($($item:item)*) => {
         $(

@@ -17,6 +17,7 @@ cfg_game! {
 cfg_server! {
     pub use bytes;
     pub use tokio;
+    pub use rollo_macros;
     pub mod packet;
     pub use async_trait::async_trait;
     pub mod server;

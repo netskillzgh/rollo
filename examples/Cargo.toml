@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 rollo = { path = "../rollo", features = ["game", "server"]}
+rollo-macros = {path = "../rollo-macros"}
 async-trait = "0.1.50"
 tracing-subscriber = "0.2.0"
 

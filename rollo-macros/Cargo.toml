@@ -9,4 +9,3 @@ proc-macro = true
 [dependencies]
 quote = "1.0"
 syn = {version = "1.0.74", features = ["full", "extra-traits"]}
-rollo = { path = "../rollo" }

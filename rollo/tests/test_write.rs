@@ -1,8 +1,5 @@
 use std::{
-    sync::{
-        atomic::{AtomicU64, Ordering},
-        Arc,
-    },
+    sync::{atomic::Ordering, Arc},
     time::Duration,
 };
 
@@ -17,6 +14,7 @@ use rollo::{
         world_socket_mgr::{ListenerSecurity, WorldSocketMgr},
     },
 };
+use rollo_macros::world_time;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::TcpStream,
@@ -54,7 +52,7 @@ fn packet() -> BytesMut {
 
 async fn setup(port: u32) -> JoinHandle<()> {
     let world = Box::new(MyWorld {
-        elapsed: AtomicU64::new(0),
+        elapsed: AtomicI64::new(0),
     });
     let world = Box::leak(world);
 
@@ -97,15 +95,9 @@ impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}
 }
 
-struct MyWorld {
-    elapsed: AtomicU64,
-}
+#[world_time]
+struct MyWorld {}
 
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
-    fn time(&self) -> i64 {
-        self.elapsed.load(Ordering::Acquire) as i64
-    }
-
-    fn update_time(&self, _new_time: i64) {}
 }

@@ -11,10 +11,8 @@ use rollo::{
         world_socket_mgr::{ListenerSecurity, WorldSocketMgr},
     },
 };
-use std::sync::{
-    atomic::{AtomicI64, Ordering},
-    Arc,
-};
+use rollo_macros::world_time;
+use std::sync::{atomic::Ordering, Arc};
 use std::time::Duration;
 
 #[tokio::main]
@@ -36,9 +34,9 @@ async fn main() {
         .unwrap();
 }
 
+#[world_time]
 struct MyWorld {
     bg: BattlegroundManager,
-    elapsed: AtomicI64,
 }
 
 impl World for MyWorld {
@@ -46,12 +44,6 @@ impl World for MyWorld {
     fn update(&'static self, diff: i64) {
         self.bg.timer.update(diff, &self.bg);
     }
-
-    fn time(&self) -> i64 {
-        self.elapsed.load(Ordering::Acquire) as i64
-    }
-
-    fn update_time(&self, _new_time: i64) {}
 
     fn get_packet_limits(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
         (10, 1024 * 10, DosPolicy::Log)

@@ -20,14 +20,17 @@ use crate::{
 use super::world_socket::WriterMessage;
 
 #[async_trait]
-pub trait WorldSession<T> {
+pub trait WorldSession<T: Send + Sync>
+where
+    Self: Sync + Send,
+{
     /// On Connection Open
     async fn on_open(socket_tools: SocketTools, world: &'static T) -> Result<Arc<Self>, Error>;
     fn socket_tools(&self) -> &SocketTools;
     async fn on_message(world_session: &Arc<Self>, world: &'static T, packet: Packet);
     /// On Connection Close
     async fn on_close(world_session: &Arc<Self>, world: &'static T);
-    async fn on_dos_trigger(world_session: &Arc<Self>, world: &'static T, cmd: u16);
+    async fn on_dos_trigger(_world_session: &Arc<Self>, _world: &'static T, _cmd: u16) {}
 }
 
 #[derive(Debug)]

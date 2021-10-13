@@ -5,21 +5,17 @@ use rollo::{
     error::Error,
     packet::Packet,
     server::{
-        dos_protection::DosPolicy,
         world::World,
         world_session::{SocketTools, WorldSession},
         world_socket_mgr::{ListenerSecurity, WorldSocketMgr},
     },
 };
-use std::sync::{
-    atomic::{AtomicI64, Ordering},
-    Arc,
-};
+use rollo_macros::world_time;
+use std::sync::{atomic::Ordering, Arc};
 use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt::init();
     let world = Box::leak(Box::new(MyWorld {
         elapsed: AtomicI64::new(0),
     }));
@@ -32,24 +28,13 @@ async fn main() {
         .unwrap();
 }
 
-struct MyWorld {
-    elapsed: AtomicI64,
-}
+#[world_time]
+struct MyWorld {}
 
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
-    fn update(&'static self, _diff: i64) {}
-
-    fn time(&self) -> i64 {
-        self.elapsed.load(Ordering::Acquire)
-    }
-
-    fn update_time(&self, new_time: i64) {
-        self.elapsed.store(new_time, Ordering::Release);
-    }
-
-    fn get_packet_limits(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
-        (10, 1024 * 10, DosPolicy::Log)
+    fn update(&'static self, _diff: i64) {
+        println!("Tick");
     }
 }
 
@@ -67,6 +52,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
             socket_tools: tools,
         }))
     }
+
     async fn on_dos_trigger(_world_session: &Arc<Self>, _world: &'static MyWorld, _cmd: u16) {}
     fn socket_tools(&self) -> &SocketTools {
         &self.socket_tools
@@ -85,6 +71,6 @@ impl WorldSession<MyWorld> for MyWorldSession {
     }
 
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {
-        println!("Closed");
+        println!("Session closed");
     }
 }
