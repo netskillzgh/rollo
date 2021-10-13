@@ -34,7 +34,7 @@ use rollo::{
     },
     tokio,
 };
-use rollo::packet::to_bytes;
+use rollo::packet::{to_bytes, Packet};
 
 use std::sync::{
     atomic::{AtomicI64, Ordering},
