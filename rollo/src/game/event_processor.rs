@@ -62,7 +62,7 @@ where
         });
     }
 
-    /// Add an event. add_time (ms)
+    /// Add an event.
     pub fn add_event(&mut self, event: Arc<T>, add_time: Duration) {
         let target_time = self.calcul_target_time(add_time.as_millis() as i64);
 
