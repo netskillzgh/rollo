@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2018"
 license = "MIT"
 description = "Macros for Rollo."
-keywords = ["game", "gamedev", "server", "network", "multiplayer", "mmo", "framework", "macros"]
+keywords = ["game", "gamedev", "server", "network", "framework", "macros"]
 repository = "https://github.com/netskillzgh/rollo/tree/master/rollo-macros"
 authors = ["Netskillz <netskillz@protonmail.com>"]
 
