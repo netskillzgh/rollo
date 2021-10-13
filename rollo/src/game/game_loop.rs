@@ -16,7 +16,7 @@ pub struct GameLoop {
 }
 
 impl GameLoop {
-    /// Create the GameLoop with the tick rate
+    /// Create the GameLoop with the tick rate (interval)
     pub fn new(interval: Duration) -> Self {
         Self {
             date: AtomicI64::new(chrono::offset::Local::now().timestamp_millis()),

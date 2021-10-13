@@ -14,6 +14,7 @@ macro_rules! interval_timer {
     };
 }
 
+// Interval Manager
 pub struct IntervalTimerMgr {
     current: AtomicCell<i64>,
     interval: i64,
@@ -62,6 +63,7 @@ impl IntervalTimerMgr {
     }
 }
 
+/// Executed when interval passed
 pub trait IntervalTimerExecutor {
     /// Executed when interval passed
     fn on_update(&self, _diff: i64);
