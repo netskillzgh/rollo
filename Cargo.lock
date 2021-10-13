@@ -545,6 +545,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rollo-macros"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "rollo",
+ "syn",
+]
+
+[[package]]
 name = "rustls"
 version = "0.19.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

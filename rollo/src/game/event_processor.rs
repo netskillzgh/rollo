@@ -1,5 +1,5 @@
 use multimap::MultiMap;
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, sync::Arc, time::Duration};
 
 /// Event processor
 #[derive(Default)]
@@ -63,10 +63,11 @@ where
     }
 
     /// Add an event. add_time (ms)
-    pub fn add_event(&mut self, event: Arc<T>, add_time_ms: i64) {
-        let target_time = self.calcul_target_time(add_time_ms);
+    pub fn add_event(&mut self, event: Arc<T>, add_time: Duration) {
+        let target_time = self.calcul_target_time(add_time.as_millis() as i64);
 
-        self.events.insert(target_time, (add_time_ms, event));
+        self.events
+            .insert(target_time, (add_time.as_millis() as i64, event));
     }
 
     /// Remove Events
@@ -119,10 +120,10 @@ mod tests {
         let event = new();
         let second_event = new();
 
-        event_processor.add_event(Arc::clone(&event), 2500);
-        event_processor.add_event(Arc::clone(&event), 2500);
-        event_processor.add_event(Arc::clone(&second_event), 2500);
-        event_processor.add_event(Arc::clone(&second_event), 3000);
+        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        event_processor.add_event(Arc::clone(&second_event), Duration::from_millis(2500));
+        event_processor.add_event(Arc::clone(&second_event), Duration::from_secs(3));
 
         assert_eq!(event.life.load(Ordering::Acquire), 0);
         assert_eq!(second_event.life.load(Ordering::Acquire), 0);
@@ -148,7 +149,7 @@ mod tests {
         };
         let event = Arc::new(event);
 
-        event_processor.add_event(Arc::clone(&event), 2500);
+        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
 
         assert_eq!(event_processor.events.len(), 1);
 
@@ -167,7 +168,7 @@ mod tests {
         };
         let event = Arc::new(event);
 
-        event_processor.add_event(Arc::clone(&event), 2500);
+        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
 
         event_processor.update(2600);
 
@@ -180,7 +181,7 @@ mod tests {
         let event = new();
 
         {
-            event_processor.add_event(event, 2500);
+            event_processor.add_event(event, Duration::from_millis(2500));
         }
 
         assert_eq!(event_processor.events.len(), 1);
@@ -198,10 +199,10 @@ mod tests {
         let event = new();
         let second_event = new();
 
-        event_processor.add_event(Arc::clone(&event), 2500);
-        event_processor.add_event(Arc::clone(&event), 2500);
-        event_processor.add_event(Arc::clone(&second_event), 2500);
-        event_processor.add_event(Arc::clone(&second_event), 3000);
+        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        event_processor.add_event(Arc::clone(&second_event), Duration::from_millis(2500));
+        event_processor.add_event(Arc::clone(&second_event), Duration::from_secs(3));
 
         assert_eq!(event_processor.events.len(), 2);
 

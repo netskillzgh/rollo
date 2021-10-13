@@ -1,5 +1,6 @@
 [workspace]
 members=  [
     "examples",
-    "rollo"
+    "rollo",
+    "rollo-macros"
 ]

@@ -15,6 +15,7 @@ use std::sync::{
     atomic::{AtomicI64, Ordering},
     Arc,
 };
+use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
@@ -25,7 +26,7 @@ async fn main() {
 
     let mut socket_manager = WorldSocketMgr::new(world);
     socket_manager
-        .start_game_loop(15)
+        .start_game_loop(Duration::from_millis(15))
         .start_network("127.0.0.1:6666", ListenerSecurity::Tcp)
         .await
         .unwrap();

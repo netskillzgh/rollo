@@ -15,20 +15,22 @@ use std::sync::{
     atomic::{AtomicI64, Ordering},
     Arc,
 };
+use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
     let world = Box::new(MyWorld {
         elapsed: AtomicI64::new(0),
         bg: BattlegroundManager {
-            timer: IntervalTimerMgr::new(20),
+            timer: IntervalTimerMgr::new(Duration::from_millis(25)),
+            name: String::from("Battleground 1"),
         },
     });
     let world = Box::leak(world);
 
     let mut socket_manager = WorldSocketMgr::new(world);
     socket_manager
-        .start_game_loop(15)
+        .start_game_loop(Duration::from_millis(15))
         .start_network("127.0.0.1:6666", ListenerSecurity::Tcp)
         .await
         .unwrap();
@@ -87,10 +89,11 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
 struct BattlegroundManager {
     timer: IntervalTimerMgr,
+    name: String,
 }
 
 impl IntervalTimerExecutor for BattlegroundManager {
     fn on_update(&self, diff: i64) {
-        println!("The diff is {}", diff);
+        println!("{} : The diff is {}", diff, self.name);
     }
 }

@@ -17,10 +17,10 @@ pub struct GameLoop {
 
 impl GameLoop {
     /// Create the GameLoop with the tick rate
-    pub fn new(interval: i64) -> Self {
+    pub fn new(interval: Duration) -> Self {
         Self {
             date: AtomicI64::new(chrono::offset::Local::now().timestamp_millis()),
-            interval,
+            interval: interval.as_millis() as i64,
         }
     }
 
@@ -91,7 +91,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
     async fn test_get_sleep_time() {
-        let mut game_loop = GameLoop::new(75);
+        let mut game_loop = GameLoop::new(Duration::from_millis(75));
         sleep(Duration::from_millis(500)).await;
         assert_eq!(game_loop.get_sleep_time(), 0);
         game_loop.update_game_time();
@@ -109,7 +109,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
     async fn test_sleep_loop() {
-        let mut game_loop = GameLoop::new(25);
+        let mut game_loop = GameLoop::new(Duration::from_millis(25));
         let timer = Instant::now();
         game_loop.sleep_until_interval().await;
         let sleep_time = timer.elapsed().as_millis();
@@ -130,7 +130,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
     async fn test_update_time() {
-        let mut game_loop = GameLoop::new(25);
+        let mut game_loop = GameLoop::new(Duration::from_millis(25));
         sleep(Duration::from_millis(10)).await;
         let old = game_loop.date.load(Ordering::SeqCst);
         let new_date = game_loop.update_game_time();
@@ -140,7 +140,7 @@ mod tests {
     #[should_panic(expected = "Test : update")]
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
     async fn test_loop() {
-        let mut game_loop = GameLoop::new(25);
+        let mut game_loop = GameLoop::new(Duration::from_millis(25));
         let world = Box::new(TestGameLoop);
         let world = Box::leak(world);
         tokio::time::timeout(Duration::from_secs(1), game_loop.start(world))

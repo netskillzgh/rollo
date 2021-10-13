@@ -34,6 +34,7 @@ use rollo::{
     },
     tokio,
 };
+use std::time::Duration;
 use rollo::packet::{to_bytes, Packet};
 
 use std::sync::{
@@ -51,7 +52,7 @@ async fn main() {
 
     // Run the server and the game loop with interval (15ms).
     socket_manager
-        .start_game_loop(15)
+        .start_game_loop(Duration::from_millis(15))
         .start_network("127.0.0.1:6666", ListenerSecurity::Tcp)
         .await
         .unwrap();

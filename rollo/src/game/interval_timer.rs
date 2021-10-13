@@ -1,5 +1,18 @@
+use std::time::Duration;
+
 use crossbeam::atomic::AtomicCell;
 use tracing::error;
+
+#[macro_export]
+macro_rules! interval_timer {
+    ($name: ident) => {
+        pub struct $name;
+
+        impl IntervalTimerExecutor for $name {
+            fn on_update(&self, _diff: i64) {}
+        }
+    };
+}
 
 pub struct IntervalTimerMgr {
     current: AtomicCell<i64>,
@@ -8,10 +21,10 @@ pub struct IntervalTimerMgr {
 
 impl IntervalTimerMgr {
     /// Create the interval Timer
-    pub fn new(interval: i64) -> Self {
+    pub fn new(interval: Duration) -> Self {
         Self {
             current: AtomicCell::new(0),
-            interval,
+            interval: interval.as_millis() as i64,
         }
     }
 
@@ -51,7 +64,7 @@ impl IntervalTimerMgr {
 
 pub trait IntervalTimerExecutor {
     /// Executed when interval passed
-    fn on_update(&self, _diff: i64) {}
+    fn on_update(&self, _diff: i64);
 }
 
 #[cfg(test)]
@@ -60,8 +73,9 @@ mod tests {
 
     #[test]
     fn test_update() {
-        let timer = IntervalTimerMgr::new(25);
-        let bu = X;
+        interval_timer!(MyMgr);
+        let timer = IntervalTimerMgr::new(Duration::from_millis(25));
+        let bu = MyMgr;
         timer.update(25, &bu);
         assert_eq!(timer.current.load(), 0);
         timer.update(30, &bu);
@@ -78,7 +92,7 @@ mod tests {
 
     #[test]
     fn test_reset() {
-        let timer = IntervalTimerMgr::new(25);
+        let timer = IntervalTimerMgr::new(Duration::from_millis(25));
         timer.current.store(30);
         timer.reset();
         assert_eq!(timer.current.load(), 5);
@@ -86,7 +100,7 @@ mod tests {
 
     #[test]
     fn test_is_passed() {
-        let timer = IntervalTimerMgr::new(25);
+        let timer = IntervalTimerMgr::new(Duration::from_millis(25));
         timer.current.store(20);
         assert!(!timer.is_passed());
         timer.current.store(25);
@@ -96,8 +110,4 @@ mod tests {
         timer.current.store(0);
         assert!(!timer.is_passed());
     }
-
-    struct X;
-
-    impl IntervalTimerExecutor for X {}
 }
