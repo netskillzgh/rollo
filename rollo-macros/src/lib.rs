@@ -22,6 +22,7 @@ pub fn interval_mgr(args: TokenStream, input: TokenStream) -> TokenStream {
     .into();
 }
 
+/// Implement WorldTime
 #[proc_macro_attribute]
 pub fn world_time(args: TokenStream, input: TokenStream) -> TokenStream {
     let mut item_struct = parse_macro_input!(input as ItemStruct);

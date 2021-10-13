@@ -92,8 +92,6 @@ where
             tls_acceptor = Some(TlsAcceptor::from(Arc::new(config)));
         }
 
-        info!("Server started!");
-
         loop {
             if let Ok((mut socket, addr)) = listener.accept().await {
                 self.counter += 1;

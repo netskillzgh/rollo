@@ -56,6 +56,7 @@ async fn main() {
         .unwrap();
 }
 
+// Implement WorldTime
 #[world_time]
 struct MyWorld {}
 

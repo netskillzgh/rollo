@@ -5,7 +5,7 @@ publish = false
 edition = "2018"
 
 [dependencies]
-rollo = { version = "0.1.0", features = ["game", "server", "macros"]}
+rollo = { path = "../rollo", features = ["game", "server", "macros"]}
 async-trait = "0.1.50"
 tracing-subscriber = "0.2.0"
 
