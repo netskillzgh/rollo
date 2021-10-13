@@ -26,6 +26,8 @@ rollo = { version = "0.1.0", features = ["full"] }
 ````rust,no_run
 use async_trait::async_trait;
 use rollo::packet::to_bytes;
+
+use rollo::rollo_macros::world_time;
 use rollo::tokio;
 use rollo::{
     error::Error,
@@ -36,7 +38,6 @@ use rollo::{
         world_socket_mgr::{ListenerSecurity, WorldSocketMgr},
     },
 };
-use rollo_macros::world_time;
 use std::sync::{atomic::Ordering, Arc};
 use std::time::Duration;
 

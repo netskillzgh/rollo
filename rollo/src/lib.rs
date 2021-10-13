@@ -10,6 +10,10 @@ cfg_flat_buffers_helpers! {
     pub mod flat_buffers_helpers;
 }
 
+cfg_macros! {
+    pub use rollo_macros;
+}
+
 cfg_game! {
     pub mod game;
 }
@@ -17,7 +21,6 @@ cfg_game! {
 cfg_server! {
     pub use bytes;
     pub use tokio;
-    pub use rollo_macros;
     pub mod packet;
     pub use async_trait::async_trait;
     pub mod server;

@@ -157,7 +157,6 @@ version = "0.0.0"
 dependencies = [
  "async-trait",
  "rollo",
- "rollo-macros",
  "tracing-subscriber",
 ]
 
