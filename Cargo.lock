@@ -156,7 +156,7 @@ name = "examples"
 version = "0.0.0"
 dependencies = [
  "async-trait",
- "rollo",
+ "rollo 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "tracing-subscriber",
 ]
 
@@ -536,10 +536,32 @@ dependencies = [
  "parking_lot",
  "rand",
  "rand_pcg",
- "rayon",
  "rollo-macros 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustls",
  "spin_sleep",
+ "tokio",
+ "tokio-rustls",
+ "tracing",
+]
+
+[[package]]
+name = "rollo"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c33fdb0afa229692d87f3eb74ed4798b61a522a484fe26545a2c7eaeb486745"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "chrono",
+ "crossbeam",
+ "lazy_static",
+ "multimap",
+ "parking_lot",
+ "rand",
+ "rand_pcg",
+ "rayon",
+ "rollo-macros 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustls",
  "tokio",
  "tokio-rustls",
  "tracing",

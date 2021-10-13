@@ -22,6 +22,7 @@ async fn main() {
     }));
 
     let mut socket_manager = WorldSocketMgr::new(world);
+    // Run the server and the game loop with an interval (15ms)
     socket_manager
         .start_game_loop(Duration::from_millis(15))
         .start_network("127.0.0.1:6666", ListenerSecurity::Tcp)
