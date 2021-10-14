@@ -12,8 +12,8 @@ A multiplayer framework based on Rust.
 - Tcp (support Tls).
 - Packet Manager (message command/payload).
 - Game Loop (tick rate).
-- Event Manager - [example](examples/event.rs).
-- Interval Manager - [example](examples/interval.rs).
+- Event Manager - [example](https://github.com/netskillzgh/rollo/blob/master/examples/event.rs).
+- Interval Manager - [example](https://github.com/netskillzgh/rollo/blob/master/examples/interval.rs).
 - Dos protection/detection.
 
 ```toml
@@ -24,7 +24,7 @@ rollo = { version = "0.1.0", features = ["full"] }
 ## Example
 
 ````rust,no_run
-use async_trait::async_trait;
+use rollo::async_trait;
 use rollo::packet::to_bytes;
 
 use rollo::rollo_macros::world_time;
@@ -38,7 +38,7 @@ use rollo::{
         world_socket_mgr::{ListenerSecurity, WorldSocketMgr},
     },
 };
-use std::sync::{atomic::Ordering, Arc};
+use std::sync::Arc;
 use std::time::Duration;
 
 #[tokio::main]
@@ -82,7 +82,6 @@ impl WorldSession<MyWorld> for MyWorldSession {
         }))
     }
 
-    async fn on_dos_trigger(_world_session: &Arc<Self>, _world: &'static MyWorld, _cmd: u16) {}
     fn socket_tools(&self) -> &SocketTools {
         &self.socket_tools
     }

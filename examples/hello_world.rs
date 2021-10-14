@@ -12,7 +12,7 @@ use rollo::{
         world_socket_mgr::{ListenerSecurity, WorldSocketMgr},
     },
 };
-use std::sync::{atomic::Ordering, Arc};
+use std::sync::Arc;
 use std::time::Duration;
 
 #[tokio::main]
