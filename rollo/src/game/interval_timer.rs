@@ -9,7 +9,8 @@ macro_rules! interval_timer {
         pub struct $name;
 
         impl IntervalTimerExecutor for $name {
-            fn on_update(&self, _diff: i64) {}
+            type Container = Option<u32>;
+            fn on_update(&self, _diff: i64, _container: Self::Container) {}
         }
     };
 }
@@ -30,7 +31,7 @@ impl IntervalTimerMgr {
     }
 
     /// Update and execute if time passed
-    pub fn update<T>(&self, diff: i64, object: &T)
+    pub fn update<T>(&self, diff: i64, object: &T, container: T::Container)
     where
         T: IntervalTimerExecutor,
     {
@@ -42,7 +43,7 @@ impl IntervalTimerMgr {
             return;
         }
 
-        object.on_update(diff);
+        object.on_update(diff, container);
 
         self.reset();
     }
@@ -65,8 +66,9 @@ impl IntervalTimerMgr {
 
 /// Executed when interval passed
 pub trait IntervalTimerExecutor {
+    type Container;
     /// Executed when interval passed
-    fn on_update(&self, _diff: i64);
+    fn on_update(&self, _diff: i64, container: Self::Container);
 }
 
 #[cfg(test)]
@@ -78,17 +80,17 @@ mod tests {
         interval_timer!(MyMgr);
         let timer = IntervalTimerMgr::new(Duration::from_millis(25));
         let bu = MyMgr;
-        timer.update(25, &bu);
+        timer.update(25, &bu, None);
         assert_eq!(timer.current.load(), 0);
-        timer.update(30, &bu);
+        timer.update(30, &bu, None);
         assert_eq!(5, timer.current.load());
-        timer.update(20, &bu);
+        timer.update(20, &bu, None);
         assert_eq!(0, timer.current.load());
-        timer.update(0, &bu);
+        timer.update(0, &bu, None);
         assert_eq!(0, timer.current.load());
-        timer.update(15, &bu);
+        timer.update(15, &bu, None);
         assert_eq!(15, timer.current.load());
-        timer.update(10, &bu);
+        timer.update(10, &bu, None);
         assert_eq!(0, timer.current.load());
     }
 

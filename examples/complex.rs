@@ -19,10 +19,10 @@ use std::time::Duration;
 async fn main() {
     let world = Box::new(MyWorld {
         elapsed: AtomicI64::new(0),
-        bg: BattlegroundManager {
+        bg: Arc::new(BattlegroundManager {
             timer: IntervalTimerMgr::new(Duration::from_millis(25)),
             name: String::from("Battleground 1"),
-        },
+        }),
     });
     let world = Box::leak(world);
 
@@ -36,13 +36,13 @@ async fn main() {
 
 #[world_time]
 struct MyWorld {
-    bg: BattlegroundManager,
+    bg: Arc<BattlegroundManager>,
 }
 
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
     fn update(&'static self, diff: i64) {
-        self.bg.timer.update(diff, &self.bg);
+        self.bg.timer.update(diff, &*self.bg, Arc::clone(&self.bg));
     }
 
     fn get_packet_limits(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
@@ -85,7 +85,8 @@ struct BattlegroundManager {
 }
 
 impl IntervalTimerExecutor for BattlegroundManager {
-    fn on_update(&self, diff: i64) {
+    type Container = Arc<Self>;
+    fn on_update(&self, diff: i64, _container: Self::Container) {
         println!("{} : The diff is {}", diff, self.name);
     }
 }
