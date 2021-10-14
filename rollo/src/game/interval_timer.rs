@@ -1,5 +1,7 @@
-#![doc = include_str!("../../../doc/interval_timer.md")]
-
+//! ## Example
+//!````
+#![doc = include_str!("../../../examples/interval.rs")]
+//!````
 use std::time::Duration;
 
 use crossbeam::atomic::AtomicCell;

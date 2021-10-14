@@ -1,4 +1,7 @@
-#![doc = include_str!("../../../doc/event_processor.md")]
+//! ## Example
+//!````
+#![doc = include_str!("../../../examples/event.rs")]
+//!````
 
 use multimap::MultiMap;
 use std::{collections::HashMap, sync::Arc, time::Duration};
