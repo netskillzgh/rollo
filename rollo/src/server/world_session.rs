@@ -33,6 +33,7 @@ where
     async fn on_dos_trigger(_world_session: &Arc<Self>, _world: &'static T, _cmd: u16) {}
 }
 
+/// Send packets, latency, SocketTools etc.
 #[derive(Debug)]
 pub struct SocketTools {
     pub socket_addr: SocketAddr,
@@ -55,6 +56,7 @@ impl SocketTools {
         }
     }
 
+    /// Send a packet to the session
     pub fn send(&self, cmd: u16, payload: Option<&[u8]>) {
         if !self.is_closed() {
             if let Ok(bytes) = to_bytes(cmd, payload) {
@@ -67,28 +69,32 @@ impl SocketTools {
         }
     }
 
-    pub fn get_latency(&self) -> i64 {
-        self.latency.load(Ordering::Acquire)
-    }
-
+    /// Send Bytes(Packet) to the session
     pub fn send_data(&self, bytes: Bytes) {
         if !self.is_closed() && self.tx.send(WriterMessage::Bytes(bytes)).is_err() {
             error!("Error when sending packet");
         }
     }
 
+    pub fn get_latency(&self) -> i64 {
+        self.latency.load(Ordering::Acquire)
+    }
+
+    /// Close the session
     pub fn close(&self) -> Result<(), Error> {
         self.tx
             .send(WriterMessage::Close)
             .map_err(|_| Error::Channel)
     }
 
+    /// Close the session with a delay
     pub fn close_with_delay(&self, delay: Duration) -> Result<(), Error> {
         self.tx
             .send(WriterMessage::CloseDelayed(delay))
             .map_err(|_| Error::Channel)
     }
 
+    /// Is connection close ?
     pub fn is_closed(&self) -> bool {
         self.tx.is_closed()
     }

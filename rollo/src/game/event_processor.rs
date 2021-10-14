@@ -2,7 +2,7 @@ use multimap::MultiMap;
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
 /// Event processor
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct EventProcessor<T>
 where
     T: Event,
@@ -62,7 +62,7 @@ where
         });
     }
 
-    /// Add an event. add_time (ms)
+    /// Add an event.
     pub fn add_event(&mut self, event: Arc<T>, add_time: Duration) {
         let target_time = self.calcul_target_time(add_time.as_millis() as i64);
 

@@ -10,13 +10,14 @@ use tokio::time::sleep;
 
 use crate::server::world::World;
 
+#[derive(Debug)]
 pub struct GameLoop {
     date: AtomicI64,
     interval: i64,
 }
 
 impl GameLoop {
-    /// Create the GameLoop with the tick rate
+    /// Create the GameLoop with the tick rate (interval)
     pub fn new(interval: Duration) -> Self {
         Self {
             date: AtomicI64::new(chrono::offset::Local::now().timestamp_millis()),
