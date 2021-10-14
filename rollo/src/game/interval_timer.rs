@@ -3,18 +3,6 @@ use std::time::Duration;
 use crossbeam::atomic::AtomicCell;
 use tracing::error;
 
-#[macro_export]
-macro_rules! interval_timer {
-    ($name: ident) => {
-        pub struct $name;
-
-        impl IntervalTimerExecutor for $name {
-            type Container = Option<u32>;
-            fn on_update(&self, _diff: i64, _container: Self::Container) {}
-        }
-    };
-}
-
 // Interval Manager
 #[derive(Debug)]
 pub struct IntervalTimerMgr {
@@ -80,9 +68,8 @@ mod tests {
 
     #[test]
     fn test_update() {
-        interval_timer!(MyMgr);
         let timer = IntervalTimerMgr::new(Duration::from_millis(25));
-        let bu = MyMgr;
+        let bu = TestW;
         timer.update(25, &bu, None);
         assert_eq!(timer.current.load(), 0);
         timer.update(30, &bu, None);
@@ -116,5 +103,13 @@ mod tests {
         assert!(!timer.is_passed());
         timer.current.store(0);
         assert!(!timer.is_passed());
+    }
+
+    struct TestW;
+
+    impl IntervalTimerExecutor for TestW {
+        type Container = Option<u8>;
+
+        fn on_update(&self, _diff: i64, _container: Self::Container) {}
     }
 }
