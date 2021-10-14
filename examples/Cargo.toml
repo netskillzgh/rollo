@@ -16,3 +16,11 @@ path = "hello_world.rs"
 [[example]]
 name = "complex"
 path = "complex.rs"
+
+[[example]]
+name = "event"
+path = "event.rs"
+
+[[example]]
+name = "interval"
+path = "interval.rs"
