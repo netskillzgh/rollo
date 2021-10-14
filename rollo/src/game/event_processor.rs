@@ -2,7 +2,7 @@ use multimap::MultiMap;
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
 /// Event processor
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct EventProcessor<T>
 where
     T: Event,
