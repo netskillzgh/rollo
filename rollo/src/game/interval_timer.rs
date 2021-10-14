@@ -110,6 +110,8 @@ mod tests {
     impl IntervalTimerExecutor for TestW {
         type Container = Option<u8>;
 
-        fn on_update(&self, _diff: i64, _container: Self::Container) {}
+        fn on_update(&self, diff: i64, _container: Self::Container) {
+            assert!(diff >= 25)
+        }
     }
 }
