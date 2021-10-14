@@ -12,8 +12,8 @@ A multiplayer framework based on Rust.
 - Tcp (support Tls).
 - Packet Manager (message command/payload).
 - Game Loop (tick rate).
-- Event Manager.
-- Interval Manager.
+- Event Manager [example]().
+- Interval Manager [example](examples/interval).
 - Dos protection/detection.
 
 ```toml
