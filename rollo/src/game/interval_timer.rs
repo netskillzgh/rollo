@@ -44,6 +44,8 @@ impl IntervalTimerMgr {
             return;
         }
 
+        let diff = self.current.load();
+
         object.on_update(diff, container);
 
         self.reset();
