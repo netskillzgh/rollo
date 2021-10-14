@@ -10,6 +10,7 @@ use tokio::time::sleep;
 
 use crate::server::world::World;
 
+#[derive(Debug)]
 pub struct GameLoop {
     date: AtomicI64,
     interval: i64,

@@ -16,6 +16,7 @@ macro_rules! interval_timer {
 }
 
 // Interval Manager
+#[derive(Debug)]
 pub struct IntervalTimerMgr {
     current: AtomicCell<i64>,
     interval: i64,
