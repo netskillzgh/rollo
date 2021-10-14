@@ -1,6 +1,6 @@
-use async_trait::async_trait;
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
+use rollo::async_trait;
 use rollo::game::event_processor::{Event, EventProcessor};
 
 use rollo::rollo_macros::world_time;

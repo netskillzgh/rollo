@@ -1,4 +1,4 @@
-use async_trait::async_trait;
+use rollo::async_trait;
 use rollo::packet::to_bytes;
 
 use rollo::rollo_macros::world_time;

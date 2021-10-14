@@ -1,4 +1,4 @@
-use async_trait::async_trait;
+use rollo::async_trait;
 use rollo::rollo_macros::world_time;
 use rollo::tokio;
 use rollo::{
