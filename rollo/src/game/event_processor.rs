@@ -1,3 +1,5 @@
+#![doc = include_str!("../../../doc/event_processor.md")]
+
 use multimap::MultiMap;
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
