@@ -68,18 +68,18 @@ mod tests {
 
     #[test]
     fn test_update() {
-        let timer = IntervalTimerMgr::new(Duration::from_millis(25));
+        let timer = IntervalTimerMgr::new(Duration::from_millis(50));
         let bu = TestW;
         timer.update(25, &bu, None);
-        assert_eq!(timer.current.load(), 0);
+        assert_eq!(timer.current.load(), 25);
         timer.update(30, &bu, None);
         assert_eq!(5, timer.current.load());
         timer.update(20, &bu, None);
-        assert_eq!(0, timer.current.load());
+        assert_eq!(25, timer.current.load());
         timer.update(0, &bu, None);
-        assert_eq!(0, timer.current.load());
+        assert_eq!(25, timer.current.load());
         timer.update(15, &bu, None);
-        assert_eq!(15, timer.current.load());
+        assert_eq!(40, timer.current.load());
         timer.update(10, &bu, None);
         assert_eq!(0, timer.current.load());
     }
@@ -111,7 +111,7 @@ mod tests {
         type Container = Option<u8>;
 
         fn on_update(&self, diff: i64, _container: Self::Container) {
-            assert!(diff >= 25)
+            assert!(diff >= 50)
         }
     }
 }

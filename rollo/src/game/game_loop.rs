@@ -120,13 +120,13 @@ mod tests {
 
         game_loop.sleep_until_interval().await;
         let sleep_time = timer.elapsed().as_millis();
-        assert!((44..=55).contains(&sleep_time));
+        assert!((42..=57).contains(&sleep_time));
 
         game_loop.update_game_time();
 
         game_loop.sleep_until_interval().await;
         let sleep_time = timer.elapsed().as_millis();
-        assert!((70..=83).contains(&sleep_time));
+        assert!((68..=85).contains(&sleep_time));
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
