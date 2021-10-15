@@ -1,7 +1,6 @@
 use std::time::Duration;
 
 use crossbeam::atomic::AtomicCell;
-use tracing::error;
 
 // Interval Manager
 #[derive(Debug)]
@@ -25,7 +24,7 @@ impl IntervalTimerMgr {
         T: IntervalTimerExecutor,
     {
         if self.current.fetch_update(|f| Some(f + diff)).is_err() {
-            error!("Can't add update");
+            return;
         }
 
         if !self.is_passed() {

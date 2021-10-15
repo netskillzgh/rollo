@@ -25,7 +25,6 @@ use tokio::{
     time::timeout,
 };
 use tokio_rustls::TlsAcceptor;
-use tracing::info;
 
 lazy_static! {
     pub(crate) static ref ACTIVE_SOCKETS: AtomicU64 = AtomicU64::new(0);
@@ -121,7 +120,6 @@ where
     ) where
         S: AsyncRead + AsyncWrite,
     {
-        info!("New connection");
         let (tx, rx) = unbounded_channel();
         let socket_tools = SocketTools::new(socket_addr, tx, id);
 

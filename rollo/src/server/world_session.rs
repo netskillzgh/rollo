@@ -10,7 +10,6 @@ use std::{
     time::Duration,
 };
 use tokio::sync::mpsc::UnboundedSender;
-use tracing::error;
 
 use crate::{
     error::Error,
@@ -60,11 +59,9 @@ impl SocketTools {
     pub fn send(&self, cmd: u16, payload: Option<&[u8]>) {
         if !self.is_closed() {
             if let Ok(bytes) = to_bytes(cmd, payload) {
-                if let Err(error) = self.tx.send(WriterMessage::Bytes(bytes.freeze())) {
-                    error!("Error when sending the packet. {}", error);
+                if self.tx.send(WriterMessage::Bytes(bytes.freeze())).is_err() {
+                    log::error!("Can't send the data to the channel.");
                 }
-            } else {
-                error!("Error when transforming the packet");
             }
         }
     }
@@ -72,7 +69,7 @@ impl SocketTools {
     /// Send Bytes(Packet) to the session
     pub fn send_data(&self, bytes: Bytes) {
         if !self.is_closed() && self.tx.send(WriterMessage::Bytes(bytes)).is_err() {
-            error!("Error when sending packet");
+            log::error!("Can't send the data to the channel.");
         }
     }
 

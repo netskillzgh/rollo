@@ -21,7 +21,6 @@ use tokio::{
     sync::mpsc::UnboundedReceiver,
 };
 use tokio::{select, task};
-use tracing::{error, info};
 
 #[derive(Debug)]
 pub(crate) struct WorldSocket<T, S, W>
@@ -41,13 +40,33 @@ where
     S: AsyncRead + AsyncWrite,
     W: 'static + Send + Sync + World,
 {
-    pub(crate) fn new(world_session: Arc<T>, world: &'static W) -> Self {
-        Self {
-            world_session,
-            dos_protection: DosProtection::new(),
-            phantom: PhantomData,
-            world,
+    async fn dispatch_channel(
+        mut rx: UnboundedReceiver<PacketDispatcher>,
+        world_session: Arc<T>,
+        world: &'static W,
+    ) {
+        while let Some(message) = rx.recv().await {
+            match message {
+                PacketDispatcher::Close => break,
+                PacketDispatcher::Packet(packet) => {
+                    T::on_message(&world_session, world, packet).await
+                }
+            }
+
+            task::yield_now().await;
         }
+    }
+
+    fn dispatch_client_packets(&self) -> (UnboundedSender<PacketDispatcher>, JoinHandle<()>) {
+        let (tx, rx) = unbounded_channel();
+
+        let world = self.world;
+        let world_session = Arc::clone(&self.world_session);
+        let t = tokio::spawn(async move {
+            Self::dispatch_channel(rx, world_session, world).await;
+        });
+
+        (tx, t)
     }
 
     pub(crate) async fn handle(
@@ -67,30 +86,114 @@ where
             _ = Self::write(writer, rx) => {}
         }
 
-        if let Err(error) = tx_packet.send(PacketDispatcher::Close) {
-            error!(
-                "Error when sending close event to Packet dispatcher channel {}.",
-                error
-            );
-        }
+        if let Err(_) = tx_packet.send(PacketDispatcher::Close) {}
 
-        if t.await.is_err() {
-            error!("Error when waiting channel.");
-        }
+        if t.await.is_err() {}
 
         ACTIVE_SOCKETS.fetch_sub(1, Ordering::Relaxed);
     }
 
-    fn dispatch_client_packets(&self) -> (UnboundedSender<PacketDispatcher>, JoinHandle<()>) {
-        let (tx, rx) = unbounded_channel();
+    fn handle_ping(&self, packet: Packet) -> Result<(), Error> {
+        if let Some(content) = packet.payload {
+            self.world_session.socket_tools().send(0, Some(&content));
+            let latency = parse_ping(content)?;
+            self.world_session
+                .socket_tools()
+                .latency
+                .store(latency, Ordering::Relaxed);
+            Ok(())
+        } else {
+            Err(Error::PacketPayload)
+        }
+    }
 
-        let world = self.world;
-        let world_session = Arc::clone(&self.world_session);
-        let t = tokio::spawn(async move {
-            Self::dispatch_channel(rx, world_session, world).await;
-        });
+    pub(crate) fn new(world_session: Arc<T>, world: &'static W) -> Self {
+        Self {
+            world_session,
+            dos_protection: DosProtection::new(),
+            phantom: PhantomData,
+            world,
+        }
+    }
 
-        (tx, t)
+    async fn process_packet(
+        &mut self,
+        reader: &mut Reader<'_, BufReader<ReadHalf<S>>>,
+        tx: &mut UnboundedSender<PacketDispatcher>,
+    ) -> Result<(), Error> {
+        let result = {
+            if let Ok(result) = timeout(Duration::from_secs(20), self.read_packet(reader)).await {
+                match result {
+                    Ok(packet) if packet.cmd == 0 => self.handle_ping(packet),
+                    Ok(packet) => tx
+                        .send(PacketDispatcher::Packet(packet))
+                        .map_err(|_| Error::Channel),
+                    Err(error) => Err(error),
+                }
+            } else {
+                Err(Error::TimeoutReading)
+            }
+        };
+
+        result
+    }
+
+    async fn read(
+        &mut self,
+        buffer: &mut BufReader<ReadHalf<S>>,
+        tx: &mut UnboundedSender<PacketDispatcher>,
+    ) {
+        let mut reader = Reader::new(buffer);
+        loop {
+            let result = self.process_packet(&mut reader, tx).await;
+
+            if result.is_err() {
+                break;
+            }
+
+            task::yield_now().await;
+        }
+    }
+
+    async fn read_packet(
+        &mut self,
+        reader: &mut Reader<'_, BufReader<ReadHalf<S>>>,
+    ) -> Result<Packet, Error> {
+        let size = reader.read_size().await?;
+        let cmd = reader.read_cmd().await?;
+
+        let (limit, size_limit, policy) = self.world.get_packet_limits(cmd);
+
+        if (size as u32) >= size_limit || size >= MAX_SIZE {
+            return Err(Error::PacketSize);
+        }
+
+        if !self
+            .dos_protection
+            .evaluate_cmd(cmd, limit, self.world.time())
+        {
+            WorldSession::on_dos_trigger(&self.world_session, self.world, cmd).await;
+            match policy {
+                DosPolicy::Close => {
+                    if self.world_session.socket_tools().close().is_err() {
+                        log::error!("Error when closing the channel.");
+                    }
+                    return Err(Error::DosProtection);
+                }
+                DosPolicy::Log => {
+                    log::info!("Potential dos attack detected for Cmd {}.", cmd);
+                }
+                DosPolicy::None => {}
+            }
+        }
+
+        if size == 0 {
+            Ok(Packet::new(cmd, None))
+        } else {
+            let payload = reader.read_payload(size).await?;
+
+            Ok(Packet::new(cmd, payload))
+        }
     }
 
     async fn write(mut writer: WriteHalf<S>, mut rx: UnboundedReceiver<WriterMessage>) {
@@ -107,136 +210,12 @@ where
                     }
 
                     if writer.write_all(&data).await.is_err() {
-                        error!("Error when writting in the buffer");
                         break;
                     }
 
                     task::yield_now().await;
                 }
             }
-        }
-    }
-
-    async fn read(
-        &mut self,
-        buffer: &mut BufReader<ReadHalf<S>>,
-        tx: &mut UnboundedSender<PacketDispatcher>,
-    ) {
-        let mut reader = Reader::new(buffer);
-        loop {
-            let result = self.process_packet(&mut reader, tx).await;
-
-            if let Err(error) = result {
-                error!("error {:?}", error);
-                break;
-            }
-
-            task::yield_now().await;
-        }
-    }
-
-    async fn process_packet(
-        &mut self,
-        reader: &mut Reader<'_, BufReader<ReadHalf<S>>>,
-        tx: &mut UnboundedSender<PacketDispatcher>,
-    ) -> Result<(), Error> {
-        let result = {
-            if let Ok(result) = timeout(Duration::from_secs(20), self.read_packet(reader)).await {
-                match result {
-                    Ok(packet) if packet.cmd == 0 => self.handle_ping(packet),
-                    Ok(packet) => tx
-                        .send(PacketDispatcher::Packet(packet))
-                        .map_err(|_| Error::Channel),
-                    Err(error) => {
-                        error!("Error read pckt {:?}", error);
-                        Err(error)
-                    }
-                }
-            } else {
-                error!("Timeout Real");
-                Err(Error::TimeoutReading)
-            }
-        };
-
-        result
-    }
-
-    async fn read_packet(
-        &mut self,
-        reader: &mut Reader<'_, BufReader<ReadHalf<S>>>,
-    ) -> Result<Packet, Error> {
-        let size = reader.read_size().await?;
-        let cmd = reader.read_cmd().await?;
-
-        let (limit, size_limit, policy) = self.world.get_packet_limits(cmd);
-
-        if (size as u32) >= size_limit || size >= MAX_SIZE {
-            error!("Error with the size");
-            return Err(Error::PacketSize);
-        }
-
-        if !self
-            .dos_protection
-            .evaluate_cmd(cmd, limit, self.world.time())
-        {
-            error!("Dos Protection Activated");
-            WorldSession::on_dos_trigger(&self.world_session, self.world, cmd).await;
-            match policy {
-                DosPolicy::Close => {
-                    if let Err(error) = self.world_session.socket_tools().close() {
-                        error!("Error when closing the socket | {:?}", error);
-                    }
-                    return Err(Error::DosProtection);
-                }
-                DosPolicy::Log => {
-                    info!(
-                        "Too much requests. Socket ID {}, cmd {}",
-                        self.world_session.socket_tools().id,
-                        cmd
-                    );
-                }
-                DosPolicy::None => {}
-            }
-        }
-
-        if size == 0 {
-            Ok(Packet::new(cmd, None))
-        } else {
-            let payload = reader.read_payload(size).await?;
-
-            Ok(Packet::new(cmd, payload))
-        }
-    }
-
-    fn handle_ping(&self, packet: Packet) -> Result<(), Error> {
-        if let Some(content) = packet.payload {
-            self.world_session.socket_tools().send(0, Some(&content));
-            let latency = parse_ping(content)?;
-            self.world_session
-                .socket_tools()
-                .latency
-                .store(latency, Ordering::Relaxed);
-            Ok(())
-        } else {
-            error!("Error with the packet ping cmd");
-            Err(Error::PacketPayload)
-        }
-    }
-
-    async fn dispatch_channel(
-        mut rx: UnboundedReceiver<PacketDispatcher>,
-        world_session: Arc<T>,
-        world: &'static W,
-    ) {
-        while let Some(message) = rx.recv().await {
-            match message {
-                PacketDispatcher::Close => break,
-                PacketDispatcher::Packet(packet) => {
-                    T::on_message(&world_session, world, packet).await
-                }
-            }
-
-            task::yield_now().await;
         }
     }
 }
@@ -250,7 +229,6 @@ fn parse_ping(content: Vec<u8>) -> Result<i64, Error> {
         let latency = i64::from_be_bytes(latency);
         Ok(latency)
     } else {
-        error!("Error parse_ping");
         Err(Error::PacketPayload)
     }
 }

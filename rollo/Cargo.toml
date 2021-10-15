@@ -52,7 +52,7 @@ flat_buffers_helpers = [
 ]
 
 [dependencies]
-tracing = "0.1"
+log  = { version = "0.4.14", default-features = false }
 tokio = { version = "1.8.0", features = ["full"], optional = true }
 async-trait = {version = "0.1.5", optional = true }
 tokio-rustls = {version = "0.22.0", optional = true}
