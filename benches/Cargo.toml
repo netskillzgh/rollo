@@ -1,0 +1,14 @@
+[package]
+name = "benches"
+version = "0.0.0"
+publish = false
+edition = "2018"
+
+[dependencies]
+rollo = { path = "../rollo", features = ["full"] }
+criterion = "0.3"
+
+[[bench]]
+name = "rand"
+path = "rand.rs"
+harness = false
