@@ -169,7 +169,7 @@ mod tests {
         let event = MyEventTest {
             life: AtomicI32::new(0),
             to_abort: AtomicBool::new(true),
-            is_deletable: AtomicBool::new(true),
+            is_deletable: AtomicBool::new(false),
         };
         let event = Arc::new(event);
 
@@ -178,6 +178,7 @@ mod tests {
         event_processor.update(2600);
 
         assert_eq!(event.life.load(Ordering::Acquire), 5);
+        assert_eq!(event_processor.events.len(), 0);
     }
 
     #[test]
