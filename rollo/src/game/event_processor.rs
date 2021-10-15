@@ -1,6 +1,6 @@
 //! ## Event
 //! ### Example
-//!````
+//!````compile_fail
 #![doc = include_str!("../../../examples/event.rs")]
 //!````
 

@@ -1,6 +1,6 @@
 //! ## Interval
 //! ### Example
-//!````
+//!````compile_fail
 #![doc = include_str!("../../../examples/interval.rs")]
 //!````
 use std::time::Duration;
