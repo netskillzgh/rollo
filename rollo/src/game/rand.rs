@@ -23,7 +23,6 @@ pub fn roll(chance: f32) -> (bool, f32) {
 }
 
 fn rand_chance() -> f32 {
-    //let x = Mcg128Xsl64::from_entropy();
     return RNG.lock().gen_range(0.0..=100.0);
 }
 
