@@ -1,9 +1,3 @@
-//! ## Event
-//! ### Example
-//!````compile_fail
-#![doc = include_str!("../../../examples/event.rs")]
-//!````
-
 use multimap::MultiMap;
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
