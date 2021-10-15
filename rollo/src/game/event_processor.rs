@@ -175,6 +175,8 @@ mod tests {
 
         event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
 
+        assert_eq!(event_processor.events.len(), 1);
+
         event_processor.update(2600);
 
         assert_eq!(event.life.load(Ordering::Acquire), 5);
