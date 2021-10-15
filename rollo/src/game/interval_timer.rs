@@ -1,4 +1,5 @@
-//! ## Example
+//! ## Interval
+//! ### Example
 //!````
 #![doc = include_str!("../../../examples/interval.rs")]
 //!````

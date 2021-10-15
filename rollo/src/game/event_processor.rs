@@ -1,4 +1,5 @@
-//! ## Example
+//! ## Event
+//! ### Example
 //!````
 #![doc = include_str!("../../../examples/event.rs")]
 //!````
