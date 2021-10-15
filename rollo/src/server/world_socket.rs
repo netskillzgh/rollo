@@ -86,7 +86,9 @@ where
             _ = Self::write(writer, rx) => {}
         }
 
-        if let Err(_) = tx_packet.send(PacketDispatcher::Close) {}
+        if tx_packet.send(PacketDispatcher::Close).is_err() {
+            log::info!("Can't close the channel.");
+        }
 
         if t.await.is_err() {}
 
