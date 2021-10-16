@@ -128,7 +128,7 @@ where
     }
 
     fn set_up_socket(socket: &mut TcpStream) -> Result<(), Error> {
-        socket.set_nodelay(true).map_err(|_| Error::DosProtection)
+        socket.set_nodelay(true).map_err(|_| Error::NoDelayError)
     }
 
     const TIMEOUT_TLS: u64 = 15;

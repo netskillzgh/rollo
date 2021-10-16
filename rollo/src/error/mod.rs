@@ -8,4 +8,5 @@ pub enum Error {
     Channel,
     PacketPayload,
     TlsAcceptTimeout,
+    NoDelayError,
 }
