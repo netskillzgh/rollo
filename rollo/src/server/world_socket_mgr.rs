@@ -146,8 +146,8 @@ where
                 acceptor.accept(socket),
             )
             .await
-            .map_err(|_| Error::DosProtection)?
-            .map_err(|_| Error::TlsAcceptTimeout)?;
+            .map_err(|_| Error::TlsAcceptTimeout)?
+            .map_err(|_| Error::TlsAccept)?;
             Ok(Self::split_socket(socket.into_inner().0))
         } else {
             Ok(Self::split_socket(socket))

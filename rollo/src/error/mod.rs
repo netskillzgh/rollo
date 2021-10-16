@@ -9,4 +9,5 @@ pub enum Error {
     PacketPayload,
     TlsAcceptTimeout,
     NoDelayError,
+    TlsAccept,
 }

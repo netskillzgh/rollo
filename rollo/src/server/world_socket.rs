@@ -224,7 +224,7 @@ where
 
 fn parse_ping(content: Vec<u8>) -> Result<i64, Error> {
     if content.len() == 16 {
-        let middle = content.len() - 8;
+        let middle = content.len() / 2;
         let latency = content[middle..]
             .try_into()
             .map_err(|_| Error::PacketPayload)?;
