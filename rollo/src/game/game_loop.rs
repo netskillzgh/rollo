@@ -53,8 +53,7 @@ impl GameLoop {
         }
     }
 
-    fn get_diff(old: i64, current: i64) -> i64 {
-        debug_assert!(current >= old);
+    const fn get_diff(old: i64, current: i64) -> i64 {
         if old >= current {
             0
         } else {

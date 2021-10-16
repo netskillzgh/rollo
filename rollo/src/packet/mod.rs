@@ -9,7 +9,7 @@ pub struct Packet {
 }
 
 impl Packet {
-    pub(crate) fn new(cmd: u16, payload: Option<Vec<u8>>) -> Self {
+    pub(crate) const fn new(cmd: u16, payload: Option<Vec<u8>>) -> Self {
         Self { cmd, payload }
     }
 

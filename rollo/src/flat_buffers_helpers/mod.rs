@@ -31,7 +31,7 @@ impl CustomFlatBufferBuilder {
         }
     }
 
-    fn from_builder(builder: FlatBufferBuilder<'static>) -> Self {
+    const fn from_builder(builder: FlatBufferBuilder<'static>) -> Self {
         Self { builder }
     }
 
