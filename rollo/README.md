@@ -14,7 +14,7 @@ A multiplayer framework based on Rust.
 - Game Loop (tick rate).
 - Event Manager - [example](https://github.com/netskillzgh/rollo/blob/master/examples/event.rs).
 - Interval Manager - [example](https://github.com/netskillzgh/rollo/blob/master/examples/interval.rs).
-- Dos protection/detection.
+- Dos protection/detection - [example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs).
 
 ```toml
 [dependencies]

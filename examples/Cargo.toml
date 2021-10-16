@@ -21,3 +21,7 @@ path = "event.rs"
 [[example]]
 name = "interval"
 path = "interval.rs"
+
+[[example]]
+name = "dos"
+path = "dos.rs"

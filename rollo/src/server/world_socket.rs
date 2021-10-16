@@ -164,7 +164,7 @@ where
         let size = reader.read_size().await?;
         let cmd = reader.read_cmd().await?;
 
-        let (limit, size_limit, policy) = self.world.get_packet_limits(cmd);
+        let (limit, size_limit, policy) = self.world.get_packet_limit(cmd);
 
         if (size as u32) >= size_limit || size >= MAX_SIZE {
             return Err(Error::PacketSize);

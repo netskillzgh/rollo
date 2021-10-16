@@ -8,7 +8,7 @@ pub trait World: Sized + Sync + WorldTime + Send {
         fn update(&'static self, _diff: i64) {}
     }
     /// Dos Protection (Cmd, Size, Policy)
-    fn get_packet_limits(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
+    fn get_packet_limit(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
         (15, 10 * 2024, DosPolicy::Log)
     }
 }
