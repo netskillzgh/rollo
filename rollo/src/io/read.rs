@@ -3,7 +3,7 @@ use tokio::io::AsyncReadExt;
 
 use crate::error::Error;
 
-pub(crate) const MAX_SIZE: usize = 1024 * 16;
+pub(crate) const MAX_SIZE: usize = 1024 * 14;
 
 pub(crate) struct Reader<'a, R>
 where
