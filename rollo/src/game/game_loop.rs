@@ -44,7 +44,7 @@ impl GameLoop {
 
     fn get_sleep_time(&self) -> i64 {
         let new_date = chrono::offset::Local::now();
-        let execution_diff = new_date.timestamp_millis() - self.date.load(Ordering::SeqCst);
+        let execution_diff = new_date.timestamp_millis() - self.date.load(Ordering::Acquire);
 
         if self.interval > execution_diff {
             self.interval - execution_diff
@@ -64,7 +64,7 @@ impl GameLoop {
 
     fn update_game_time(&mut self) -> i64 {
         let current = chrono::offset::Local::now().timestamp_millis();
-        self.date.store(current, Ordering::SeqCst);
+        self.date.store(current, Ordering::Release);
 
         current
     }
@@ -133,7 +133,7 @@ mod tests {
     async fn test_update_time() {
         let mut game_loop = GameLoop::new(Duration::from_millis(25));
         sleep(Duration::from_millis(10)).await;
-        let old = game_loop.date.load(Ordering::SeqCst);
+        let old = game_loop.date.load(Ordering::Acquire);
         let new_date = game_loop.update_game_time();
         assert!(old != new_date && new_date > old);
     }
@@ -142,7 +142,9 @@ mod tests {
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
     async fn test_loop() {
         let mut game_loop = GameLoop::new(Duration::from_millis(25));
-        let world = Box::new(TestGameLoop);
+        let world = Box::new(TestGameLoop {
+            time: AtomicI64::new(0),
+        });
         let world = Box::leak(world);
         tokio::time::timeout(Duration::from_secs(1), game_loop.start(world))
             .await
@@ -183,7 +185,9 @@ mod tests {
         }
     }
 
-    struct TestGameLoop;
+    struct TestGameLoop {
+        time: AtomicI64,
+    }
 
     impl World for TestGameLoop {
         type WorldSessionimplementer = SessionTest;
@@ -195,11 +199,12 @@ mod tests {
 
     impl WorldTime for TestGameLoop {
         fn time(&self) -> i64 {
-            10
+            self.time.load(Ordering::Acquire)
         }
 
         fn update_time(&self, new_time: i64) {
-            assert_eq!(10, new_time);
+            self.time.store(new_time, Ordering::Release);
+            assert_ne!(10, new_time);
         }
     }
 }

@@ -53,41 +53,47 @@ impl Drop for CustomFlatBufferBuilder {
 
 #[cfg(test)]
 mod tests {
+    use serial_test::serial;
+
     use super::*;
 
     #[test]
+    #[serial]
     fn test_drop() {
-        assert_eq!(ACTIVE_SOCKETS.load(Ordering::Relaxed), 0);
-        assert_eq!(BUILDERS.len(), 0);
+        let before = BUILDERS.len();
 
         {
             CustomFlatBufferBuilder::new();
             CustomFlatBufferBuilder::new();
         }
 
-        assert_eq!(BUILDERS.len(), 2);
+        assert_eq!(BUILDERS.len(), before + 2);
 
         {
             CustomFlatBufferBuilder::new();
             CustomFlatBufferBuilder::new();
         }
 
-        assert_eq!(BUILDERS.len(), 4);
+        assert_eq!(BUILDERS.len(), before + 4);
     }
 
-    /* #[test]
+    #[test]
+    #[serial]
     fn test_get_builder() {
-        (0..BUILDERS.len()).into_iter().for_each(|_| {
-            BUILDERS.pop();
-        });
+        BUILDERS.push(CustomFlatBufferBuilder::new());
+        let before = BUILDERS.len();
+        assert!(before > 0);
+        let first = get_builder();
+        assert_eq!(before - 1, BUILDERS.len());
+        let mut list: Vec<_> = (0..BUILDERS.len())
+            .into_iter()
+            .map(|_| get_builder())
+            .collect();
         assert!(BUILDERS.is_empty());
-        BUILDERS.push(CustomFlatBufferBuilder::new());
-        BUILDERS.push(CustomFlatBufferBuilder::new());
-
-        assert_eq!(BUILDERS.len(), 2);
-
-        BUILDERS.pop();
-
-        assert_eq!(BUILDERS.len(), 1);
-    } */
+        let second = get_builder();
+        drop(first);
+        drop(second);
+        list.clear();
+        assert_eq!(before + 1, BUILDERS.len());
+    }
 }
