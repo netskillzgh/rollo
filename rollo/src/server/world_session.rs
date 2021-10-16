@@ -29,7 +29,7 @@ where
     async fn on_message(world_session: &Arc<Self>, world: &'static T, packet: Packet);
     /// On Connection Close
     async fn on_close(world_session: &Arc<Self>, world: &'static T);
-    async fn on_dos_trigger(_world_session: &Arc<Self>, _world: &'static T, _cmd: u16) {}
+    async fn on_dos_attack(_world_session: &Arc<Self>, _world: &'static T, _cmd: u16) {}
 }
 
 /// Send packets, latency, SocketTools etc.

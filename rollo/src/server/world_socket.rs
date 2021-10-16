@@ -174,7 +174,7 @@ where
             .dos_protection
             .evaluate_cmd(cmd, limit, self.world.time())
         {
-            WorldSession::on_dos_trigger(&self.world_session, self.world, cmd).await;
+            WorldSession::on_dos_attack(&self.world_session, self.world, cmd).await;
             match policy {
                 DosPolicy::Close => {
                     if self.world_session.socket_tools().close().is_err() {

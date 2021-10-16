@@ -74,7 +74,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}
 
-    async fn on_dos_trigger(_world_session: &Arc<Self>, _world: &'static MyWorld, _cmd: u16) {}
+    async fn on_dos_attack(_world_session: &Arc<Self>, _world: &'static MyWorld, _cmd: u16) {}
 }
 
 #[world_time]

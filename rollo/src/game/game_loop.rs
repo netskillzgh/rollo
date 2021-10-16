@@ -181,13 +181,6 @@ mod tests {
         async fn on_close(_world_session: &Arc<Self>, _world: &'static TestGameLoop) {
             todo!()
         }
-
-        async fn on_dos_trigger(
-            _world_session: &Arc<Self>,
-            _world: &'static TestGameLoop,
-            _cmd: u16,
-        ) {
-        }
     }
 
     struct TestGameLoop;
