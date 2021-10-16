@@ -70,6 +70,7 @@ chrono = { version = "0.4", optional = true }
 spin_sleep = { version = "1.0.0", optional = true }
 rollo-macros = { version = "0.1.0", optional = true }
 log  = { version = "0.4.14", default-features = false }
+concache = "0.2.1"
 
 [dev-dependencies]
 spin_sleep = { version = "1.0.0" } 

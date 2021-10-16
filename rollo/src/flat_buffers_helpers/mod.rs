@@ -3,10 +3,13 @@ use std::sync::atomic::Ordering;
 use crate::server::world_socket_mgr::ACTIVE_SOCKETS;
 use crossbeam_queue::SegQueue;
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
-use lazy_static::lazy_static;
 
-lazy_static! {
-    static ref BUILDERS: SegQueue<CustomFlatBufferBuilder> = SegQueue::new();
+static BUILDERS: SegQueue<CustomFlatBufferBuilder> = SegQueue::new();
+
+pub fn generate_builders(number: u32) {
+    (0..=number).into_iter().for_each(|_| {
+        BUILDERS.push(CustomFlatBufferBuilder::new());
+    });
 }
 
 pub fn get_builder() -> CustomFlatBufferBuilder {
