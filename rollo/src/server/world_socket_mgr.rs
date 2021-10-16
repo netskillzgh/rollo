@@ -10,7 +10,6 @@ use super::{
     world_session::{SocketTools, WorldSession},
     world_socket::WorldSocket,
 };
-use lazy_static::lazy_static;
 use std::{
     net::SocketAddr,
     path::Path,
@@ -26,9 +25,7 @@ use tokio::{
 };
 use tokio_rustls::TlsAcceptor;
 
-lazy_static! {
-    pub(crate) static ref ACTIVE_SOCKETS: AtomicU64 = AtomicU64::new(0);
-}
+pub(crate) static ACTIVE_SOCKETS: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Debug, Clone)]
 pub struct WorldSocketMgr<W>
