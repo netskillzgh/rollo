@@ -129,15 +129,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "concache"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c94573ca52a9895401bbc0f3fecf24cbed8b320b304664adc5c6d2cd2909a516"
-dependencies = [
- "crossbeam 0.3.2",
-]
-
-[[package]]
 name = "criterion"
 version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -172,12 +163,6 @@ dependencies = [
  "cast",
  "itertools",
 ]
-
-[[package]]
-name = "crossbeam"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24ce9782d4d5c53674646a6a4c1863a21a8fc0cb649b3c94dfc16e45071dea19"
 
 [[package]]
 name = "crossbeam"
@@ -702,8 +687,7 @@ dependencies = [
  "async-trait",
  "bytes",
  "chrono",
- "concache",
- "crossbeam 0.8.1",
+ "crossbeam",
  "crossbeam-queue",
  "flatbuffers",
  "lazy_static",
