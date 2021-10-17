@@ -1,5 +1,4 @@
-use std::{sync::Arc, time::Duration};
-
+#![cfg(feature = "full")]
 use async_trait::async_trait;
 use bytes::{BufMut, BytesMut};
 use rollo::{
@@ -12,6 +11,7 @@ use rollo::{
     },
 };
 use rollo_macros::world_time;
+use std::{sync::Arc, time::Duration};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::TcpStream,

@@ -20,3 +20,7 @@ pub trait WorldTime: Sized + Sync {
     /// Update the time
     fn update_time(&self, new_time: i64);
 }
+
+cfg_macros! {
+    pub use rollo_macros::world_time;
+}

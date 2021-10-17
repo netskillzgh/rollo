@@ -1,7 +1,9 @@
+use rollo::flatbuffers_helpers::flatbuffers;
 use rollo::packet::to_bytes;
-use rollo::rollo_macros::world_time;
-use rollo::tokio;
-use rollo::{async_trait, flatbuffers};
+use rollo::pool_flatbuffers;
+use rollo::server::async_trait;
+use rollo::server::tokio;
+use rollo::server::world::world_time;
 use rollo::{
     error::Error,
     packet::Packet,
@@ -19,6 +21,7 @@ async fn main() {
     let world = Box::leak(Box::new(MyWorld {
         elapsed: AtomicI64::new(0),
     }));
+    pool_flatbuffers!(1000, BUILDERS, get_builder);
 
     let mut socket_manager = WorldSocketMgr::new(world);
     socket_manager
@@ -62,9 +65,9 @@ impl WorldSession<MyWorld> for MyWorldSession {
         // If you are using a FlatBufferBuilder repeatedly, make sure to use this function, because it re-uses the FlatBufferBuilder’s existing heap-allocated Vec<u8> internal buffer.
         // This offers significant speed improvements as compared to creating a new FlatBufferBuilder for every new object."
         // https://docs.rs/flatbuffers/2.0.0/flatbuffers/struct.FlatBufferBuilder.html#method.reset
-
-        world_session.socket_tools.send_flatbuffers(|builder| {
-            let name = builder.create_string(&"Sword");
+        let name = "Sword";
+        world_session.socket_tools.send_flatbuffers(move |builder| {
+            let name = builder.create_string(name);
             let weapon = Weapon::create(
                 builder,
                 &WeaponArgs {

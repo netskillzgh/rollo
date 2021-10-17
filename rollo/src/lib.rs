@@ -1,20 +1,27 @@
+#![cfg_attr(docsrs, deny(rustdoc::broken_intra_doc_links))]
+#![doc(test(
+    no_crate_inject,
+    attr(deny(warnings, rust_2018_idioms), allow(dead_code, unused_variables))
+))]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![doc = include_str!("../README.md")]
+
 #[macro_use]
 #[doc(hidden)]
 pub(crate) mod macros;
+
 cfg_server! {
     mod io;
 }
 
+#[doc(hidden)]
+#[cfg(any(feature = "server", feature = "flatbuffers_helpers"))]
+pub extern crate lazy_static;
+
 pub mod error;
 
 cfg_flatbuffers_helpers! {
-    pub use flatbuffers;
-    pub mod flat_buffers_helpers;
-}
-
-cfg_macros! {
-    pub use rollo_macros;
+    pub mod flatbuffers_helpers;
 }
 
 cfg_game! {
@@ -22,9 +29,6 @@ cfg_game! {
 }
 
 cfg_server! {
-    pub use bytes;
-    pub use tokio;
     pub mod packet;
-    pub use async_trait::async_trait;
     pub mod server;
 }
