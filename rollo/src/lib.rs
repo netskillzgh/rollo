@@ -8,7 +8,7 @@ cfg_server! {
 
 pub mod error;
 
-cfg_flat_buffers_helpers! {
+cfg_flatbuffers_helpers! {
     pub use flatbuffers;
     pub mod flat_buffers_helpers;
 }

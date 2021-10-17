@@ -54,7 +54,6 @@ impl Event for MyEvent {
         false
     }
 }
-
 // Implement WorldTime
 #[world_time]
 struct MyWorld {

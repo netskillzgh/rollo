@@ -27,10 +27,10 @@ macro_rules! cfg_game {
     }
 }
 
-macro_rules! cfg_flat_buffers_helpers {
+macro_rules! cfg_flatbuffers_helpers {
     ($($item:item)*) => {
         $(
-            #[cfg(feature = "flat_buffers_helpers")]
+            #[cfg(feature = "flatbuffers_helpers")]
             $item
         )*
     }

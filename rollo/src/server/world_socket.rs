@@ -7,7 +7,7 @@ use super::world::World;
 use super::world_session::WorldSession;
 use super::world_socket_mgr::ACTIVE_SOCKETS;
 use bytes::Bytes;
-#[cfg(feature = "flat_buffers_helpers")]
+#[cfg(feature = "flatbuffers_helpers")]
 use flatbuffers::FlatBufferBuilder;
 use std::convert::TryInto;
 use std::marker::PhantomData;
@@ -201,7 +201,7 @@ where
     }
 
     async fn write(mut writer: WriteHalf<S>, mut rx: UnboundedReceiver<WriterMessage>) {
-        #[cfg(feature = "flat_buffers_helpers")]
+        #[cfg(feature = "flatbuffers_helpers")]
         let mut builder = flatbuffers::FlatBufferBuilder::new();
         while let Some(message) = rx.recv().await {
             match message {
@@ -220,8 +220,8 @@ where
                         break;
                     }
                 }
-                #[cfg(feature = "flat_buffers_helpers")]
-                WriterMessage::SendFlatBuffers(f) => {
+                #[cfg(feature = "flatbuffers_helpers")]
+                WriterMessage::SendFlatbuffers(f) => {
                     if let Ok(bytes) = f(&mut builder) {
                         if writer.write_all(&bytes).await.is_err() {
                             break;
@@ -253,8 +253,8 @@ pub(crate) enum WriterMessage {
     Close,
     CloseDelayed(Duration),
     Bytes(Bytes),
-    #[cfg(feature = "flat_buffers_helpers")]
-    SendFlatBuffers(
+    #[cfg(feature = "flatbuffers_helpers")]
+    SendFlatbuffers(
         Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> Result<Bytes, Error> + Send + Sync>,
     ),
 }

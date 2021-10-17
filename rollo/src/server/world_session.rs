@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use bytes::Bytes;
-#[cfg(feature = "flat_buffers_helpers")]
+#[cfg(feature = "flatbuffers_helpers")]
 use flatbuffers::FlatBufferBuilder;
 use std::{
     fmt::Debug,
@@ -79,8 +79,8 @@ impl SocketTools {
         self.latency.load(Ordering::Acquire)
     }
 
-    #[cfg(feature = "flat_buffers_helpers")]
-    pub fn send_flat_buffers<
+    #[cfg(feature = "flatbuffers_helpers")]
+    pub fn send_flatbuffers<
         F: 'static + Fn(&mut FlatBufferBuilder<'static>) -> Result<Bytes, Error> + Send + Sync,
     >(
         &self,
@@ -88,7 +88,7 @@ impl SocketTools {
     ) {
         if self
             .tx
-            .send(WriterMessage::SendFlatBuffers(Box::new(f)))
+            .send(WriterMessage::SendFlatbuffers(Box::new(f)))
             .is_err()
         {
             log::error!("Can't send the data to the channel.");

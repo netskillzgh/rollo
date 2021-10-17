@@ -14,7 +14,7 @@ authors = ["Netskillz <netskillz@protonmail.com>"]
 default = []
 full = [
     "server",
-    "flat_buffers_helpers",
+    "flatbuffers_helpers",
     "game",
     "precise_time",
     "macros"
@@ -47,7 +47,7 @@ precise_time = [
     "spin_sleep"
 ]
 
-flat_buffers_helpers = [
+flatbuffers_helpers = [
     "flatbuffers",
     "crossbeam-queue"
 ]

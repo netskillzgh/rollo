@@ -25,3 +25,7 @@ path = "interval.rs"
 [[example]]
 name = "dos"
 path = "dos.rs"
+
+[[example]]
+name = "flatbuffers"
+path = "flatbuffers.rs"
