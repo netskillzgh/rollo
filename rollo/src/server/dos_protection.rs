@@ -1,6 +1,7 @@
 use std::{
     collections::HashMap,
     fmt::{Debug, Formatter},
+    time::Duration,
 };
 
 pub(crate) struct DosProtection {
@@ -14,7 +15,7 @@ impl DosProtection {
         }
     }
 
-    const ONE_SECOND_IN_MS: i64 = 1000;
+    const ONE_SECOND_IN_MS: i64 = Duration::from_secs(1).as_millis() as i64;
 
     pub(crate) fn evaluate_cmd(&mut self, cmd: u16, limit: u16, elapsed: i64) -> bool {
         if let Some(mut packet_counter) = self.counters.get_mut(&cmd) {
