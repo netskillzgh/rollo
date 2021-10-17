@@ -88,6 +88,8 @@ where
             tls_acceptor = Some(TlsAcceptor::from(Arc::new(config)));
         }
 
+        let no_delay = self.configuration.no_delay;
+
         loop {
             if let Ok((mut socket, addr)) = listener.accept().await {
                 self.counter += 1;
@@ -96,7 +98,7 @@ where
 
                 let world = self.world;
                 tokio::spawn(async move {
-                    if Self::set_up_socket(&mut socket).is_ok() {
+                    if Self::set_up_socket(&mut socket, no_delay).is_ok() {
                         if let Ok((reader, writer)) = Self::try_tls(acceptor, socket).await {
                             Self::create_socket(addr, world, id, reader, writer).await;
                         }
@@ -127,8 +129,12 @@ where
         }
     }
 
-    fn set_up_socket(socket: &mut TcpStream) -> Result<(), Error> {
-        socket.set_nodelay(true).map_err(|_| Error::NoDelayError)
+    fn set_up_socket(socket: &mut TcpStream, no_delay: bool) -> Result<(), Error> {
+        if no_delay {
+            socket.set_nodelay(true).map_err(|_| Error::NoDelayError)
+        } else {
+            Ok(())
+        }
     }
 
     const TIMEOUT_TLS: u64 = 15;
