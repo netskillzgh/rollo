@@ -2,7 +2,9 @@
 #[macro_use]
 #[doc(hidden)]
 pub(crate) mod macros;
-mod io;
+cfg_server! {
+    mod io;
+}
 
 pub mod error;
 
