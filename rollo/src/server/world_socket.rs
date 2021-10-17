@@ -7,6 +7,8 @@ use super::world::World;
 use super::world_session::WorldSession;
 use super::world_socket_mgr::ACTIVE_SOCKETS;
 use bytes::Bytes;
+#[cfg(feature = "flat_buffers_helpers")]
+use flatbuffers::FlatBufferBuilder;
 use std::convert::TryInto;
 use std::marker::PhantomData;
 use std::sync::atomic::Ordering;
@@ -14,7 +16,7 @@ use std::sync::Arc;
 use std::time::Duration;
 use tokio::io::AsyncWriteExt;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedSender};
-use tokio::task::JoinHandle;
+use tokio::task::{yield_now, JoinHandle};
 use tokio::time::{sleep, timeout};
 use tokio::{
     io::{AsyncRead, AsyncWrite, BufReader, ReadHalf, WriteHalf},
@@ -199,6 +201,8 @@ where
     }
 
     async fn write(mut writer: WriteHalf<S>, mut rx: UnboundedReceiver<WriterMessage>) {
+        #[cfg(feature = "flat_buffers_helpers")]
+        let mut builder = flatbuffers::FlatBufferBuilder::new();
         while let Some(message) = rx.recv().await {
             match message {
                 WriterMessage::Close => break,
@@ -208,16 +212,26 @@ where
                 }
                 WriterMessage::Bytes(data) => {
                     if data.is_empty() {
+                        yield_now().await;
                         continue;
                     }
 
                     if writer.write_all(&data).await.is_err() {
                         break;
                     }
-
-                    task::yield_now().await;
+                }
+                #[cfg(feature = "flat_buffers_helpers")]
+                WriterMessage::SendFlatBuffers(f) => {
+                    if let Ok(bytes) = f(&mut builder) {
+                        if writer.write_all(&bytes).await.is_err() {
+                            break;
+                        }
+                    }
+                    builder.reset();
                 }
             }
+
+            yield_now().await;
         }
     }
 }
@@ -239,6 +253,10 @@ pub(crate) enum WriterMessage {
     Close,
     CloseDelayed(Duration),
     Bytes(Bytes),
+    #[cfg(feature = "flat_buffers_helpers")]
+    SendFlatBuffers(
+        Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> Result<Bytes, Error> + Send + Sync>,
+    ),
 }
 
 pub(crate) enum PacketDispatcher {

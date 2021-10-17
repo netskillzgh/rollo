@@ -7,6 +7,7 @@ mod io;
 pub mod error;
 
 cfg_flat_buffers_helpers! {
+    pub use flatbuffers;
     pub mod flat_buffers_helpers;
 }
 

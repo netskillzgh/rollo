@@ -11,7 +11,7 @@ repository = "https://github.com/netskillzgh/rollo"
 authors = ["Netskillz <netskillz@protonmail.com>"]
 
 [features]
-default = ["server", "game", "macros"]
+default = []
 full = [
     "server",
     "flat_buffers_helpers",
