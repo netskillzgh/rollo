@@ -53,7 +53,6 @@ flat_buffers_helpers = [
 ]
 
 [dependencies]
-
 tokio = { version = "1.8.0", features = ["full"], optional = true }
 async-trait = {version = "0.1.5", optional = true }
 tokio-rustls = {version = "0.22.0", optional = true}
