@@ -25,10 +25,10 @@ rollo = { version = "0.2.0", features = ["full"] }
 ## Example
 
 ```rust,no_run
-use rollo::async_trait;
+use rollo::server::async_trait;
 use rollo::packet::to_bytes;
-use rollo::rollo_macros::world_time;
-use rollo::tokio;
+use rollo::server::world::world_time;
+use rollo::server::tokio;
 use rollo::{
     error::Error,
     packet::Packet,

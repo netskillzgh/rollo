@@ -15,20 +15,20 @@ A multiplayer framework based on Rust.
 - Event Manager - [example](https://github.com/netskillzgh/rollo/blob/master/examples/event.rs).
 - Interval Manager - [example](https://github.com/netskillzgh/rollo/blob/master/examples/interval.rs).
 - Dos protection/detection - [example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs).
+- flatbuffers - [example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs)
 
 ```toml
 [dependencies]
-rollo = { version = "0.1.0", features = ["full"] }
+rollo = { version = "0.2.0", features = ["full"] }
 ```
 
 ## Example
 
-````rust,no_run
-use rollo::async_trait;
+```rust,no_run
+use rollo::server::async_trait;
 use rollo::packet::to_bytes;
-
-use rollo::rollo_macros::world_time;
-use rollo::tokio;
+use rollo::server::world::world_time;
+use rollo::server::tokio;
 use rollo::{
     error::Error,
     packet::Packet,
@@ -102,7 +102,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
         println!("Session closed");
     }
 }
-````
+```
 
 ## Packet
 
