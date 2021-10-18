@@ -1,19 +1,19 @@
 use lazy_static::lazy_static;
 use parking_lot::Mutex;
 use rand::{Rng, SeedableRng};
-#[cfg(target_pointer_width = "32")]
-use rand_pcg::Lcg64Xsh32;
-#[cfg(target_pointer_width = "64")]
-use rand_pcg::Mcg128Xsl64;
 
-#[cfg(target_pointer_width = "64")]
-lazy_static! {
-    static ref RNG: Mutex<Mcg128Xsl64> = Mutex::new(Mcg128Xsl64::from_entropy());
+cfg_pointer_64! {
+    use rand_pcg::Mcg128Xsl64;
+    lazy_static! {
+        static ref RNG: Mutex<Mcg128Xsl64> = Mutex::new(Mcg128Xsl64::from_entropy());
+    }
 }
 
-#[cfg(target_pointer_width = "32")]
-lazy_static! {
-    static ref RNG: Mutex<Lcg64Xsh32> = Mutex::new(Lcg64Xsh32::from_entropy());
+cfg_pointer_32! {
+    use rand_pcg::Lcg64Xsh32;
+    lazy_static! {
+        static ref RNG: Mutex<Lcg64Xsh32> = Mutex::new(Lcg64Xsh32::from_entropy());
+    }
 }
 
 /// Roll with a chance.
