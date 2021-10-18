@@ -6,8 +6,6 @@ use super::dos_protection::{DosPolicy, DosProtection};
 use super::world::World;
 use super::world_session::WorldSession;
 use bytes::Bytes;
-#[cfg(feature = "flatbuffers_helpers")]
-use flatbuffers::FlatBufferBuilder;
 use std::convert::TryInto;
 use std::marker::PhantomData;
 use std::sync::atomic::Ordering;
@@ -22,6 +20,10 @@ use tokio::{
     sync::mpsc::UnboundedReceiver,
 };
 use tokio::{select, task};
+
+cfg_flatbuffers_helpers! {
+    use flatbuffers::FlatBufferBuilder;
+}
 
 #[derive(Debug)]
 pub(crate) struct WorldSocket<T, S, W>

@@ -87,6 +87,9 @@ impl WorldSession<MyWorld> for MyWorldSession {
     }
 
     async fn on_message(world_session: &Arc<Self>, _world: &'static MyWorld, packet: Packet) {
+        assert!(packet.payload.is_some());
+        assert_eq!(6, packet.cmd);
+
         world_session
             .socket_tools
             .send(packet.cmd, Some(&packet.payload.unwrap()));
