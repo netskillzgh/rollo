@@ -21,6 +21,7 @@ async fn main() {
     let world = Box::leak(Box::new(MyWorld {
         elapsed: AtomicI64::new(0),
     }));
+
     pool_flatbuffers!(1000, BUILDERS, get_builder);
 
     let mut socket_manager = WorldSocketMgr::new(world);
