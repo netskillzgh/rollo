@@ -4,6 +4,7 @@
     attr(deny(warnings, rust_2018_idioms), allow(dead_code, unused_variables))
 ))]
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, allow(unused_attributes))]
 #![doc = include_str!("../README.md")]
 
 #[macro_use]
@@ -15,7 +16,7 @@ cfg_server! {
 }
 
 #[doc(hidden)]
-#[cfg(any(feature = "server", feature = "flatbuffers_helpers"))]
+#[cfg(any(feature = "flatbuffers_helpers"))]
 pub extern crate lazy_static;
 
 pub mod error;

@@ -5,7 +5,6 @@ use crate::packet::Packet;
 use super::dos_protection::{DosPolicy, DosProtection};
 use super::world::World;
 use super::world_session::WorldSession;
-use super::world_socket_mgr::ACTIVE_SOCKETS;
 use bytes::Bytes;
 #[cfg(feature = "flatbuffers_helpers")]
 use flatbuffers::FlatBufferBuilder;
@@ -79,8 +78,6 @@ where
     ) where
         S: AsyncWrite + AsyncRead,
     {
-        ACTIVE_SOCKETS.fetch_add(1, Ordering::Relaxed);
-
         let (mut tx_packet, t) = self.dispatch_client_packets();
 
         select! {
@@ -93,8 +90,6 @@ where
         }
 
         if t.await.is_err() {}
-
-        ACTIVE_SOCKETS.fetch_sub(1, Ordering::Relaxed);
     }
 
     fn handle_ping(&self, packet: Packet) -> Result<(), Error> {

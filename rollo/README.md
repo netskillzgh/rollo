@@ -24,7 +24,7 @@ rollo = { version = "0.2.0", features = ["full"] }
 
 ## Example
 
-```rust,no_run
+```no_run
 use rollo::server::async_trait;
 use rollo::packet::to_bytes;
 use rollo::server::world::world_time;

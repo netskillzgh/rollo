@@ -10,12 +10,7 @@ use super::{
     world_session::{SocketTools, WorldSession},
     world_socket::WorldSocket,
 };
-use std::{
-    net::SocketAddr,
-    path::Path,
-    sync::{atomic::AtomicU64, Arc},
-    time::Duration,
-};
+use std::{net::SocketAddr, path::Path, sync::Arc, time::Duration};
 use tokio::{
     io::{AsyncRead, AsyncWrite, BufReader, ReadHalf, WriteHalf},
     net::{TcpListener, TcpStream},
@@ -24,8 +19,6 @@ use tokio::{
     time::timeout,
 };
 use tokio_rustls::TlsAcceptor;
-
-pub(crate) static ACTIVE_SOCKETS: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Debug, Clone)]
 pub struct WorldSocketMgr<W>

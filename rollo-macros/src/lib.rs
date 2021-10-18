@@ -18,7 +18,7 @@ pub fn world_time(args: TokenStream, input: TokenStream) -> TokenStream {
         );
     }
 
-    return quote! {
+    let tokens = quote! {
         use std::sync::atomic::{AtomicI64, Ordering};
         use rollo::server::world::WorldTime;
         #item_struct
@@ -32,6 +32,7 @@ pub fn world_time(args: TokenStream, input: TokenStream) -> TokenStream {
                 self.elapsed.store(new_time, Ordering::Release);
             }
         }
-    }
-    .into();
+    };
+
+    tokens.into()
 }
