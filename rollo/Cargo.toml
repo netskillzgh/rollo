@@ -1,6 +1,6 @@
 [package]
 name = "rollo"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2018"
 license = "MIT"
 readme = "README.md"
@@ -39,6 +39,7 @@ game = [
     "crossbeam",
     "rand",
     "rand_pcg",
+    "lazy_static",
 ]
 
 precise_time = [
