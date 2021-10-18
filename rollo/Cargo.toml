@@ -76,6 +76,9 @@ log = { version = "0.4.14", default-features = false }
 spin_sleep = { version = "1.0.0" } 
 serial_test = "0.5.1"
 
+[build-dependencies]
+autocfg = "1"
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]

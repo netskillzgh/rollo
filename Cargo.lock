@@ -685,6 +685,7 @@ name = "rollo"
 version = "0.2.3"
 dependencies = [
  "async-trait",
+ "autocfg",
  "bytes",
  "chrono",
  "crossbeam",
