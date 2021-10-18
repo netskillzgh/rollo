@@ -219,7 +219,9 @@ mod tests {
         }
 
         fn update_time(&self, new_time: i64) {
+            let old = self.time();
             self.time.store(new_time, Ordering::Release);
+            assert!(new_time > old);
             assert_ne!(10, new_time);
         }
     }
