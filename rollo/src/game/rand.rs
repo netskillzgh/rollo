@@ -13,7 +13,7 @@ lazy_static! {
 
 #[cfg(target_pointer_width = "32")]
 lazy_static! {
-    static ref RNG: Mutex<Mcg128Xsl64> = Mutex::new(Lcg64Xsh32::from_entropy());
+    static ref RNG: Mutex<Lcg64Xsh32> = Mutex::new(Lcg64Xsh32::from_entropy());
 }
 
 /// Roll with a chance.
