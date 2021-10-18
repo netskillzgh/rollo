@@ -1,7 +1,7 @@
 use crate::server::world::World;
 #[cfg(any(test, feature = "precise_time"))]
 use spin_sleep::SpinSleeper;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};
 use std::{
     sync::atomic::{AtomicI64, Ordering},
     time::Duration,
@@ -25,11 +25,10 @@ impl GameLoop {
         }
     }
 
-    fn current_timestamp() -> Result<i64, ()> {
+    fn current_timestamp() -> Result<i64, SystemTimeError> {
         SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map(|time| time.as_millis() as i64)
-            .map_err(|_| ())
     }
 
     /// Start the Game Loop
