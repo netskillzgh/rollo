@@ -22,10 +22,12 @@ async fn main() {
         elapsed: AtomicI64::new(0),
     }));
 
-    pool_flatbuffers!(1000, BUILDERS, get_builder);
-    // Get builder from the pool
+    // Create the pool.
+    pool_flatbuffers!(100, BUILDERS, get_builder);
+    // Get builder from the pool.
     let builder = get_builder();
     drop(builder);
+    // Builder returned.
 
     let mut socket_manager = WorldSocketMgr::new(world);
     socket_manager
