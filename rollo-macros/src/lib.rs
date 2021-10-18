@@ -13,23 +13,22 @@ pub fn world_time(args: TokenStream, input: TokenStream) -> TokenStream {
     if let syn::Fields::Named(ref mut fields) = item_struct.fields {
         fields.named.push(
             syn::Field::parse_named
-                .parse2(quote! { elapsed: AtomicI64 })
+                .parse2(quote! { elapsed: std::sync::atomic::AtomicI64 })
                 .unwrap(),
         );
     }
 
     let tokens = quote! {
-        use std::sync::atomic::{AtomicI64, Ordering};
-        use rollo::server::world::WorldTime;
         #item_struct
+        use rollo::server::world::WorldTime;
 
         impl WorldTime for #name {
             fn time(&self) -> i64 {
-                self.elapsed.load(Ordering::Acquire)
+                self.elapsed.load(std::sync::atomic::Ordering::Acquire)
             }
 
             fn update_time(&self, new_time: i64) {
-                self.elapsed.store(new_time, Ordering::Release);
+                self.elapsed.store(new_time, std::sync::atomic::Ordering::Release);
             }
         }
     };

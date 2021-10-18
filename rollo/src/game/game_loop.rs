@@ -1,5 +1,7 @@
+use crate::server::world::World;
 #[cfg(any(test, feature = "precise_time"))]
 use spin_sleep::SpinSleeper;
+use std::time::{SystemTime, UNIX_EPOCH};
 use std::{
     sync::atomic::{AtomicI64, Ordering},
     time::Duration,
@@ -7,8 +9,6 @@ use std::{
 use tokio::task::yield_now;
 #[cfg(all(not(test), not(feature = "precise_time")))]
 use tokio::time::sleep;
-
-use crate::server::world::World;
 
 #[derive(Debug)]
 pub struct GameLoop {
@@ -20,9 +20,16 @@ impl GameLoop {
     /// Create the GameLoop with the tick rate (interval)
     pub fn new(interval: Duration) -> Self {
         Self {
-            date: AtomicI64::new(chrono::offset::Local::now().timestamp_millis()),
+            date: AtomicI64::new(Self::get_time().unwrap()),
             interval: interval.as_millis() as i64,
         }
+    }
+
+    fn get_time() -> Result<i64, ()> {
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|time| time.as_millis() as i64)
+            .map_err(|_| ())
     }
 
     /// Start the Game Loop
@@ -43,14 +50,16 @@ impl GameLoop {
     }
 
     fn get_sleep_time(&self) -> i64 {
-        let new_date = chrono::offset::Local::now();
-        let execution_diff = new_date.timestamp_millis() - self.date.load(Ordering::Acquire);
+        let new_date = Self::get_time();
+        if let Ok(new_date) = new_date {
+            let execution_diff = new_date - self.date.load(Ordering::Acquire);
 
-        if self.interval > execution_diff {
-            self.interval - execution_diff
-        } else {
-            0
+            if self.interval > execution_diff {
+                return self.interval - execution_diff;
+            }
         }
+
+        0
     }
 
     const fn get_diff(old: i64, current: i64) -> i64 {
@@ -62,10 +71,15 @@ impl GameLoop {
     }
 
     fn update_game_time(&mut self) -> i64 {
-        let current = chrono::offset::Local::now().timestamp_millis();
-        self.date.store(current, Ordering::Release);
+        let current = Self::get_time();
 
-        current
+        if let Ok(current) = current {
+            self.date.store(current, Ordering::Release);
+
+            current
+        } else {
+            self.date.load(Ordering::Relaxed)
+        }
     }
 
     async fn sleep_until_interval(&mut self) {

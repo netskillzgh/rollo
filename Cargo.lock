@@ -113,7 +113,6 @@ dependencies = [
  "libc",
  "num-integer",
  "num-traits",
- "time",
  "winapi",
 ]
 
@@ -686,7 +685,6 @@ version = "0.2.5"
 dependencies = [
  "async-trait",
  "bytes",
- "chrono",
  "crossbeam",
  "crossbeam-queue",
  "flatbuffers",
@@ -696,7 +694,7 @@ dependencies = [
  "parking_lot",
  "rand",
  "rand_pcg",
- "rollo-macros 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rollo-macros",
  "rustls",
  "serial_test",
  "spin_sleep",
@@ -707,16 +705,6 @@ dependencies = [
 [[package]]
 name = "rollo-macros"
 version = "0.1.4"
-dependencies = [
- "quote",
- "syn",
-]
-
-[[package]]
-name = "rollo-macros"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "177d48ef776da6c2cc27ac9bef32b130da0f783337acfc73ef6ed054d028286a"
 dependencies = [
  "quote",
  "syn",
@@ -928,16 +916,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8018d24e04c95ac8790716a5987d0fec4f8b27249ffa0f7d33f1369bdfb88cbd"
 dependencies = [
  "once_cell",
-]
-
-[[package]]
-name = "time"
-version = "0.1.43"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
-dependencies = [
- "libc",
- "winapi",
 ]
 
 [[package]]

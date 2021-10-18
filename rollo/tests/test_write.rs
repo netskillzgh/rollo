@@ -11,7 +11,10 @@ use rollo::{
     },
 };
 use rollo_macros::world_time;
-use std::{sync::Arc, time::Duration};
+use std::{
+    sync::{atomic::AtomicI64, Arc},
+    time::Duration,
+};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::TcpStream,
