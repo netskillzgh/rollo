@@ -19,7 +19,7 @@ A multiplayer framework based on Rust.
 
 ```toml
 [dependencies]
-rollo = { version = "0.2.0", features = ["full"] }
+rollo = { version = "0.3.0", features = ["full"] }
 ```
 
 ## Example
