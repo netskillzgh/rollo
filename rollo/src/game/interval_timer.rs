@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use crossbeam::atomic::AtomicCell;
 
-// Interval Manager
+/// Interval Manager
 #[derive(Debug)]
 pub struct IntervalTimerMgr {
     current: AtomicCell<i64>,
