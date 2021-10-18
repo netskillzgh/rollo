@@ -14,7 +14,7 @@ A multiplayer framework based on Rust.
 - Game Loop (tick rate).
 - Event Manager - [example](https://github.com/netskillzgh/rollo/blob/master/examples/event.rs).
 - Interval Manager - [example](https://github.com/netskillzgh/rollo/blob/master/examples/interval.rs).
-- Dos protection/detection - [example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs).
+- Dos protection - [example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs).
 - flatbuffers - [example](https://github.com/netskillzgh/rollo/blob/master/examples/flatbuffers.rs)
 
 ```toml
@@ -24,7 +24,7 @@ rollo = { version = "0.2.0", features = ["full"] }
 
 ## Example
 
-```no_run
+```rust,no_run
 use rollo::server::async_trait;
 use rollo::packet::to_bytes;
 use rollo::server::world::world_time;
