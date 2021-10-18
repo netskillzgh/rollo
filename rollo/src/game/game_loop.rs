@@ -1,14 +1,18 @@
 use crate::server::world::World;
-#[cfg(any(test, feature = "precise_time"))]
-use spin_sleep::SpinSleeper;
 use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};
 use std::{
     sync::atomic::{AtomicI64, Ordering},
     time::Duration,
 };
 use tokio::task::yield_now;
-#[cfg(all(not(test), not(feature = "precise_time")))]
-use tokio::time::sleep;
+
+cfg_not_precise_time! {
+    use tokio::time::sleep;
+}
+
+cfg_precise_time! {
+    use spin_sleep::SpinSleeper;
+}
 
 #[derive(Debug)]
 pub struct GameLoop {
