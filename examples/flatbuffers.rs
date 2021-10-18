@@ -23,6 +23,9 @@ async fn main() {
     }));
 
     pool_flatbuffers!(1000, BUILDERS, get_builder);
+    // Get builder from the pool
+    let builder = get_builder();
+    drop(builder);
 
     let mut socket_manager = WorldSocketMgr::new(world);
     socket_manager
