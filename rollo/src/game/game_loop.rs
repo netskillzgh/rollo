@@ -20,12 +20,12 @@ impl GameLoop {
     /// Create the GameLoop with the tick rate (interval)
     pub fn new(interval: Duration) -> Self {
         Self {
-            date: AtomicI64::new(Self::get_time().unwrap()),
+            date: AtomicI64::new(Self::current_timestamp().unwrap()),
             interval: interval.as_millis() as i64,
         }
     }
 
-    fn get_time() -> Result<i64, ()> {
+    fn current_timestamp() -> Result<i64, ()> {
         SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map(|time| time.as_millis() as i64)
@@ -50,7 +50,7 @@ impl GameLoop {
     }
 
     fn get_sleep_time(&self) -> i64 {
-        let new_date = Self::get_time();
+        let new_date = Self::current_timestamp();
         if let Ok(new_date) = new_date {
             let execution_diff = new_date - self.date.load(Ordering::Acquire);
 
@@ -71,7 +71,7 @@ impl GameLoop {
     }
 
     fn update_game_time(&mut self) -> i64 {
-        let current = Self::get_time();
+        let current = Self::current_timestamp();
 
         if let Ok(current) = current {
             self.date.store(current, Ordering::Release);
