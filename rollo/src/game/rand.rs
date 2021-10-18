@@ -19,7 +19,7 @@ cfg_pointer_32! {
 /// Roll with a chance.
 pub fn roll(chance: f32) -> (bool, f32) {
     let r = rand_chance();
-    (chance > r, r)
+    (chance >= r, r)
 }
 
 fn rand_chance() -> f32 {
@@ -39,6 +39,8 @@ mod tests {
     #[test]
     fn test_roll() {
         assert!(!roll(0f32).0);
+        assert!(roll(0f32).1 >= 0.0);
         assert!(roll(100f32).0);
+        assert!(roll(100f32).1 <= 100.0);
     }
 }
