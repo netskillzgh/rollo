@@ -1,4 +1,4 @@
-//! #Game Loop
+//! # Game Loop
 use crate::server::world::World;
 use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};
 use std::{

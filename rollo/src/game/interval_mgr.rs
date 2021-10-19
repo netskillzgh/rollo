@@ -1,4 +1,4 @@
-//! # Manager
+//! # Interval Manager
 //! ## Usage
 //! ```rust, no_run
 //! use rollo::game::interval_mgr::{IntervalExecutor, IntervalMgr};
