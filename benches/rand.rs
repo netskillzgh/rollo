@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use rollo::game::rand::roll;
+use rollo::game::roll;
 
 fn basic_rand(c: &mut Criterion) {
     c.bench_function("basic_rand", |b| b.iter(|| roll(black_box(20.0))));

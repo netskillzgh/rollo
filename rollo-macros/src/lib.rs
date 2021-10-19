@@ -20,7 +20,7 @@ pub fn world_time(args: TokenStream, input: TokenStream) -> TokenStream {
 
     let tokens = quote! {
         #item_struct
-        use rollo::server::world::WorldTime;
+        use rollo::server::WorldTime;
 
         impl WorldTime for #name {
             fn time(&self) -> i64 {

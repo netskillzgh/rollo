@@ -58,7 +58,7 @@ impl SocketTools {
     /// Send a packet to the session
     /// ## Examples
     /// ```rust, no_run
-    /// use rollo::server::world_session::SocketTools;
+    /// use rollo::server::SocketTools;
     ///
     /// fn on_message(socket: SocketTools) {
     ///     socket.send(1, None);
@@ -77,7 +77,7 @@ impl SocketTools {
     /// Send Bytes(Packet) to the session
     /// ## Examples
     /// ```rust, no_run
-    /// use rollo::server::world_session::SocketTools;
+    /// use rollo::server::SocketTools;
     /// use rollo::packet::to_bytes;
     ///
     /// fn on_message(socket: SocketTools) {
@@ -94,7 +94,7 @@ impl SocketTools {
     /// get Latency
     /// ## Examples
     /// ```rust, no_run
-    /// use rollo::server::world_session::SocketTools;
+    /// use rollo::server::SocketTools;
     ///
     /// fn on_message(socket: SocketTools) {
     ///     let latency = socket.get_latency();
@@ -123,7 +123,7 @@ impl SocketTools {
     /// Close the session
     /// ## Examples
     /// ```rust, no_run
-    /// use rollo::server::world_session::SocketTools;
+    /// use rollo::server::SocketTools;
     ///
     /// fn on_message(socket: SocketTools) {
     ///     if socket.close().is_err() {
@@ -140,7 +140,7 @@ impl SocketTools {
     /// Close the session with a delay
     /// ## Examples
     /// ```rust, no_run
-    /// use rollo::server::world_session::SocketTools;
+    /// use rollo::server::SocketTools;
     /// use std::time::Duration;
     ///
     /// fn on_message(socket: SocketTools) {
@@ -158,7 +158,7 @@ impl SocketTools {
     /// Is connection close ?
     /// ## Examples
     /// ```rust, no_run
-    /// use rollo::server::world_session::SocketTools;
+    /// use rollo::server::SocketTools;
     ///
     /// fn on_message(socket: SocketTools) {
     ///     if socket.is_closed() {

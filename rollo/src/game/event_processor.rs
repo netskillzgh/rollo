@@ -1,7 +1,7 @@
 //! # Event Processor
 //! ## Usage
 //! ```rust, no_run
-//! use rollo::game::event_processor::{EventProcessor, Event};
+//! use rollo::game::{EventProcessor, Event};
 //! use std::sync::Arc;
 //! use std::time::Duration;
 //!
@@ -38,7 +38,7 @@ where
     /// ## Create an event processor
     /// ### Examples
     /// ```rust, no_run
-    /// use rollo::game::event_processor::{EventProcessor, Event};
+    /// use rollo::game::{EventProcessor, Event};
     ///
     /// let event_processor = EventProcessor::<MyEvent>::new();
     ///
@@ -58,7 +58,7 @@ where
     /// ## Update events
     /// ### Examples
     /// ```rust, no_run
-    /// use rollo::game::event_processor::{EventProcessor, Event};
+    /// use rollo::game::{EventProcessor, Event};
     ///
     /// let mut event_processor = EventProcessor::<MyEvent>::new();
     /// // 100 is the diff.
@@ -111,7 +111,7 @@ where
     /// ## Add an event
     /// ### Examples
     /// ```rust, no_run
-    /// use rollo::game::event_processor::{EventProcessor, Event};
+    /// use rollo::game::{EventProcessor, Event};
     /// use std::sync::Arc;
     /// use std::time::Duration;
     ///
@@ -137,7 +137,7 @@ where
     /// ## Remove Events
     /// ### Examples
     /// ```rust, no_run
-    /// use rollo::game::event_processor::{EventProcessor, Event};
+    /// use rollo::game::{EventProcessor, Event};
     ///
     /// let mut event_processor = EventProcessor::<MyEvent>::new();
     /// // Remove all events and abort them (on_abort()).

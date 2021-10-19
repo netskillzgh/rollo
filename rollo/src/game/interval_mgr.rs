@@ -1,7 +1,7 @@
 //! # Interval Manager
 //! ## Usage
 //! ```rust, no_run
-//! use rollo::game::interval_mgr::{IntervalExecutor, IntervalMgr};
+//! use rollo::game::{IntervalExecutor, IntervalMgr};
 //! use std::time::Duration;
 //! use std::sync::Arc;
 //!
@@ -33,7 +33,7 @@ impl IntervalMgr {
     /// ## Create the interval Timer
     /// ### Examples
     /// ```rust, no_run
-    /// use rollo::game::interval_mgr::IntervalMgr;
+    /// use rollo::game::IntervalMgr;
     /// use std::time::Duration;
     /// let interval_timer = IntervalMgr::new(Duration::from_millis(50));
     /// ```
@@ -47,7 +47,7 @@ impl IntervalMgr {
     /// ## Update and executes if time passed
     /// ### Examples
     /// ```rust, no_run
-    /// use rollo::game::interval_mgr::{IntervalExecutor, IntervalMgr};
+    /// use rollo::game::{IntervalExecutor, IntervalMgr};
     /// use std::time::Duration;
     /// use std::sync::Arc;
     ///
