@@ -1,3 +1,4 @@
+//! Packet
 use crate::error::Error;
 use bytes::{BufMut, BytesMut};
 use std::{convert::TryFrom, mem, sync::Arc};
@@ -13,7 +14,15 @@ impl Packet {
         Self { cmd, payload }
     }
 
-    /// If you want to share the packet, move the packet to an Arc.
+    /// ## Converts Packet to an Arc<Packet>
+    /// ### Examples
+    /// ```rust, no_run
+    /// use rollo::packet::Packet;
+    ///
+    /// fn on_message(packet: Packet) {
+    ///     let packet = packet.freeze();
+    /// }
+    /// ```
     pub fn freeze(self) -> Arc<Self> {
         Arc::new(self)
     }
