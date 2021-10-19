@@ -3,7 +3,7 @@ pub use bytes;
 pub use tokio;
 
 pub use dos_protection::DosPolicy;
-pub use world::{World, WorldTime};
+pub use world::{world_time, World, WorldTime};
 pub use world_session::{SocketTools, WorldSession};
 pub use world_socket_mgr::{ListenerSecurity, WorldSocketConfiguration, WorldSocketMgr};
 

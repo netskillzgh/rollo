@@ -64,9 +64,9 @@ dependencies = [
 
 [[package]]
 name = "bumpalo"
-version = "3.7.1"
+version = "3.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9df67f7bf9ef8498769f994239c45613ef0c5899415fb58e9add412d2c1a538"
+checksum = "8f1e260c3a9040a7c19a12468758f4c16f31a81a1fe087482be9570ec864bb6c"
 
 [[package]]
 name = "bytes"
@@ -650,7 +650,7 @@ dependencies = [
  "parking_lot",
  "rand",
  "rand_pcg",
- "rollo-macros 0.2.0",
+ "rollo-macros 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustls",
  "serial_test",
  "spin_sleep",
@@ -660,9 +660,7 @@ dependencies = [
 
 [[package]]
 name = "rollo-macros"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aeb0a6fa15d7a6ff22d0f6fc22ea58077ffc2545796b1de50c53091dd6281704"
+version = "0.3.0"
 dependencies = [
  "quote",
  "syn",
@@ -671,6 +669,8 @@ dependencies = [
 [[package]]
 name = "rollo-macros"
 version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "efd942807d3639ea0cd02f39b0787f438619a21860122aa24e025c05069d4e9d"
 dependencies = [
  "quote",
  "syn",

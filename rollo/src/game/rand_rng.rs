@@ -18,7 +18,7 @@ cfg_pointer_32! {
 
 /// ## Roll with a chance
 /// ```rust, no_run
-/// use rollo::game::rand::roll;
+/// use rollo::game::roll;
 ///
 /// // 100%
 /// let (ok, result) = roll(100.0);
