@@ -34,6 +34,7 @@ impl IntervalMgr {
     /// ```rust, no_run
     /// use rollo::game::IntervalMgr;
     /// use std::time::Duration;
+    ///
     /// let interval_timer = IntervalMgr::new(Duration::from_millis(50));
     /// ```
     pub fn new(interval: Duration) -> Self {
