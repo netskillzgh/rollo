@@ -18,6 +18,7 @@ use crate::packet::{to_bytes, Packet};
 
 use super::world_socket::WriterMessage;
 
+/// Events for a WorldSession
 #[async_trait]
 pub trait WorldSession<T: Send + Sync>
 where

@@ -1,6 +1,6 @@
-//! # World
 use super::{dos_protection::DosPolicy, world_session::WorldSession};
 
+/// Events for the World
 pub trait World: Sized + Sync + WorldTime + Send {
     type WorldSessionimplementer: WorldSession<Self> + 'static + Send + Sync;
 

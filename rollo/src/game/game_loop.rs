@@ -1,4 +1,3 @@
-//! # Game Loop
 use crate::server::world::World;
 use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};
 use std::{
@@ -15,6 +14,7 @@ cfg_precise_time! {
     use spin_sleep::SpinSleeper;
 }
 
+/// Main Loop with an interval
 #[derive(Debug)]
 pub struct GameLoop {
     date: AtomicI64,

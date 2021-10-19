@@ -18,6 +18,7 @@ use tokio::{
 };
 use tokio_rustls::TlsAcceptor;
 
+/// World Socket Manager
 #[derive(Debug, Clone)]
 pub struct WorldSocketMgr<W>
 where
@@ -162,12 +163,14 @@ where
     }
 }
 
+/// Tcp or Tcp/Tls
 #[derive(Debug)]
 pub enum ListenerSecurity<'a> {
     Tcp,
     Tls(&'a Path, &'a Path),
 }
 
+/// Socket Configuration
 #[derive(Debug, Clone)]
 pub struct WorldSocketConfiguration {
     no_delay: bool,

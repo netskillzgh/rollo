@@ -11,10 +11,10 @@ pub use world::{world_time, World, WorldTime};
 pub(crate) mod world_session;
 pub use world_session::{SocketTools, WorldSession};
 
-mod world_socket;
 mod world_socket_mgr;
-
 pub use world_socket_mgr::{ListenerSecurity, WorldSocketConfiguration, WorldSocketMgr};
+
+mod world_socket;
 
 mod tls;
 

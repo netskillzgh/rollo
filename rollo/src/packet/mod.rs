@@ -1,8 +1,8 @@
-//! Packet
 use crate::error::Error;
 use bytes::{BufMut, BytesMut};
 use std::{convert::TryFrom, mem, sync::Arc};
 
+/// Message representation Cmd + Payload
 #[derive(Debug, Clone)]
 pub struct Packet {
     pub cmd: u16,

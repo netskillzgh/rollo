@@ -1,28 +1,27 @@
-//! # Interval Manager
-//! ## Usage
-//! ```rust, no_run
-//! use rollo::game::{IntervalExecutor, IntervalMgr};
-//! use std::time::Duration;
-//! use std::sync::Arc;
-//!
-//! let interval_mgr = IntervalMgr::new(Duration::from_millis(100));
-//! let battleground_mgr = Arc::new(BattlegroundMgr);
-//! interval_mgr.update(100, &*battleground_mgr, Arc::clone(&battleground_mgr));
-//!
-//! struct BattlegroundMgr;
-//!
-//! impl IntervalExecutor for BattlegroundMgr {
-//!     type Container = Arc<Self>;
-//!    
-//!     fn on_update(&self, diff: i64, _container: Self::Container) {
-//!     }
-//! }
-//! ```
 use std::time::Duration;
 
 use crossbeam::atomic::AtomicCell;
 
-/// Interval Manager
+/// # Interval Manager
+/// ## Usage
+/// ```rust, no_run
+/// use rollo::game::{IntervalExecutor, IntervalMgr};
+/// use std::time::Duration;
+/// use std::sync::Arc;
+///
+/// let interval_mgr = IntervalMgr::new(Duration::from_millis(100));
+/// let battleground_mgr = Arc::new(BattlegroundMgr);
+/// interval_mgr.update(100, &*battleground_mgr, Arc::clone(&battleground_mgr));
+///
+/// struct BattlegroundMgr;
+///
+/// impl IntervalExecutor for BattlegroundMgr {
+///     type Container = Arc<Self>;
+///    
+///     fn on_update(&self, diff: i64, _container: Self::Container) {
+///     }
+/// }
+/// ```
 #[derive(Debug)]
 pub struct IntervalMgr {
     current: AtomicCell<i64>,

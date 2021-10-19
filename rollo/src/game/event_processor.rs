@@ -1,27 +1,26 @@
-//! # Event Processor
-//! ## Usage
-//! ```rust, no_run
-//! use rollo::game::{EventProcessor, Event};
-//! use std::sync::Arc;
-//! use std::time::Duration;
-//!
-//! let mut event_processor = EventProcessor::<MyEvent>::new();
-//! let event = MyEvent;
-//! let event = Arc::new(event);
-//! // The duration is the delay before the execution.
-//! event_processor.add_event(event, Duration::from_secs(5));
-//! event_processor.update(100);
-//!
-//! struct MyEvent;
-//!
-//! impl Event for MyEvent {
-//!     fn on_execute(&self){}
-//! }
-//! ```
 use multimap::MultiMap;
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
-/// Event processor
+/// # Event Processor
+/// ## Usage
+/// ```rust, no_run
+/// use rollo::game::{EventProcessor, Event};
+/// use std::sync::Arc;
+/// use std::time::Duration;
+///
+/// let mut event_processor = EventProcessor::<MyEvent>::new();
+/// let event = MyEvent;
+/// let event = Arc::new(event);
+/// // The duration is the delay before the execution.
+/// event_processor.add_event(event, Duration::from_secs(5));
+/// event_processor.update(100);
+///
+/// struct MyEvent;
+///
+/// impl Event for MyEvent {
+///     fn on_execute(&self){}
+/// }
+/// ```
 #[derive(Default, Debug)]
 pub struct EventProcessor<T>
 where
@@ -165,6 +164,7 @@ where
     }
 }
 
+/// Events for an Event. 🥵
 pub trait Event {
     /// Execute an event
     fn on_execute(&self);
