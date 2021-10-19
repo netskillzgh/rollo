@@ -1,10 +1,10 @@
-use crate::error::Error;
 use crate::io::read::{Reader, MAX_SIZE};
 use crate::packet::Packet;
 
 use super::dos_protection::{DosPolicy, DosProtection};
 use super::world::World;
 use super::world_session::WorldSession;
+use crate::error::{Error, Result};
 use bytes::Bytes;
 use std::convert::TryInto;
 use std::marker::PhantomData;
@@ -94,7 +94,7 @@ where
         if t.await.is_err() {}
     }
 
-    fn handle_ping(&self, packet: Packet) -> Result<(), Error> {
+    fn handle_ping(&self, packet: Packet) -> Result<()> {
         if let Some(content) = packet.payload {
             self.world_session.socket_tools().send(0, Some(&content));
             let latency = parse_ping(content)?;
@@ -121,7 +121,7 @@ where
         &mut self,
         reader: &mut Reader<'_, BufReader<ReadHalf<S>>>,
         tx: &mut UnboundedSender<PacketDispatcher>,
-    ) -> Result<(), Error> {
+    ) -> Result<()> {
         let result = {
             if let Ok(result) = timeout(Duration::from_secs(20), self.read_packet(reader)).await {
                 match result {
@@ -159,7 +159,7 @@ where
     async fn read_packet(
         &mut self,
         reader: &mut Reader<'_, BufReader<ReadHalf<S>>>,
-    ) -> Result<Packet, Error> {
+    ) -> Result<Packet> {
         let size = reader.read_size().await?;
         let cmd = reader.read_cmd().await?;
 
@@ -233,7 +233,7 @@ where
     }
 }
 
-fn parse_ping(content: Vec<u8>) -> Result<i64, Error> {
+fn parse_ping(content: Vec<u8>) -> Result<i64> {
     if content.len() == 16 {
         let middle = content.len() / 2;
         let latency = content[middle..]
@@ -251,9 +251,7 @@ pub(crate) enum WriterMessage {
     CloseDelayed(Duration),
     Bytes(Bytes),
     #[cfg(feature = "flatbuffers_helpers")]
-    SendFlatbuffers(
-        Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> Result<Bytes, Error> + Send + Sync>,
-    ),
+    SendFlatbuffers(Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> Result<Bytes> + Send + Sync>),
 }
 
 pub(crate) enum PacketDispatcher {

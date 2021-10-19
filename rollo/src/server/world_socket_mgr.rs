@@ -1,15 +1,13 @@
-use crate::error::Error;
-
 cfg_game! {
     use crate::game::game_loop::GameLoop;
 }
-
 use super::{
     tls::load_config,
     world::World,
     world_session::{SocketTools, WorldSession},
     world_socket::WorldSocket,
 };
+use crate::error::{Error, Result};
 use std::{net::SocketAddr, path::Path, sync::Arc, time::Duration};
 use tokio::{
     io::{AsyncRead, AsyncWrite, BufReader, ReadHalf, WriteHalf},
@@ -70,7 +68,7 @@ where
         &mut self,
         addr: impl AsRef<str>,
         security: ListenerSecurity<'_>,
-    ) -> Result<(), Error> {
+    ) -> Result<()> {
         let address = addr.as_ref().parse::<String>().unwrap();
         let listener = TcpListener::bind(&address).await.unwrap();
 
@@ -122,7 +120,7 @@ where
         }
     }
 
-    fn set_up_socket(socket: &mut TcpStream, no_delay: bool) -> Result<(), Error> {
+    fn set_up_socket(socket: &mut TcpStream, no_delay: bool) -> Result<()> {
         if no_delay {
             socket.set_nodelay(true).map_err(|_| Error::NoDelayError)
         } else {
@@ -135,7 +133,7 @@ where
     async fn try_tls<S>(
         tls_acceptor: Option<TlsAcceptor>,
         socket: S,
-    ) -> Result<(BufReader<ReadHalf<S>>, WriteHalf<S>), Error>
+    ) -> Result<(BufReader<ReadHalf<S>>, WriteHalf<S>)>
     where
         S: AsyncWrite + AsyncRead + Unpin,
     {

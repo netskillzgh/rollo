@@ -1,7 +1,7 @@
 use std::convert::TryFrom;
 use tokio::io::AsyncReadExt;
 
-use crate::error::Error;
+use crate::error::{Error, Result};
 
 pub(crate) const MAX_SIZE: usize = 1024 * 14;
 
@@ -28,7 +28,7 @@ where
         }
     }
 
-    pub(crate) async fn read_size(&mut self) -> Result<usize, Error> {
+    pub(crate) async fn read_size(&mut self) -> Result<usize> {
         self.buffer
             .read_exact(&mut self.size)
             .await
@@ -41,7 +41,7 @@ where
         Ok(size)
     }
 
-    pub(crate) async fn read_cmd(&mut self) -> Result<u16, Error> {
+    pub(crate) async fn read_cmd(&mut self) -> Result<u16> {
         self.buffer
             .read_exact(&mut self.cmd)
             .await
@@ -52,7 +52,7 @@ where
         Ok(cmd)
     }
 
-    pub(crate) async fn read_payload(&mut self, size: usize) -> Result<Option<Vec<u8>>, Error>
+    pub(crate) async fn read_payload(&mut self, size: usize) -> Result<Option<Vec<u8>>>
     where
         R: AsyncReadExt + Unpin,
     {

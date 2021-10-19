@@ -13,10 +13,8 @@ use std::{
 };
 use tokio::sync::mpsc::UnboundedSender;
 
-use crate::{
-    error::Error,
-    packet::{to_bytes, Packet},
-};
+use crate::error::{Error, Result};
+use crate::packet::{to_bytes, Packet};
 
 use super::world_socket::WriterMessage;
 
@@ -26,7 +24,7 @@ where
     Self: Sync + Send,
 {
     /// On Connection Open
-    async fn on_open(socket_tools: SocketTools, world: &'static T) -> Result<Arc<Self>, Error>;
+    async fn on_open(socket_tools: SocketTools, world: &'static T) -> Result<Arc<Self>>;
     fn socket_tools(&self) -> &SocketTools;
     async fn on_message(world_session: &Arc<Self>, world: &'static T, packet: Packet);
     /// On Connection Close
@@ -81,7 +79,7 @@ impl SocketTools {
 
     #[cfg(feature = "flatbuffers_helpers")]
     pub fn send_flatbuffers<
-        F: 'static + Fn(&mut FlatBufferBuilder<'static>) -> Result<Bytes, Error> + Send + Sync,
+        F: 'static + Fn(&mut FlatBufferBuilder<'static>) -> Result<Bytes> + Send + Sync,
     >(
         &self,
         f: F,
@@ -96,14 +94,14 @@ impl SocketTools {
     }
 
     /// Close the session
-    pub fn close(&self) -> Result<(), Error> {
+    pub fn close(&self) -> Result<()> {
         self.tx
             .send(WriterMessage::Close)
             .map_err(|_| Error::Channel)
     }
 
     /// Close the session with a delay
-    pub fn close_with_delay(&self, delay: Duration) -> Result<(), Error> {
+    pub fn close_with_delay(&self, delay: Duration) -> Result<()> {
         self.tx
             .send(WriterMessage::CloseDelayed(delay))
             .map_err(|_| Error::Channel)
