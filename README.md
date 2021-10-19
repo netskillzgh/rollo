@@ -19,7 +19,7 @@ A multiplayer framework based on Rust.
 
 ```toml
 [dependencies]
-rollo = { version = "0.3.0", features = ["full"] }
+rollo = { version = "0.4.0", features = ["full"] }
 ```
 
 ## Example
@@ -45,7 +45,7 @@ use std::time::Duration;
 #[tokio::main]
 async fn main() {
     let world = Box::leak(Box::new(MyWorld {
-        elapsed: AtomicI64::new(0),
+        time: AtomicI64::new(0),
     }));
 
     let mut socket_manager = WorldSocketMgr::new(world);

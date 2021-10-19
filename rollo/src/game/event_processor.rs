@@ -1,3 +1,4 @@
+//! # Event Processor
 use multimap::MultiMap;
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
@@ -15,7 +16,19 @@ impl<T> EventProcessor<T>
 where
     T: Event,
 {
-    /// Create an event processor
+    /// ## Create an event processor
+    /// ### Examples
+    /// ```rust, no_run
+    /// use rollo::game::event_processor::{EventProcessor, Event};
+    ///
+    /// let event_processor = EventProcessor::<MyEvent>::new();
+    ///
+    /// struct MyEvent;
+    ///
+    /// impl Event for MyEvent {
+    ///     fn on_execute(&self){}
+    /// }
+    /// ```
     pub fn new() -> Self {
         Self {
             m_time: 0,
@@ -23,7 +36,21 @@ where
         }
     }
 
-    /// Update events
+    /// ## Update events
+    /// ### Examples
+    /// ```rust, no_run
+    /// use rollo::game::event_processor::{EventProcessor, Event};
+    ///
+    /// let mut event_processor = EventProcessor::<MyEvent>::new();
+    /// // 100 is the diff.
+    /// event_processor.update(100);
+    ///
+    /// struct MyEvent;
+    ///
+    /// impl Event for MyEvent {
+    ///     fn on_execute(&self){}
+    /// }
+    /// ```
     pub fn update(&mut self, diff: i64) {
         self.m_time += diff;
         let m_time = self.m_time;
@@ -62,7 +89,25 @@ where
         });
     }
 
-    /// Add an event.
+    /// ## Add an event
+    /// ### Examples
+    /// ```rust, no_run
+    /// use rollo::game::event_processor::{EventProcessor, Event};
+    /// use std::sync::Arc;
+    /// use std::time::Duration;
+    ///
+    /// let mut event_processor = EventProcessor::<MyEvent>::new();
+    /// let event = MyEvent;
+    /// let event = Arc::new(event);
+    /// // The duration is the delay before the execution.
+    /// event_processor.add_event(event, Duration::from_secs(5));
+    ///
+    /// struct MyEvent;
+    ///
+    /// impl Event for MyEvent {
+    ///     fn on_execute(&self){}
+    /// }
+    /// ```
     pub fn add_event(&mut self, event: Arc<T>, add_time: Duration) {
         let target_time = self.calcul_target_time(add_time.as_millis() as i64);
 
@@ -70,7 +115,22 @@ where
             .insert(target_time, (add_time.as_millis() as i64, event));
     }
 
-    /// Remove Events
+    /// ## Remove Events
+    /// ### Examples
+    /// ```rust, no_run
+    /// use rollo::game::event_processor::{EventProcessor, Event};
+    ///
+    /// let mut event_processor = EventProcessor::<MyEvent>::new();
+    /// // Remove all events and abort them (on_abort()).
+    /// event_processor.remove_events(true);
+    ///
+    /// struct MyEvent;
+    ///
+    /// impl Event for MyEvent {
+    ///     fn on_execute(&self){}
+    ///     fn on_abort(&self) {}
+    /// }
+    /// ```
     pub fn remove_events(&mut self, abort: bool) {
         if abort {
             self.events

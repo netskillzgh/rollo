@@ -18,7 +18,7 @@ use std::time::Duration;
 #[tokio::main]
 async fn main() {
     let world = Box::leak(Box::new(MyWorld {
-        elapsed: AtomicI64::new(0),
+        time: AtomicI64::new(0),
     }));
 
     let mut socket_manager = WorldSocketMgr::new(world);

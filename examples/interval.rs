@@ -3,7 +3,7 @@ use rollo::server::tokio;
 use rollo::server::world::world_time;
 use rollo::{
     error::Error,
-    game::interval_timer::{IntervalTimerExecutor, IntervalTimerMgr},
+    game::interval_mgr::{IntervalExecutor, IntervalMgr},
     packet::Packet,
     server::{
         world::World,
@@ -18,9 +18,9 @@ use std::time::Duration;
 #[tokio::main]
 async fn main() {
     let world = Box::new(MyWorld {
-        elapsed: AtomicI64::new(0),
+        time: AtomicI64::new(0),
         bg: Arc::new(BattlegroundManager {
-            timer: IntervalTimerMgr::new(Duration::from_secs(2)),
+            timer: IntervalMgr::new(Duration::from_secs(2)),
             name: String::from("Battleground 1"),
         }),
     });
@@ -72,11 +72,11 @@ impl WorldSession<MyWorld> for MyWorldSession {
 }
 
 struct BattlegroundManager {
-    timer: IntervalTimerMgr,
+    timer: IntervalMgr,
     name: String,
 }
 
-impl IntervalTimerExecutor for BattlegroundManager {
+impl IntervalExecutor for BattlegroundManager {
     type Container = Arc<Self>;
     fn on_update(&self, diff: i64, _container: Self::Container) {
         println!("Executed : {} : The diff is {}", diff, self.name);

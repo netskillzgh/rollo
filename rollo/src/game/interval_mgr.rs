@@ -1,16 +1,23 @@
+//! # Manager
 use std::time::Duration;
 
 use crossbeam::atomic::AtomicCell;
 
 /// Interval Manager
 #[derive(Debug)]
-pub struct IntervalTimerMgr {
+pub struct IntervalMgr {
     current: AtomicCell<i64>,
     interval: i64,
 }
 
-impl IntervalTimerMgr {
-    /// Create the interval Timer
+impl IntervalMgr {
+    /// ## Create the interval Timer
+    /// ### Examples
+    /// ```rust, no_run
+    /// use rollo::game::interval_mgr::IntervalMgr;
+    /// use std::time::Duration;
+    /// let interval_timer = IntervalMgr::new(Duration::from_millis(50));
+    /// ```
     pub fn new(interval: Duration) -> Self {
         Self {
             current: AtomicCell::new(0),
@@ -18,10 +25,30 @@ impl IntervalTimerMgr {
         }
     }
 
-    /// Update and execute if time passed
+    /// ## Update and executes if time passed
+    /// ### Examples
+    /// ```rust, no_run
+    /// use rollo::game::interval_mgr::{IntervalExecutor, IntervalMgr};
+    /// use std::time::Duration;
+    /// use std::sync::Arc;
+    ///
+    /// let interval_mgr = IntervalMgr::new(Duration::from_millis(100));
+    /// let battleground_mgr = Arc::new(BattlegroundMgr);
+    /// interval_mgr.update(100, &*battleground_mgr, Arc::clone(&battleground_mgr));
+    ///
+    /// struct BattlegroundMgr;
+    ///
+    /// impl IntervalExecutor for BattlegroundMgr {
+    ///     type Container = Arc<Self>;
+    ///    
+    ///     fn on_update(&self, diff: i64, _container: Self::Container) {
+    ///         assert!(diff >= 50)
+    ///     }
+    /// }
+    /// ```
     pub fn update<T>(&self, diff: i64, object: &T, container: T::Container)
     where
-        T: IntervalTimerExecutor,
+        T: IntervalExecutor,
     {
         if self.current.fetch_update(|f| Some(f + diff)).is_err() {
             return;
@@ -55,7 +82,7 @@ impl IntervalTimerMgr {
 }
 
 /// Executed when interval passed
-pub trait IntervalTimerExecutor {
+pub trait IntervalExecutor {
     type Container;
     /// Executed when interval passed
     fn on_update(&self, _diff: i64, container: Self::Container);
@@ -67,7 +94,7 @@ mod tests {
 
     #[test]
     fn test_update() {
-        let timer = IntervalTimerMgr::new(Duration::from_millis(50));
+        let timer = IntervalMgr::new(Duration::from_millis(50));
         let bu = TestW;
         timer.update(25, &bu, None);
         assert_eq!(timer.current.load(), 25);
@@ -85,7 +112,7 @@ mod tests {
 
     #[test]
     fn test_reset() {
-        let timer = IntervalTimerMgr::new(Duration::from_millis(25));
+        let timer = IntervalMgr::new(Duration::from_millis(25));
         timer.current.store(30);
         timer.reset();
         assert_eq!(timer.current.load(), 5);
@@ -93,7 +120,7 @@ mod tests {
 
     #[test]
     fn test_is_passed() {
-        let timer = IntervalTimerMgr::new(Duration::from_millis(25));
+        let timer = IntervalMgr::new(Duration::from_millis(25));
         timer.current.store(20);
         assert!(!timer.is_passed());
         timer.current.store(25);
@@ -106,7 +133,7 @@ mod tests {
 
     struct TestW;
 
-    impl IntervalTimerExecutor for TestW {
+    impl IntervalExecutor for TestW {
         type Container = Option<u8>;
 
         fn on_update(&self, diff: i64, _container: Self::Container) {

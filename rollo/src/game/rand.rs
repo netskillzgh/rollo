@@ -16,7 +16,17 @@ cfg_pointer_32! {
     }
 }
 
-/// Roll with a chance.
+/// ## Roll with a chance
+/// ```rust, no_run
+/// use rollo::game::rand::roll;
+///
+/// // 100%
+/// let (ok, result) = roll(100.0);
+/// assert!(ok);
+/// // 0%
+/// let (ok, result) = roll(0.0);
+/// assert!(!ok);
+/// ```
 pub fn roll(chance: f32) -> (bool, f32) {
     let r = rand_chance();
     (chance >= r, r)

@@ -1,6 +1,6 @@
 use rollo::flatbuffers_helpers::flatbuffers;
+use rollo::flatbuffers_pool;
 use rollo::packet::to_bytes;
-use rollo::pool_flatbuffers;
 use rollo::server::async_trait;
 use rollo::server::tokio;
 use rollo::server::world::world_time;
@@ -20,11 +20,11 @@ use std::time::Duration;
 #[tokio::main]
 async fn main() {
     let world = Box::leak(Box::new(MyWorld {
-        elapsed: AtomicI64::new(0),
+        time: AtomicI64::new(0),
     }));
 
     // Create the pool.
-    pool_flatbuffers!(100, BUILDERS, get_builder);
+    flatbuffers_pool!(100, BUILDERS, get_builder);
     // Get builder from the pool.
     let builder = get_builder();
     drop(builder);

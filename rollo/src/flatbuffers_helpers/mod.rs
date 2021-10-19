@@ -5,7 +5,18 @@ pub use flatbuffers::{FlatBufferBuilder, WIPOffset};
 #[cfg(feature = "flatbuffers_helpers")]
 #[cfg_attr(docsrs, doc(cfg(feature = "flatbuffers_helpers")))]
 #[macro_export]
-macro_rules! pool_flatbuffers {
+/// ## FlatBuffers Pool
+/// # Example
+/// ```rust,no_run
+/// use rollo::flatbuffers_pool;
+/// //Create the pool.
+/// flatbuffers_pool!(100, BUILDERS, get_builder);
+/// //Get builder from the pool.
+/// let builder = get_builder();
+/// drop(builder);
+/// //Builder returned.
+/// ```
+macro_rules! flatbuffers_pool {
     ($l:tt, $n:ident, $f:ident) => {
         use $crate::flatbuffers_helpers::ArrayQueue;
         use $crate::flatbuffers_helpers::{FlatBufferBuilder, WIPOffset};
@@ -73,7 +84,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_drop() {
-        pool_flatbuffers!(100, BUILDERS, get_builder);
+        flatbuffers_pool!(100, BUILDERS, get_builder);
         let before = BUILDERS.len();
 
         {
@@ -94,7 +105,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_get_builder() {
-        pool_flatbuffers!(100, BUILDERS, get_builder);
+        flatbuffers_pool!(100, BUILDERS, get_builder);
         let _ = BUILDERS.push(CustomFlatBuffersBuilder::new());
         let before = BUILDERS.len();
         assert!(before > 0);

@@ -52,7 +52,7 @@ fn packet() -> BytesMut {
 
 async fn setup(port: u32) -> JoinHandle<()> {
     let world = Box::new(MyWorld {
-        elapsed: AtomicI64::new(0),
+        time: AtomicI64::new(0),
     });
     let world = Box::leak(world);
 
