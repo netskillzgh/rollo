@@ -13,7 +13,7 @@ pub fn world_time(args: TokenStream, input: TokenStream) -> TokenStream {
     if let syn::Fields::Named(ref mut fields) = item_struct.fields {
         fields.named.push(
             syn::Field::parse_named
-                .parse2(quote! { elapsed: std::sync::atomic::AtomicI64 })
+                .parse2(quote! { time: std::sync::atomic::AtomicI64 })
                 .unwrap(),
         );
     }
@@ -24,11 +24,11 @@ pub fn world_time(args: TokenStream, input: TokenStream) -> TokenStream {
 
         impl WorldTime for #name {
             fn time(&self) -> i64 {
-                self.elapsed.load(std::sync::atomic::Ordering::Acquire)
+                self.time.load(std::sync::atomic::Ordering::Acquire)
             }
 
             fn update_time(&self, new_time: i64) {
-                self.elapsed.store(new_time, std::sync::atomic::Ordering::Release);
+                self.time.store(new_time, std::sync::atomic::Ordering::Release);
             }
         }
     };
