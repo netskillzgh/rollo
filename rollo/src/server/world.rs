@@ -26,7 +26,7 @@ cfg_macros! {
     /// ## Implement WorldTime
     /// ### Examples
     /// ```rust, no_run
-    /// use rollo::server::world_time;
+    /// use rollo::server::world::world_time;
     /// use std::sync::atomic::AtomicI64;
     ///
     /// let world = MyWorld {
