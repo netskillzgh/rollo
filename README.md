@@ -10,12 +10,12 @@ https://docs.rs/rollo)
 A multiplayer framework based on Rust.
 
 - Tcp (support Tls).
-- Packet Manager (message command/payload).
+- Packet Manager (command/payload).
 - Game Loop (tick rate).
-- Event Manager - [example](https://github.com/netskillzgh/rollo/blob/master/examples/event.rs).
-- Interval Manager - [example](https://github.com/netskillzgh/rollo/blob/master/examples/interval.rs).
-- Dos protection - [example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs).
-- flatbuffers - [example](https://github.com/netskillzgh/rollo/blob/master/examples/flatbuffers.rs)
+- Event Manager | [example](https://github.com/netskillzgh/rollo/blob/master/examples/event.rs).
+- Interval Manager | [example](https://github.com/netskillzgh/rollo/blob/master/examples/interval.rs).
+- Dos protection | [example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs).
+- flatbuffers | [example](https://github.com/netskillzgh/rollo/blob/master/examples/flatbuffers.rs)
 
 ```toml
 [dependencies]
