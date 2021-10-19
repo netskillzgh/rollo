@@ -56,6 +56,14 @@ impl SocketTools {
     }
 
     /// Send a packet to the session
+    /// ## Examples
+    /// ```rust, no_run
+    /// use rollo::server::world_session::SocketTools;
+    ///
+    /// fn on_message(socket: SocketTools) {
+    ///     socket.send(1, None);
+    /// }
+    /// ```
     pub fn send(&self, cmd: u16, payload: Option<&[u8]>) {
         if !self.is_closed() {
             if let Ok(bytes) = to_bytes(cmd, payload) {
@@ -67,12 +75,31 @@ impl SocketTools {
     }
 
     /// Send Bytes(Packet) to the session
+    /// ## Examples
+    /// ```rust, no_run
+    /// use rollo::server::world_session::SocketTools;
+    /// use rollo::packet::to_bytes;
+    ///
+    /// fn on_message(socket: SocketTools) {
+    ///     let bytes = to_bytes(1, None).unwrap().freeze();
+    ///     socket.send_data(bytes);
+    /// }
+    /// ```
     pub fn send_data(&self, bytes: Bytes) {
         if !self.is_closed() && self.tx.send(WriterMessage::Bytes(bytes)).is_err() {
             log::error!("Can't send the data to the channel.");
         }
     }
 
+    /// get Latency
+    /// ## Examples
+    /// ```rust, no_run
+    /// use rollo::server::world_session::SocketTools;
+    ///
+    /// fn on_message(socket: SocketTools) {
+    ///     let latency = socket.get_latency();
+    /// }
+    /// ```
     pub fn get_latency(&self) -> i64 {
         self.latency.load(Ordering::Acquire)
     }
@@ -94,6 +121,16 @@ impl SocketTools {
     }
 
     /// Close the session
+    /// ## Examples
+    /// ```rust, no_run
+    /// use rollo::server::world_session::SocketTools;
+    ///
+    /// fn on_message(socket: SocketTools) {
+    ///     if socket.close().is_err() {
+    ///         println!("Error when closing the session");
+    ///     }
+    /// }
+    /// ```
     pub fn close(&self) -> Result<()> {
         self.tx
             .send(WriterMessage::Close)
@@ -101,6 +138,17 @@ impl SocketTools {
     }
 
     /// Close the session with a delay
+    /// ## Examples
+    /// ```rust, no_run
+    /// use rollo::server::world_session::SocketTools;
+    /// use std::time::Duration;
+    ///
+    /// fn on_message(socket: SocketTools) {
+    ///     if socket.close_with_delay(Duration::from_secs(1)).is_err() {
+    ///         println!("Error when closing the session");
+    ///     }
+    /// }
+    /// ```
     pub fn close_with_delay(&self, delay: Duration) -> Result<()> {
         self.tx
             .send(WriterMessage::CloseDelayed(delay))
@@ -108,6 +156,16 @@ impl SocketTools {
     }
 
     /// Is connection close ?
+    /// ## Examples
+    /// ```rust, no_run
+    /// use rollo::server::world_session::SocketTools;
+    ///
+    /// fn on_message(socket: SocketTools) {
+    ///     if socket.is_closed() {
+    ///     // Do something
+    ///     }
+    /// }
+    /// ```
     pub fn is_closed(&self) -> bool {
         self.tx.is_closed()
     }
