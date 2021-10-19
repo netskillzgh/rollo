@@ -650,7 +650,7 @@ dependencies = [
  "parking_lot",
  "rand",
  "rand_pcg",
- "rollo-macros 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rollo-macros 0.2.0",
  "rustls",
  "serial_test",
  "spin_sleep",
@@ -661,6 +661,8 @@ dependencies = [
 [[package]]
 name = "rollo-macros"
 version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aeb0a6fa15d7a6ff22d0f6fc22ea58077ffc2545796b1de50c53091dd6281704"
 dependencies = [
  "quote",
  "syn",
@@ -668,9 +670,7 @@ dependencies = [
 
 [[package]]
 name = "rollo-macros"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aeb0a6fa15d7a6ff22d0f6fc22ea58077ffc2545796b1de50c53091dd6281704"
+version = "0.3.0"
 dependencies = [
  "quote",
  "syn",
