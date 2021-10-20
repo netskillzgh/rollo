@@ -115,9 +115,9 @@ struct PacketCounter {
 }
 
 impl PacketCounter {
-    fn new(elapsed: i64) -> Self {
+    fn new(time: i64) -> Self {
         Self {
-            last_receive_time: elapsed,
+            last_receive_time: time,
             amount: 1,
         }
     }

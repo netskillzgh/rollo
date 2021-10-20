@@ -172,22 +172,27 @@ where
 
         let time = self.world.time();
 
-        if !self.dos_protection.evaluate_global_limit(
+        let global_result = self.dos_protection.evaluate_global_limit(
             time,
             size as u32,
             global_size_limit,
             gloabl_amount_limit,
-        ) || !self
-            .dos_protection
-            .evaluate_cmd(cmd, packet_amount_limit, time)
+        );
+
+        if !global_result
+            || !self
+                .dos_protection
+                .evaluate_cmd(cmd, packet_amount_limit, time)
         {
             WorldSession::on_dos_attack(&self.world_session, self.world, cmd).await;
+
+            if !global_result {
+                return Err(self.close_dos());
+            }
+
             match policy {
                 DosPolicy::Close => {
-                    if self.world_session.socket_tools().close().is_err() {
-                        log::error!("Error when closing the channel.");
-                    }
-                    return Err(Error::DosProtection);
+                    return Err(self.close_dos());
                 }
                 DosPolicy::Log => {
                     log::info!("Potential dos attack detected for Cmd {}.", cmd);
@@ -203,6 +208,13 @@ where
 
             Ok(Packet::new(cmd, payload))
         }
+    }
+
+    fn close_dos(&self) -> Error {
+        if self.world_session.socket_tools().close().is_err() {
+            log::error!("Error when closing the channel.");
+        }
+        Error::DosProtection
     }
 
     async fn write(mut writer: WriteHalf<S>, mut rx: UnboundedReceiver<WriterMessage>) {
