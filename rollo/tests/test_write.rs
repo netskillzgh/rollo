@@ -76,8 +76,6 @@ impl WorldSession<MyWorld> for MyWorldSession {
         }))
     }
 
-    async fn on_dos_attack(_world_session: &Arc<Self>, _world: &'static MyWorld, _cmd: u16) {}
-
     fn socket_tools(&self) -> &SocketTools {
         &self.socket_tools
     }
