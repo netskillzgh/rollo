@@ -13,7 +13,7 @@ use std::{
     time::Duration,
 };
 use tokio::{
-    io::AsyncWriteExt,
+    io::{AsyncReadExt, AsyncWriteExt},
     net::TcpStream,
     sync::mpsc::{unbounded_channel, UnboundedSender},
     task::JoinHandle,
@@ -42,6 +42,8 @@ async fn test_write_dos() {
         5
     );
 
+    assert!(connect.read_u16().await.is_err());
+
     // Global
     let mut connect = TcpStream::connect("127.0.0.1:6666").await.unwrap();
     connect.set_nodelay(true).unwrap();
@@ -57,6 +59,8 @@ async fn test_write_dos() {
             .unwrap(),
         6
     );
+
+    assert!(connect.read_u16().await.is_err());
 }
 
 fn packet(number: u16, cmd: u16) -> BytesMut {

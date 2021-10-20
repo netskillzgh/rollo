@@ -14,7 +14,6 @@ authors = ["Netskillz <netskillz@protonmail.com>"]
 default = []
 full = [
     "server",
-    "flatbuffers_helpers",
     "game",
     "precise_time",
     "macros"
