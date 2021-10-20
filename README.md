@@ -122,6 +122,10 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
 [Payload size(u32); Command(u16); Payload]
 
+### Diagram
+
+![alt text][https://github.com/netskillzgh/doc/simple-description.png]
+
 ## License
 
 MIT license ([LICENSE-MIT](LICENSE-MIT))
