@@ -81,7 +81,7 @@ mod tests {
     use super::*;
     use std::io::Cursor;
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+    #[tokio::test]
     async fn test_parse_size() {
         let mut buffer = Cursor::new(vec![0x00, 0x00, 0x01, 0x0b]);
         let mut reader = Reader::new(&mut buffer);
@@ -89,7 +89,7 @@ mod tests {
         assert_eq!(size, 267);
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+    #[tokio::test]
     #[should_panic]
     async fn test_parse_size_fail_zero() {
         let mut buffer = Cursor::new(vec![]);
@@ -97,7 +97,7 @@ mod tests {
         reader.read_size().await.unwrap();
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+    #[tokio::test]
     async fn test_parse_op_code() {
         let mut buffer = Cursor::new(vec![0x00, 0xc1]);
         let mut reader = Reader::new(&mut buffer);
@@ -105,7 +105,7 @@ mod tests {
         assert_eq!(op_code, 193);
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+    #[tokio::test]
     #[should_panic]
     async fn test_fail_parse_size_negative_number() {
         let mut buffer = Cursor::new(vec![0xff, 0x7c]);
@@ -113,7 +113,7 @@ mod tests {
         reader.read_size().await.unwrap();
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+    #[tokio::test]
     async fn test_parse_content() {
         let content = vec![0x00, 0xc1];
         let mut buffer = Cursor::new(content.clone());
@@ -122,7 +122,7 @@ mod tests {
         assert_eq!(result.unwrap(), content);
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+    #[tokio::test]
     async fn test_parse_content_fail() {
         let content = vec![];
         let mut buffer = Cursor::new(content.clone());
