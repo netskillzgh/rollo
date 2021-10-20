@@ -124,7 +124,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
 ### Diagram
 
-![alt text][https://github.com/netskillzgh/rollo/blob/master/doc/simple-description.png]
+![](https://github.com/netskillzgh/rollo/blob/master/doc/simple-description.png)
 
 ## License
 
