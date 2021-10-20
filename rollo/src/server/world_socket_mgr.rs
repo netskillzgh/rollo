@@ -1,6 +1,3 @@
-cfg_game! {
-    use crate::game::game_loop::GameLoop;
-}
 use super::{
     tls::load_config,
     world::World,
@@ -8,6 +5,7 @@ use super::{
     world_socket::WorldSocket,
 };
 use crate::error::{Error, Result};
+use crate::game::game_loop::GameLoop;
 use std::{net::SocketAddr, path::Path, sync::Arc, time::Duration};
 use tokio::{
     io::{AsyncRead, AsyncWrite, BufReader, ReadHalf, WriteHalf},
@@ -51,17 +49,15 @@ where
         }
     }
 
-    cfg_game! {
-        /// Start the GameLoop with an interval (tick rate).
-        pub fn start_game_loop(&mut self, interval: Duration) -> &mut Self {
-            let world = self.world;
-            tokio::spawn(async move {
-                let mut game_loop = GameLoop::new(interval);
-                game_loop.start(world).await;
-            });
+    /// Start the GameLoop with an interval (tick rate).
+    pub fn start_game_loop(&mut self, interval: Duration) -> &mut Self {
+        let world = self.world;
+        tokio::spawn(async move {
+            let mut game_loop = GameLoop::new(interval);
+            game_loop.start(world).await;
+        });
 
-            self
-        }
+        self
     }
 
     /// Start TCP Server

@@ -4,10 +4,9 @@ use super::{dos_protection::DosPolicy, world_session::WorldSession};
 pub trait World: Sized + Sync + WorldTime + Send {
     type WorldSessionimplementer: WorldSession<Self> + 'static + Send + Sync;
 
-    cfg_game! {
-        /// Tick
-        fn update(&'static self, _diff: i64) {}
-    }
+    /// Tick
+    fn update(&'static self, _diff: i64) {}
+
     /// Packet limit.
     /// (amount, size, policy)
     fn get_packet_limit(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
