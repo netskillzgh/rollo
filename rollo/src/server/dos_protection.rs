@@ -148,16 +148,19 @@ mod tests {
         let mut dos_protection = DosProtection::new();
         assert!(dos_protection.evaluate_global_limit(1000, 100, 200, 4));
         assert!(dos_protection.evaluate_global_limit(1500, 100, 200, 4));
+        // Size
         assert!(!dos_protection.evaluate_global_limit(1999, 100, 200, 4));
 
         let mut dos_protection = DosProtection::new();
         assert!(dos_protection.evaluate_global_limit(1000, 100, 500, 3));
         assert!(dos_protection.evaluate_global_limit(1500, 100, 500, 3));
         assert!(dos_protection.evaluate_global_limit(1998, 100, 500, 3));
+        // Amount
         assert!(!dos_protection.evaluate_global_limit(1998, 100, 500, 3));
 
         assert!(dos_protection.evaluate_global_limit(2010, 100, 200, 2));
         assert!(dos_protection.evaluate_global_limit(2500, 100, 200, 2));
+        // Both
         assert!(!dos_protection.evaluate_global_limit(2600, 100, 200, 2));
     }
 }
