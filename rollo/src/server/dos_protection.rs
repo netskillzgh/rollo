@@ -137,6 +137,10 @@ mod tests {
         assert!(!dos_protection.evaluate_cmd(10, 1, 2905));
         assert!(dos_protection.evaluate_cmd(10, 1, 10000));
         assert!(!dos_protection.evaluate_cmd(10, 1, 10001));
+
+        let mut dos_protection = DosProtection::new();
+        assert!(dos_protection.evaluate_cmd(10, 1, 0));
+        assert!(!dos_protection.evaluate_cmd(10, 1, 1000));
     }
 
     #[test]
