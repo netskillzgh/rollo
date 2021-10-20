@@ -1,4 +1,3 @@
-// Should be improved...
 #![cfg(feature = "full")]
 use async_trait::async_trait;
 use bytes::{BufMut, BytesMut};
@@ -14,39 +13,52 @@ use std::{
     time::Duration,
 };
 use tokio::{
-    io::{AsyncReadExt, AsyncWriteExt},
+    io::AsyncWriteExt,
     net::TcpStream,
+    sync::mpsc::{unbounded_channel, UnboundedSender},
     task::JoinHandle,
     time::sleep,
 };
 
 #[tokio::test]
-#[should_panic]
 async fn test_write_dos() {
-    setup(6666).await;
+    let (sender, mut rx) = unbounded_channel();
+    setup(6666, sender).await;
     sleep(Duration::from_secs(1)).await;
 
+    // Packet
     let mut connect = TcpStream::connect("127.0.0.1:6666").await.unwrap();
     connect.set_nodelay(true).unwrap();
 
-    for i in 0..150 {
-        let _ = connect.write(&packet(i).to_vec()).await;
+    for i in 0..6 {
+        let _ = connect.write(&packet(i, 5).to_vec()).await;
     }
 
-    connect.read_u32().await.unwrap();
+    assert_eq!(rx.recv().await.unwrap(), 5);
+
+    // Global
+    let mut connect = TcpStream::connect("127.0.0.1:6666").await.unwrap();
+    connect.set_nodelay(true).unwrap();
+
+    for i in 0..11 {
+        let _ = connect.write(&packet(i, 6).to_vec()).await;
+    }
+
+    assert_eq!(rx.recv().await.unwrap(), 6);
 }
 
-fn packet(number: u16) -> BytesMut {
+fn packet(number: u16, cmd: u16) -> BytesMut {
     let mut bytes = BytesMut::new();
     bytes.put_u32(2);
-    bytes.put_u16(6);
+    bytes.put_u16(cmd);
     bytes.put_u16(number);
 
     bytes
 }
 
-async fn setup(port: u32) -> JoinHandle<()> {
+async fn setup(port: u32, sender: UnboundedSender<u16>) -> JoinHandle<()> {
     let world = Box::new(MyWorld {
+        sender,
         time: AtomicI64::new(0),
     });
     let world = Box::leak(world);
@@ -75,7 +87,9 @@ impl WorldSession<MyWorld> for MyWorldSession {
         }))
     }
 
-    async fn on_dos_attack(_world_session: &Arc<Self>, _world: &'static MyWorld, _cmd: u16) {}
+    async fn on_dos_attack(_world_session: &Arc<Self>, world: &'static MyWorld, cmd: u16) {
+        world.sender.send(cmd).unwrap();
+    }
 
     fn socket_tools(&self) -> &SocketTools {
         &self.socket_tools
@@ -83,14 +97,16 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
     async fn on_message(_world_session: &Arc<Self>, _world: &'static MyWorld, packet: Packet) {
         let n = packet.payload.unwrap();
-        assert!(u16::from_be_bytes(n[0..2].try_into().unwrap()) <= 5)
+        assert!(u16::from_be_bytes(n[0..2].try_into().unwrap()) <= 11)
     }
 
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}
 }
 
 #[world_time]
-struct MyWorld {}
+struct MyWorld {
+    sender: UnboundedSender<u16>,
+}
 
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
@@ -99,7 +115,11 @@ impl World for MyWorld {
         (10, 5000)
     }
 
-    fn get_packet_limit(&self, _cmd: u16) -> (u16, u32, rollo::server::DosPolicy) {
-        (5, 500, DosPolicy::Close)
+    fn get_packet_limit(&self, cmd: u16) -> (u16, u32, rollo::server::DosPolicy) {
+        if cmd == 5 {
+            return (5, 500, DosPolicy::Close);
+        }
+
+        (10, 500, DosPolicy::Close)
     }
 }
