@@ -12,6 +12,10 @@ pub trait World: Sized + Sync + WorldTime + Send {
     fn get_packet_limit(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
         (15, 10 * 2024, DosPolicy::Log)
     }
+
+    fn global_limit(&self) -> (u16, u32) {
+        (50, 5000)
+    }
 }
 
 /// Current World Time

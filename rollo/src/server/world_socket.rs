@@ -163,15 +163,23 @@ where
         let size = reader.read_size().await?;
         let cmd = reader.read_cmd().await?;
 
-        let (limit, size_limit, policy) = self.world.get_packet_limit(cmd);
+        let (gloabl_amount_limit, global_size_limit) = self.world.global_limit();
+        let (packet_amount_limit, packet_size_limit, policy) = self.world.get_packet_limit(cmd);
 
-        if (size as u32) >= size_limit || size >= MAX_SIZE {
+        if size >= MAX_SIZE || (size as u32) >= packet_size_limit {
             return Err(Error::PacketSize);
         }
 
-        if !self
+        let time = self.world.time();
+
+        if !self.dos_protection.evaluate_global_limit(
+            time,
+            size as u32,
+            global_size_limit,
+            gloabl_amount_limit,
+        ) || !self
             .dos_protection
-            .evaluate_cmd(cmd, limit, self.world.time())
+            .evaluate_cmd(cmd, packet_amount_limit, time)
         {
             WorldSession::on_dos_attack(&self.world_session, self.world, cmd).await;
             match policy {
