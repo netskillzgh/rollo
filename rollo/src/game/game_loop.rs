@@ -107,7 +107,7 @@ mod tests {
     use async_trait::async_trait;
     use tokio::time::sleep;
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
     async fn test_get_sleep_time() {
         let mut game_loop = GameLoop::new(Duration::from_millis(75));
         sleep(Duration::from_millis(500)).await;
@@ -125,7 +125,7 @@ mod tests {
         assert_eq!(game_loop.get_sleep_time(), 0);
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
     async fn test_sleep_loop() {
         let mut game_loop = GameLoop::new(Duration::from_millis(25));
         let timer = Instant::now();
@@ -146,7 +146,7 @@ mod tests {
         assert!((68..=85).contains(&sleep_time));
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
     async fn test_update_time() {
         let mut game_loop = GameLoop::new(Duration::from_millis(25));
         sleep(Duration::from_millis(10)).await;
@@ -156,7 +156,7 @@ mod tests {
     }
 
     #[should_panic(expected = "Test : update")]
-    #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
     async fn test_loop() {
         let mut game_loop = GameLoop::new(Duration::from_millis(25));
         let world = Box::new(TestGameLoop {
