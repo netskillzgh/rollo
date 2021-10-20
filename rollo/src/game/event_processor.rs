@@ -164,7 +164,7 @@ where
     }
 }
 
-/// Events for an Event. 🥵
+/// Events for an Event.
 pub trait Event {
     /// Execute an event
     fn on_execute(&self);
