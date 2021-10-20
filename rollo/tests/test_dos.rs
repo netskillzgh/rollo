@@ -21,7 +21,7 @@ use tokio::{
 };
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn test_write_dos() {
+async fn test_dos_attack() {
     let (sender, mut rx) = unbounded_channel();
     setup(6666, sender).await;
     sleep(Duration::from_secs(1)).await;
