@@ -122,6 +122,12 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
 [Payload size(u32); Command(u16); Payload]
 
+### Diagram
+
+<a href="https://raw.githubusercontent.com/netskillzgh/rollo/master/doc/simple-description.png">
+<img src="https://raw.githubusercontent.com/netskillzgh/rollo/master/doc/simple-description.png" height="300" width="300" />
+</a>
+
 ## License
 
 MIT license ([LICENSE-MIT](LICENSE-MIT))
