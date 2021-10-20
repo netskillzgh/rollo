@@ -138,6 +138,6 @@ impl World for MyWorld {
             return (5, 500, DosPolicy::Close);
         }
 
-        (10, 5000, DosPolicy::Close)
+        (1000, 5000, DosPolicy::Close)
     }
 }
