@@ -8,12 +8,20 @@ pub trait World: Sized + Sync + WorldTime + Send {
         /// Tick
         fn update(&'static self, _diff: i64) {}
     }
-    /// Dos Protection (Cmd, Size, Policy)
+    /// Packet limit.
+    /// (amount, size, policy)
     fn get_packet_limit(&self, _cmd: u16) -> (u16, u32, DosPolicy) {
-        (15, 10 * 2024, DosPolicy::Log)
+        // 15 packets maximum per second.
+        // 10 * 1024 bytes maximum per second.
+        // Log if exceed.
+        (15, 10 * 1024, DosPolicy::Log)
     }
 
+    /// Limit for all packets per second.
+    /// (amount of packets, size of packets)
     fn global_limit(&self) -> (u16, u32) {
+        // 50 packets maximum per second.
+        // 5000 bytes maximum per second.
         (50, 5000)
     }
 }
