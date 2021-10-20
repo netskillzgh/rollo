@@ -180,3 +180,10 @@ impl Clone for SocketTools {
         }
     }
 }
+
+impl PartialEq for SocketTools {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+impl Eq for SocketTools {}
