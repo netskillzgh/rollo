@@ -18,7 +18,7 @@ use tokio::{
     time::sleep,
 };
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn test_write_packet() {
     setup(6666).await;
     sleep(Duration::from_secs(1)).await;

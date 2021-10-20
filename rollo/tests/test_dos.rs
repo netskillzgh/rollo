@@ -17,10 +17,10 @@ use tokio::{
     net::TcpStream,
     sync::mpsc::{unbounded_channel, UnboundedSender},
     task::JoinHandle,
-    time::sleep,
+    time::{sleep, timeout},
 };
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn test_write_dos() {
     let (sender, mut rx) = unbounded_channel();
     setup(6666, sender).await;
@@ -34,17 +34,29 @@ async fn test_write_dos() {
         let _ = connect.write(&packet(i, 5).to_vec()).await;
     }
 
-    assert_eq!(rx.recv().await.unwrap(), 5);
+    assert_eq!(
+        timeout(Duration::from_secs(5), rx.recv())
+            .await
+            .unwrap()
+            .unwrap(),
+        5
+    );
 
     // Global
     let mut connect = TcpStream::connect("127.0.0.1:6666").await.unwrap();
     connect.set_nodelay(true).unwrap();
 
-    for i in 0..6 {
+    for i in 0..11 {
         let _ = connect.write(&packet(i, 6).to_vec()).await;
     }
 
-    assert_eq!(rx.recv().await.unwrap(), 6);
+    assert_eq!(
+        timeout(Duration::from_secs(5), rx.recv())
+            .await
+            .unwrap()
+            .unwrap(),
+        6
+    );
 }
 
 fn packet(number: u16, cmd: u16) -> BytesMut {
@@ -118,7 +130,7 @@ impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
 
     fn global_limit(&self) -> (u16, u32) {
-        (1, 5000)
+        (10, 5000)
     }
 
     fn get_packet_limit(&self, cmd: u16) -> (u16, u32, rollo::server::DosPolicy) {

@@ -13,7 +13,7 @@ use rollo::{
 use rollo_macros::world_time;
 use tokio::{io::AsyncReadExt, net::TcpStream, task::JoinHandle, time::sleep};
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn connect_server() {
     setup(6666).await;
 
