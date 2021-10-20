@@ -5,7 +5,7 @@ publish = false
 edition = "2018"
 
 [dependencies]
-rollo = { path = "../rollo", features = ["game", "server", "flatbuffers_helpers",]}
+rollo = { path = "../rollo", features = ["server", "flatbuffers_helpers",]}
 parking_lot = "0.11"
 once_cell = "1.8.0"
 
