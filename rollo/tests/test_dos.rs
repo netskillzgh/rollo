@@ -30,7 +30,7 @@ async fn test_write_dos() {
     let mut connect = TcpStream::connect("127.0.0.1:6666").await.unwrap();
     connect.set_nodelay(true).unwrap();
 
-    for i in 0..6 {
+    for i in 0..8 {
         let _ = connect.write(&packet(i, 5).to_vec()).await;
     }
 
@@ -46,7 +46,7 @@ async fn test_write_dos() {
     let mut connect = TcpStream::connect("127.0.0.1:6666").await.unwrap();
     connect.set_nodelay(true).unwrap();
 
-    for i in 0..11 {
+    for i in 0..16 {
         let _ = connect.write(&packet(i, 6).to_vec()).await;
     }
 
