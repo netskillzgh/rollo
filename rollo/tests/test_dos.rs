@@ -1,3 +1,4 @@
+// Should be improved...
 #![cfg(feature = "full")]
 use async_trait::async_trait;
 use bytes::{BufMut, BytesMut};
@@ -29,7 +30,7 @@ async fn test_write_dos() {
     connect.set_nodelay(true).unwrap();
 
     for i in 0..150 {
-        connect.write(&packet(i).to_vec()).await.unwrap();
+        let _ = connect.write(&packet(i).to_vec()).await;
     }
 
     connect.read_u32().await.unwrap();
