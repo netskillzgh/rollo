@@ -35,7 +35,7 @@ async fn test_write_dos() {
     }
 
     assert_eq!(
-        timeout(Duration::from_secs(5), rx.recv())
+        timeout(Duration::from_secs(20), rx.recv())
             .await
             .unwrap()
             .unwrap(),
@@ -51,7 +51,7 @@ async fn test_write_dos() {
     }
 
     assert_eq!(
-        timeout(Duration::from_secs(5), rx.recv())
+        timeout(Duration::from_secs(20), rx.recv())
             .await
             .unwrap()
             .unwrap(),
