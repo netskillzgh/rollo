@@ -39,6 +39,10 @@ impl World for MyWorld {
             _ => (20, 1024, DosPolicy::Log),
         }
     }
+
+    fn global_limit(&self) -> (u16, u32) {
+        (50, 5000)
+    }
 }
 
 struct MyWorldSession {
