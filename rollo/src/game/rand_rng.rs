@@ -1,20 +1,9 @@
-use lazy_static::lazy_static;
-use parking_lot::Mutex;
+use std::sync::atomic::{AtomicU64, Ordering};
+
 use rand::{Rng, SeedableRng};
+use rand_xoshiro::Xoshiro256Plus;
 
-cfg_pointer_64! {
-    use rand_pcg::Mcg128Xsl64;
-    lazy_static! {
-        static ref RNG: Mutex<Mcg128Xsl64> = Mutex::new(Mcg128Xsl64::from_entropy());
-    }
-}
-
-cfg_pointer_32! {
-    use rand_pcg::Lcg64Xsh32;
-    lazy_static! {
-        static ref RNG: Mutex<Lcg64Xsh32> = Mutex::new(Lcg64Xsh32::from_entropy());
-    }
-}
+static SEED: AtomicU64 = AtomicU64::new(0);
 
 /// ## Roll with a chance
 /// ```rust, no_run
@@ -33,7 +22,9 @@ pub fn roll(chance: f32) -> (bool, f32) {
 }
 
 fn rand_chance() -> f32 {
-    return RNG.lock().gen_range(0.0..=100.0);
+    let seed = SEED.fetch_add(1, Ordering::Relaxed);
+
+    return Xoshiro256Plus::seed_from_u64(seed).gen_range(0.0..=100.0);
 }
 
 #[cfg(test)]
@@ -54,3 +45,7 @@ mod tests {
         assert!(roll(100f32).1 <= 100.0);
     }
 }
+
+/*
+
+*/
