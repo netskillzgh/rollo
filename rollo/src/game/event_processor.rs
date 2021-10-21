@@ -18,7 +18,7 @@ use std::{collections::HashMap, sync::Arc, time::Duration};
 /// struct MyEvent;
 ///
 /// impl Event for MyEvent {
-///     fn on_execute(&self){}
+///     fn on_execute(&self, _diff: i64){}
 /// }
 /// ```
 #[derive(Default, Debug)]
@@ -44,7 +44,7 @@ where
     /// struct MyEvent;
     ///
     /// impl Event for MyEvent {
-    ///     fn on_execute(&self){}
+    ///     fn on_execute(&self, _diff: i64){}
     /// }
     /// ```
     pub fn new() -> Self {
@@ -66,10 +66,11 @@ where
     /// struct MyEvent;
     ///
     /// impl Event for MyEvent {
-    ///     fn on_execute(&self){}
+    ///     fn on_execute(&self, _diff: i64){}
     /// }
     /// ```
     pub fn update(&mut self, time: i64) {
+        let diff = time - self.m_time;
         self.m_time = time;
         let m_time = self.m_time;
 
@@ -87,7 +88,7 @@ where
                     if event.1.to_abort() {
                         event.1.on_abort();
                     } else {
-                        event.1.on_execute();
+                        event.1.on_execute(diff);
 
                         if !event.1.is_deletable() {
                             retain.push((event.0, Arc::clone(&event.1)));
@@ -123,7 +124,7 @@ where
     /// struct MyEvent;
     ///
     /// impl Event for MyEvent {
-    ///     fn on_execute(&self){}
+    ///     fn on_execute(&self, _diff: i64){}
     /// }
     /// ```
     pub fn add_event(&mut self, event: Arc<T>, add_time: Duration) {
@@ -145,7 +146,7 @@ where
     /// struct MyEvent;
     ///
     /// impl Event for MyEvent {
-    ///     fn on_execute(&self){}
+    ///     fn on_execute(&self, _diff: i64){}
     ///     fn on_abort(&self) {}
     /// }
     /// ```
@@ -167,7 +168,7 @@ where
 /// Events for an Event.
 pub trait Event {
     /// Execute an event
-    fn on_execute(&self);
+    fn on_execute(&self, diff: i64);
     /// Event lifetime
     fn is_deletable(&self) -> bool {
         true
@@ -318,7 +319,7 @@ mod tests {
             self.to_abort.load(Ordering::Acquire)
         }
 
-        fn on_execute(&self) {
+        fn on_execute(&self, _diff: i64) {
             self.life.fetch_add(10, Ordering::SeqCst);
         }
 

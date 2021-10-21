@@ -43,7 +43,7 @@ async fn main() {
 struct MyEvent;
 
 impl Event for MyEvent {
-    fn on_execute(&self) {
+    fn on_execute(&self, _diff: i64) {
         println!("Event executed at {}", WORLD.time());
     }
 
