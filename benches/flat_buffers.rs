@@ -4,7 +4,13 @@ use rollo::flatbuffers_pool;
 fn basic_get(c: &mut Criterion) {
     flatbuffers_pool!(100, TEST, get_builder);
     generate_builders(1);
-    c.bench_function("flat_buffers", |b| b.iter(get_builder));
+    c.bench_function("flat_buffers", |b| {
+        b.iter(|| {
+            (0..50).into_iter().for_each(|_| {
+                get_builder();
+            })
+        })
+    });
 }
 
 criterion_group!(benches, basic_get);

@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 rollo = { path = "../rollo", features = ["full"] }
 criterion = "0.3"
+rayon = "1.5"
 
 [[bench]]
 name = "rand"
