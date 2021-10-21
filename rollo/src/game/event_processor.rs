@@ -145,7 +145,7 @@ where
     /// struct MyEvent;
     ///
     /// impl Event for MyEvent {
-    ///     fn on_execute(&self){}
+    ///     fn on_execute(&self, _diff: i64){}
     ///     fn on_abort(&self) {}
     /// }
     /// ```
