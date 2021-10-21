@@ -60,7 +60,7 @@ where
     /// use rollo::game::{EventProcessor, Event};
     ///
     /// let mut event_processor = EventProcessor::<MyEvent>::new();
-    /// // 100 is the time.
+    /// // 100 is the diff.
     /// event_processor.update(100);
     ///
     /// struct MyEvent;
@@ -69,9 +69,8 @@ where
     ///     fn on_execute(&self, _diff: i64){}
     /// }
     /// ```
-    pub fn update(&mut self, time: i64) {
-        let diff = time - self.m_time;
-        self.m_time = time;
+    pub fn update(&mut self, diff: i64) {
+        self.m_time += diff;
         let m_time = self.m_time;
 
         let mut keys_to_remove = HashMap::new();
@@ -146,7 +145,7 @@ where
     /// struct MyEvent;
     ///
     /// impl Event for MyEvent {
-    ///     fn on_execute(&self, _diff: i64){}
+    ///     fn on_execute(&self){}
     ///     fn on_abort(&self) {}
     /// }
     /// ```
@@ -168,7 +167,7 @@ where
 /// Events for an Event.
 pub trait Event {
     /// Execute an event
-    fn on_execute(&self, diff: i64);
+    fn on_execute(&self, _diff: i64);
     /// Event lifetime
     fn is_deletable(&self) -> bool {
         true
@@ -213,7 +212,7 @@ mod tests {
         assert_eq!(event.life.load(Ordering::Acquire), 20);
         assert_eq!(second_event.life.load(Ordering::Acquire), 10);
 
-        event_processor.update(3600);
+        event_processor.update(1000);
 
         assert_eq!(20, event.life.load(Ordering::Acquire));
         assert_eq!(20, second_event.life.load(Ordering::Acquire));
@@ -295,7 +294,7 @@ mod tests {
         assert_eq!(event_processor.events.len(), 1);
         assert_eq!(event_processor.events.get_vec(&3000).unwrap().len(), 1);
 
-        event_processor.update(3100);
+        event_processor.update(500);
 
         assert_eq!(event_processor.events.len(), 0);
     }
