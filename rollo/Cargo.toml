@@ -38,6 +38,7 @@ game = [
     "crossbeam",
     "rand",
     "rand_pcg",
+    "server",
     "lazy_static",
 ]
 

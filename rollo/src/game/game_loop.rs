@@ -23,6 +23,12 @@ pub struct GameLoop {
 
 impl GameLoop {
     /// Create the GameLoop with the tick rate (interval)
+    /// ```rust, no_run
+    /// use rollo::game::GameLoop;
+    /// use std::time::Duration;
+    ///
+    /// let game_loop = GameLoop::new(Duration::from_millis(25));
+    /// ```
     pub fn new(interval: Duration) -> Self {
         Self {
             date: AtomicI64::new(Self::current_timestamp().unwrap()),
