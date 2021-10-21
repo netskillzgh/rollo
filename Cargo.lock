@@ -558,15 +558,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rand_pcg"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "59cad018caf63deb318e5a4586d99a24424a364f40f1e5778c29aca23f4fc73e"
-dependencies = [
- "rand_core",
-]
-
-[[package]]
 name = "rand_xoshiro"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -659,7 +650,6 @@ dependencies = [
  "multimap",
  "parking_lot",
  "rand",
- "rand_pcg",
  "rand_xoshiro",
  "rollo-macros 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustls-pemfile",

@@ -37,9 +37,7 @@ game = [
     "multimap",
     "crossbeam",
     "rand",
-    "rand_pcg",
     "server",
-    "lazy_static",
     "rand_xoshiro"
 ]
 
@@ -64,7 +62,6 @@ multimap = { version = "0.8.3", optional = true }
 parking_lot = { version = "0.11.1", optional = true }
 rand = { version = "0.8.4", optional = true }
 lazy_static = { version = "1.4.0", optional = true }
-rand_pcg = { version = "0.3.1", optional = true }
 flatbuffers = { version = "2.0.0", optional = true }
 crossbeam-queue = { version = "0.3.2", optional = true }
 spin_sleep = { version = "1.0.0", optional = true }
