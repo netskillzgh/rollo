@@ -13,7 +13,7 @@ fn event(c: &mut Criterion) {
 
     c.bench_function("event", |b| {
         b.iter(|| {
-            event_processor.update(black_box(10000));
+            event_processor.update(black_box(40000));
         })
     });
 }
