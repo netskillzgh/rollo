@@ -44,7 +44,7 @@ async fn test_dos_attack() {
 
     assert!(connect.read_u16().await.is_err());
 
-    // Global
+    // Global amount
     let mut connect = TcpStream::connect("127.0.0.1:6666").await.unwrap();
     connect.set_nodelay(true).unwrap();
 
@@ -134,7 +134,7 @@ impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
 
     fn global_limit(&self) -> (u16, u32) {
-        (10, 5000)
+        (10, 100)
     }
 
     fn get_packet_limit(&self, cmd: u16) -> (u16, u32, rollo::server::DosPolicy) {
