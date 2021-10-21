@@ -16,7 +16,7 @@ cfg_server! {
 }
 
 #[doc(hidden)]
-#[cfg(any(feature = "flatbuffers_helpers", feature = "game"))]
+#[cfg(any(feature = "flatbuffers_helpers"))]
 pub extern crate lazy_static;
 
 pub mod error;
