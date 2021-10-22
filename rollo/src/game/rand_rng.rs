@@ -24,7 +24,7 @@ pub fn roll(chance: f32) -> (bool, f32) {
 fn rand_chance() -> f32 {
     let seed = SEED.fetch_add(1, Ordering::Relaxed);
 
-    return Xoshiro256Plus::seed_from_u64(seed).gen_range(0.0..=100.0);
+    Xoshiro256Plus::seed_from_u64(seed).gen_range(0.0..=100.0)
 }
 
 #[cfg(test)]
