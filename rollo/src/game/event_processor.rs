@@ -35,7 +35,7 @@ where
     T: Event,
 {
     /// ## Create an event processor
-    /// Time (Timestamp)
+    /// Time (current time in milliseconds)
     /// ### Examples
     /// ```rust, no_run
     /// use rollo::game::{EventProcessor, Event};
@@ -56,7 +56,7 @@ where
     }
 
     /// ## Update events
-    /// Time (Timestamp)
+    /// Time (current time in milliseconds)
     /// ### Examples
     /// ```rust, no_run
     /// use rollo::game::{EventProcessor, Event};

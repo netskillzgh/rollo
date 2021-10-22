@@ -30,6 +30,6 @@ pub trait WorldTime: Sized + Sync {
     /// Current Time.
     fn time(&self) -> i64;
     /// Update the time.
-    /// new_time (Timestamp).
+    /// new_time (new time in milliseconds).
     fn update_time(&self, new_time: i64);
 }
