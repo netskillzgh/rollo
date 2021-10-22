@@ -1,15 +1,9 @@
-use rollo::server::async_trait;
-use rollo::server::rollo_macros::world_time;
 use rollo::server::tokio;
-use rollo::server::ListenerSecurity;
-use rollo::server::SocketTools;
-use rollo::server::World;
-use rollo::server::WorldSession;
-use rollo::server::WorldSocketMgr;
 use rollo::{
     error::Error,
     game::{IntervalExecutor, IntervalMgr},
     packet::Packet,
+    server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
 use std::sync::atomic::AtomicI64;
 use std::sync::Arc;
@@ -34,7 +28,7 @@ async fn main() {
         .unwrap();
 }
 
-#[world_time]
+#[rollo::world_time]
 struct MyWorld {
     bg: Arc<BattlegroundManager>,
 }
@@ -50,7 +44,7 @@ struct MyWorldSession {
     socket_tools: SocketTools,
 }
 
-#[async_trait]
+#[rollo::async_trait]
 impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_open(
         tools: SocketTools,

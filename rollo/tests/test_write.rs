@@ -6,7 +6,6 @@ use rollo::{
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
-use rollo_macros::world_time;
 use std::{
     sync::{atomic::AtomicI64, Arc},
     time::Duration,
@@ -92,7 +91,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}
 }
 
-#[world_time]
+#[rollo::world_time]
 struct MyWorld {}
 
 impl World for MyWorld {

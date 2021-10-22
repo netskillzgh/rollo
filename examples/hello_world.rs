@@ -1,6 +1,4 @@
 use rollo::packet::to_bytes;
-use rollo::server::async_trait;
-use rollo::server::rollo_macros::world_time;
 use rollo::server::tokio;
 use rollo::{
     error::Error,
@@ -27,7 +25,7 @@ async fn main() {
 }
 
 // Implement WorldTime
-#[world_time]
+#[rollo::world_time]
 struct MyWorld {}
 
 impl World for MyWorld {
@@ -41,7 +39,7 @@ struct MyWorldSession {
     socket_tools: SocketTools,
 }
 
-#[async_trait]
+#[rollo::async_trait]
 impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_open(
         tools: SocketTools,

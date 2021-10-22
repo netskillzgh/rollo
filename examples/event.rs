@@ -1,9 +1,7 @@
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 use rollo::game::{Event, EventProcessor};
-use rollo::server::async_trait;
 
-use rollo::server::rollo_macros::world_time;
 use rollo::server::tokio;
 use rollo::{
     error::Error,
@@ -52,7 +50,7 @@ impl Event for MyEvent {
     }
 }
 // Implement WorldTime
-#[world_time]
+#[rollo::world_time]
 struct MyWorld {
     events: Mutex<EventProcessor<MyEvent>>,
 }
@@ -69,7 +67,7 @@ struct MyWorldSession {
     socket_tools: SocketTools,
 }
 
-#[async_trait]
+#[rollo::async_trait]
 impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_open(
         tools: SocketTools,

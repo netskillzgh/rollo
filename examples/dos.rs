@@ -1,5 +1,3 @@
-use rollo::server::async_trait;
-
 use rollo::server::tokio;
 use rollo::server::DosPolicy;
 use rollo::world_time;
@@ -49,7 +47,7 @@ struct MyWorldSession {
     socket_tools: SocketTools,
 }
 
-#[async_trait]
+#[rollo::async_trait]
 impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_dos_attack(_world_session: &Arc<Self>, _world: &'static MyWorld, cmd: u16) {
         println!("DoS attack detected for cmd {}.", cmd);

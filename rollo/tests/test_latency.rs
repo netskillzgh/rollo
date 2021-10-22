@@ -11,7 +11,6 @@ use rollo::{
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
-use rollo_macros::world_time;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::TcpStream,
@@ -89,7 +88,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}
 }
 
-#[world_time]
+#[rollo::world_time]
 struct MyWorld {}
 
 impl World for MyWorld {

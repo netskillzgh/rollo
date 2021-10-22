@@ -32,5 +32,23 @@ cfg_game! {
 cfg_server! {
     pub mod packet;
     pub mod server;
-    pub use server::world_time as world_time;
+    pub use async_trait::async_trait;
+
+    cfg_macros! {
+        /// ## Implement WorldTime
+        /// ### Examples
+        /// ```rust, no_run
+        /// use std::sync::atomic::AtomicI64;
+        ///
+        /// let world = MyWorld {
+        ///     time: AtomicI64::new(0)
+        /// };
+        ///
+        /// let time = world.time();
+        ///
+        /// #[rollo::world_time]
+        /// struct MyWorld {}
+        /// ```
+        pub use rollo_macros::world_time;
+    }
 }

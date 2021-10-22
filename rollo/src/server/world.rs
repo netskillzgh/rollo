@@ -32,22 +32,3 @@ pub trait WorldTime: Sized + Sync {
     /// Update the time
     fn update_time(&self, new_time: i64);
 }
-
-cfg_macros! {
-    /// ## Implement WorldTime
-    /// ### Examples
-    /// ```rust, no_run
-    /// use rollo::server::world_time;
-    /// use std::sync::atomic::AtomicI64;
-    ///
-    /// let world = MyWorld {
-    ///     time: AtomicI64::new(0)
-    /// };
-    ///
-    /// let time = world.time();
-    ///
-    /// #[world_time]
-    /// struct MyWorld {}
-    /// ```
-    pub use rollo_macros::world_time;
-}

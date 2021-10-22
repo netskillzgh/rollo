@@ -43,13 +43,10 @@ rollo = { version = "0.4.0", features = ["full"] }
 
 ```rust,no_run
 use rollo::packet::to_bytes;
-use rollo::server::async_trait;
-use rollo::server::rollo_macros::world_time;
-use rollo::server::tokio;
 use rollo::{
     error::Error,
     packet::Packet,
-    server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
+    server::{tokio, ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
 use std::sync::atomic::AtomicI64;
 use std::sync::Arc;
@@ -71,7 +68,7 @@ async fn main() {
 }
 
 // Implement WorldTime
-#[world_time]
+#[rollo::world_time]
 struct MyWorld {}
 
 impl World for MyWorld {
@@ -85,7 +82,7 @@ struct MyWorldSession {
     socket_tools: SocketTools,
 }
 
-#[async_trait]
+#[rollo::async_trait]
 impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_open(
         tools: SocketTools,
@@ -124,9 +121,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
 ### Diagram
 
-<a href="https://raw.githubusercontent.com/netskillzgh/rollo/master/doc/simple-description.png">
-<img src="https://raw.githubusercontent.com/netskillzgh/rollo/master/doc/simple-description.png" height="300" width="300" />
-</a>
+![](https://github.com/netskillzgh/rollo/blob/master/doc/simple-description.png)
 
 ## License
 

@@ -10,7 +10,6 @@ use rollo::{
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
-use rollo_macros::world_time;
 use tokio::{io::AsyncReadExt, net::TcpStream, task::JoinHandle, time::sleep};
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
@@ -77,7 +76,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_dos_attack(_world_session: &Arc<Self>, _world: &'static MyWorld, _cmd: u16) {}
 }
 
-#[world_time]
+#[rollo::world_time]
 struct MyWorld {}
 
 impl World for MyWorld {
