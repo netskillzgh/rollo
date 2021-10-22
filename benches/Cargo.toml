@@ -23,3 +23,8 @@ harness = false
 name = "event"
 path = "event.rs"
 harness = false
+
+[[bench]]
+name = "time"
+path = "time.rs"
+harness = false

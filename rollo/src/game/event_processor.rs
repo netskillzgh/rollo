@@ -39,7 +39,7 @@ where
     /// ```rust, no_run
     /// use rollo::game::{EventProcessor, Event};
     ///
-    /// let event_processor = EventProcessor::<MyEvent>::new();
+    /// let event_processor = EventProcessor::<MyEvent>::new(10000);
     ///
     /// struct MyEvent;
     ///
@@ -47,9 +47,9 @@ where
     ///     fn on_execute(&self, _diff: i64){}
     /// }
     /// ```
-    pub fn new() -> Self {
+    pub fn new(time: i64) -> Self {
         Self {
-            m_time: 0,
+            m_time: time,
             events: MultiMap::new(),
         }
     }
@@ -60,8 +60,8 @@ where
     /// use rollo::game::{EventProcessor, Event};
     ///
     /// let mut event_processor = EventProcessor::<MyEvent>::new();
-    /// // 100 is the diff.
-    /// event_processor.update(100);
+    /// // 1000000 is the time.
+    /// event_processor.update(1000000);
     ///
     /// struct MyEvent;
     ///
@@ -69,14 +69,14 @@ where
     ///     fn on_execute(&self, _diff: i64){}
     /// }
     /// ```
-    pub fn update(&mut self, diff: i64) {
-        self.m_time += diff;
+    pub fn update(&mut self, time: i64) {
+        self.m_time = time;
         let m_time = self.m_time;
 
         let mut keys_to_remove = HashMap::new();
 
         for (time, events) in self.events.iter_all() {
-            if *time >= m_time {
+            if *time > m_time {
                 continue;
             }
 
@@ -87,6 +87,7 @@ where
                     if event.1.to_abort() {
                         event.1.on_abort();
                     } else {
+                        let diff = (m_time - time) + event.0;
                         event.1.on_execute(diff);
 
                         if !event.1.is_deletable() {
@@ -114,7 +115,7 @@ where
     /// use std::sync::Arc;
     /// use std::time::Duration;
     ///
-    /// let mut event_processor = EventProcessor::<MyEvent>::new();
+    /// let mut event_processor = EventProcessor::<MyEvent>::new(1000000);
     /// let event = MyEvent;
     /// let event = Arc::new(event);
     /// // The duration is the delay before the execution.
@@ -138,7 +139,7 @@ where
     /// ```rust, no_run
     /// use rollo::game::{EventProcessor, Event};
     ///
-    /// let mut event_processor = EventProcessor::<MyEvent>::new();
+    /// let mut event_processor = EventProcessor::<MyEvent>::new(1000000);
     /// // Remove all events and abort them (on_abort()).
     /// event_processor.remove_events(true);
     ///
@@ -187,7 +188,7 @@ mod tests {
 
     #[test]
     fn test_calcul_time_success() {
-        let mut event_processor = EventProcessor::<MyEventTest>::new();
+        let mut event_processor = EventProcessor::<MyEventTest>::new(0);
         event_processor.m_time = 10;
         let result = event_processor.calcul_target_time(10);
         assert_eq!(result, 20);
@@ -195,7 +196,7 @@ mod tests {
 
     #[test]
     fn test_update_success() {
-        let mut event_processor = EventProcessor::new();
+        let mut event_processor = EventProcessor::new(0);
         let event = new();
         let second_event = new();
 
@@ -212,7 +213,7 @@ mod tests {
         assert_eq!(event.life.load(Ordering::Acquire), 20);
         assert_eq!(second_event.life.load(Ordering::Acquire), 10);
 
-        event_processor.update(1000);
+        event_processor.update(3600);
 
         assert_eq!(20, event.life.load(Ordering::Acquire));
         assert_eq!(20, second_event.life.load(Ordering::Acquire));
@@ -220,7 +221,7 @@ mod tests {
 
     #[test]
     fn test_not_deletable() {
-        let mut event_processor = EventProcessor::new();
+        let mut event_processor = EventProcessor::new(0);
         let event = MyEventTest {
             life: AtomicI32::new(0),
             to_abort: AtomicBool::new(false),
@@ -239,7 +240,7 @@ mod tests {
 
     #[test]
     fn test_abort() {
-        let mut event_processor = EventProcessor::new();
+        let mut event_processor = EventProcessor::new(0);
         let event = MyEventTest {
             life: AtomicI32::new(0),
             to_abort: AtomicBool::new(true),
@@ -259,7 +260,7 @@ mod tests {
 
     #[test]
     fn test_remove_events() {
-        let mut event_processor = EventProcessor::new();
+        let mut event_processor = EventProcessor::new(0);
         let event = new();
 
         {
@@ -277,7 +278,7 @@ mod tests {
 
     #[test]
     fn test_remove_event() {
-        let mut event_processor = EventProcessor::new();
+        let mut event_processor = EventProcessor::new(0);
         let event = new();
         let second_event = new();
 
@@ -294,7 +295,7 @@ mod tests {
         assert_eq!(event_processor.events.len(), 1);
         assert_eq!(event_processor.events.get_vec(&3000).unwrap().len(), 1);
 
-        event_processor.update(500);
+        event_processor.update(3100);
 
         assert_eq!(event_processor.events.len(), 0);
     }

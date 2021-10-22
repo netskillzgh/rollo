@@ -15,7 +15,7 @@ use std::time::Duration;
 static WORLD: Lazy<MyWorld> = Lazy::new(|| {
     let world = MyWorld {
         time: AtomicI64::new(0),
-        events: Mutex::new(EventProcessor::new()),
+        events: Mutex::new(EventProcessor::new(1000000)),
     };
 
     // Add an event
