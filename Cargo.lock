@@ -272,9 +272,9 @@ dependencies = [
 
 [[package]]
 name = "half"
-version = "1.8.0"
+version = "1.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac5956d4e63858efaec57e0d6c1c2f6a41e1487f830314a324ccd7e2223a7ca0"
+checksum = "3bd566f08830dd1fa75b2a5f1d8def8336de7f08b2692a9a71efbe7188aea36f"
 
 [[package]]
 name = "hermit-abi"
@@ -651,7 +651,7 @@ dependencies = [
  "parking_lot",
  "rand",
  "rand_xoshiro",
- "rollo-macros 0.3.0",
+ "rollo-macros 0.4.0",
  "rustls-pemfile",
  "serial_test",
  "spin_sleep",
@@ -661,9 +661,9 @@ dependencies = [
 
 [[package]]
 name = "rollo-macros"
-version = "0.3.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "efd942807d3639ea0cd02f39b0787f438619a21860122aa24e025c05069d4e9d"
+checksum = "1dccbce14958c01777c638f6dbf8aa8c0423429026ce778b36cb29b48a46bb98"
 dependencies = [
  "quote",
  "syn",
@@ -671,7 +671,7 @@ dependencies = [
 
 [[package]]
 name = "rollo-macros"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "quote",
  "syn",
