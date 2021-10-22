@@ -29,7 +29,7 @@ server = [
     "async-trait",
     "tokio",
     "game",
-    "rustls-pemfile"
+    "rustls-pemfile",
 ]
 
 game = [
