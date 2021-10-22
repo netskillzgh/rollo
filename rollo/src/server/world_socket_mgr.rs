@@ -167,12 +167,16 @@ pub enum ListenerSecurity<'a> {
 }
 
 /// Socket Configuration
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct WorldSocketConfiguration {
     no_delay: bool,
 }
 
 impl WorldSocketConfiguration {
+    ///```rust, no_run
+    /// use rollo::server::WorldSocketConfiguration;
+    /// let conf = WorldSocketConfiguration::new(true);
+    /// ```
     pub fn new(no_delay: bool) -> Self {
         Self { no_delay }
     }
