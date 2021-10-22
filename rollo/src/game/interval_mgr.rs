@@ -1,6 +1,5 @@
-use std::time::Duration;
-
 use crossbeam::atomic::AtomicCell;
+use std::time::Duration;
 
 /// # Interval Manager
 /// ## Usage

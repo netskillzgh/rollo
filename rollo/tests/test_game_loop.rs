@@ -1,14 +1,13 @@
 #![cfg(feature = "full")]
-use std::sync::{
-    atomic::{AtomicI64, AtomicU16, Ordering},
-    Arc,
-};
-
 use async_trait::async_trait;
 use rollo::{
     error::Error,
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
+};
+use std::sync::{
+    atomic::{AtomicI64, AtomicU16, Ordering},
+    Arc,
 };
 use tokio::time::Duration;
 

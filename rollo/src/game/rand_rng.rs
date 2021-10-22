@@ -1,7 +1,6 @@
-use std::sync::atomic::{AtomicU64, Ordering};
-
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256Plus;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 static SEED: AtomicU64 = AtomicU64::new(0);
 

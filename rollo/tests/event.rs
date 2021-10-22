@@ -1,11 +1,9 @@
 #![cfg(feature = "full")]
-
+use rollo::game::{Event, EventProcessor};
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
 };
-
-use rollo::game::{Event, EventProcessor};
 use tokio::time::Duration;
 
 #[test]

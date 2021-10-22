@@ -1,7 +1,6 @@
+use crate::error::{Error, Result};
 use std::convert::TryFrom;
 use tokio::io::AsyncReadExt;
-
-use crate::error::{Error, Result};
 
 pub(crate) const MAX_SIZE: usize = 1024 * 14;
 

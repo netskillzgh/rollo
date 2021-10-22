@@ -1,7 +1,6 @@
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 use rollo::game::{Event, EventProcessor};
-
 use rollo::server::tokio;
 use rollo::{
     error::Error,

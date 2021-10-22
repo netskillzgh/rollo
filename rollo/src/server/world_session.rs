@@ -1,3 +1,6 @@
+use super::world_socket::WriterMessage;
+use crate::error::{Error, Result};
+use crate::packet::{to_bytes, Packet};
 use async_trait::async_trait;
 use bytes::Bytes;
 #[cfg(feature = "flatbuffers_helpers")]
@@ -12,11 +15,6 @@ use std::{
     time::Duration,
 };
 use tokio::sync::mpsc::UnboundedSender;
-
-use crate::error::{Error, Result};
-use crate::packet::{to_bytes, Packet};
-
-use super::world_socket::WriterMessage;
 
 /// Events for a WorldSession
 #[async_trait]

@@ -1,5 +1,4 @@
 use rollo::flatbuffers_helpers::flatbuffers;
-
 use rollo::packet::to_bytes;
 use rollo::server::tokio;
 use rollo::{

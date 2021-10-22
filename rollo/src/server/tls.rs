@@ -4,7 +4,6 @@ use std::{
     io::{self, BufReader},
     path::Path,
 };
-//"../certificates/server.key.pem"
 use tokio_rustls::rustls::{Certificate, PrivateKey, ServerConfig};
 
 pub(crate) fn load_config(certificate: &Path, key: &Path) -> io::Result<ServerConfig> {

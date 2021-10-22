@@ -1,10 +1,9 @@
-use crate::io::read::{Reader, MAX_SIZE};
-use crate::packet::Packet;
-
 use super::dos_protection::{DosPolicy, DosProtection};
 use super::world::World;
 use super::world_session::WorldSession;
 use crate::error::{Error, Result};
+use crate::io::read::{Reader, MAX_SIZE};
+use crate::packet::Packet;
 use bytes::Bytes;
 use std::convert::TryInto;
 use std::marker::PhantomData;
