@@ -22,7 +22,7 @@ pub struct GameLoop {
 }
 
 impl GameLoop {
-    /// Create the GameLoop with the tick rate (interval)
+    /// Create the GameLoop with an interval.
     /// ```rust, no_run
     /// use rollo::game::GameLoop;
     /// use std::time::Duration;

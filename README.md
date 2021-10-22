@@ -28,7 +28,7 @@
 
 - Tcp (support Tls).
 - Packet Manager (command/payload).
-- Game Loop (tick rate).
+- Game Loop (Update).
 - Event Manager | [example](https://github.com/netskillzgh/rollo/blob/master/examples/event.rs).
 - Interval Manager | [example](https://github.com/netskillzgh/rollo/blob/master/examples/interval.rs).
 - Dos protection | [example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs).
@@ -74,7 +74,7 @@ struct MyWorld {}
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
     fn update(&'static self, _diff: i64) {
-        println!("Tick at : {}", self.time());
+        println!("Update at : {}", self.time());
     }
 }
 

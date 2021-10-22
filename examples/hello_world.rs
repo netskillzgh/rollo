@@ -31,7 +31,7 @@ struct MyWorld {}
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
     fn update(&'static self, _diff: i64) {
-        println!("Tick at : {}", self.time());
+        println!("Update at : {}", self.time());
     }
 }
 

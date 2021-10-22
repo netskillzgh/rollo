@@ -4,7 +4,7 @@ use super::{dos_protection::DosPolicy, world_session::WorldSession};
 pub trait World: Sized + Sync + WorldTime + Send {
     type WorldSessionimplementer: WorldSession<Self> + 'static + Send + Sync;
 
-    /// Tick
+    /// Update
     fn update(&'static self, _diff: i64) {}
 
     /// Packet limit.
@@ -27,8 +27,9 @@ pub trait World: Sized + Sync + WorldTime + Send {
 
 /// Current World Time
 pub trait WorldTime: Sized + Sync {
-    /// Current Time
+    /// Current Time.
     fn time(&self) -> i64;
-    /// Update the time
+    /// Update the time.
+    /// new_time (Timestamp).
     fn update_time(&self, new_time: i64);
 }

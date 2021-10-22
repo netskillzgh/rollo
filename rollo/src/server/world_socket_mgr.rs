@@ -49,7 +49,7 @@ where
         }
     }
 
-    /// Start the GameLoop with an interval (tick rate).
+    /// Start the GameLoop with an interval.
     pub fn start_game_loop(&mut self, interval: Duration) -> &mut Self {
         let world = self.world;
         tokio::spawn(async move {
