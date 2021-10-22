@@ -29,6 +29,7 @@ fn test_event_processor() {
     event_processor.update(14000);
     assert!(!second_event.executed.load(Ordering::SeqCst));
     event_processor.update(14999);
+    assert!(!second_event.executed.load(Ordering::SeqCst));
     event_processor.update(15001);
     assert!(second_event.executed.load(Ordering::SeqCst));
 }
