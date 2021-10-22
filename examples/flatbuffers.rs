@@ -1,5 +1,5 @@
 use rollo::flatbuffers_helpers::flatbuffers;
-use rollo::flatbuffers_pool;
+
 use rollo::packet::to_bytes;
 use rollo::server::tokio;
 use rollo::{
@@ -18,7 +18,7 @@ async fn main() {
     }));
 
     // Create the pool.
-    flatbuffers_pool!(100, BUILDERS, get_builder);
+    rollo::flatbuffers_pool!(100, BUILDERS, get_builder);
     // Get builder from the pool.
     let builder = get_builder();
     drop(builder);
