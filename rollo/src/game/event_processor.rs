@@ -8,7 +8,7 @@ use std::{collections::HashMap, sync::Arc, time::Duration};
 /// use std::sync::Arc;
 /// use std::time::Duration;
 ///
-/// let mut event_processor = EventProcessor::<MyEvent>::new();
+/// let mut event_processor = EventProcessor::<MyEvent>::new(1000000);
 /// let event = MyEvent;
 /// let event = Arc::new(event);
 /// // The duration is the delay before the execution.
@@ -59,7 +59,7 @@ where
     /// ```rust, no_run
     /// use rollo::game::{EventProcessor, Event};
     ///
-    /// let mut event_processor = EventProcessor::<MyEvent>::new();
+    /// let mut event_processor = EventProcessor::<MyEvent>::new(1000000);
     /// // 1000000 is the time.
     /// event_processor.update(1000000);
     ///
