@@ -6,7 +6,7 @@ mod dos_protection;
 pub use dos_protection::DosPolicy;
 
 pub(crate) mod world;
-pub use world::{world_time, World, WorldTime};
+pub use world::{world_time, World};
 
 pub(crate) mod world_session;
 pub use world_session::{SocketTools, WorldSession};

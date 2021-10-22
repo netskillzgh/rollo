@@ -1,8 +1,8 @@
 use rollo::server::async_trait;
 
-use rollo::server::rollo_macros::world_time;
 use rollo::server::tokio;
 use rollo::server::DosPolicy;
+use rollo::world_time;
 use rollo::{
     error::Error,
     packet::Packet,

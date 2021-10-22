@@ -32,4 +32,5 @@ cfg_game! {
 cfg_server! {
     pub mod packet;
     pub mod server;
+    pub use server::world_time as world_time;
 }
