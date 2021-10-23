@@ -80,7 +80,7 @@ impl World for MyWorld {
         println!("Elapsed is {}", self.game_time.load().elapsed.as_millis());
     }
 
-    // Your GameTime will be update automatically.
+    // Your GameTime will be updated automatically.
     fn game_time(&'static self) -> Option<&'static AtomicCell<GameTime>> {
         Some(&self.game_time)
     }
