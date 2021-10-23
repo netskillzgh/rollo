@@ -30,3 +30,9 @@ impl GameTime {
         SystemTime::now().duration_since(UNIX_EPOCH)
     }
 }
+
+impl Default for GameTime {
+    fn default() -> Self {
+        Self::new()
+    }
+}
