@@ -56,7 +56,7 @@ use std::time::Duration;
 #[tokio::main]
 async fn main() {
     let world = Box::leak(Box::new(MyWorld {
-        game_time: AtomicCell::new(GameTime::default()),
+        game_time: AtomicCell::new(GameTime::new()),
     }));
 
     let mut socket_manager = WorldSocketMgr::new(world);
@@ -74,10 +74,12 @@ struct MyWorld {
 
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
-    fn update(&'static self, _diff: i64, game_time: GameTime) {
-        println!("Update at : {}", game_time.timestamp);
+    fn update(&'static self, _diff: i64, _game_time: GameTime) {
+        //println!("Update at : {}", game_time.timestamp);
+        println!("Elapsed is {}", self.game_time.load().elapsed.as_millis());
     }
 
+    // Your GameTime reference will be update automatically.
     fn game_time(&'static self) -> Option<&'static AtomicCell<GameTime>> {
         Some(&self.game_time)
     }
