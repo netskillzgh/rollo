@@ -1,6 +1,6 @@
 [package]
 name = "rollo-macros"
-version = "0.4.1"
+version = "0.6.0"
 edition = "2018"
 license = "MIT"
 description = "Macros for Rollo."
@@ -14,3 +14,4 @@ proc-macro = true
 [dependencies]
 quote = "1.0"
 syn = {version = "1.0.74", features = ["full", "extra-traits"]}
+crossbeam = { version = "0.8.1" }
