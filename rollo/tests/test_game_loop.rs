@@ -4,7 +4,11 @@ use rollo::{
     error::Error,
     game::GameTime,
     packet::Packet,
-    server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
+    server::{
+        ListenerSecurity, SocketTools, World, WorldSession, WorldSocketConfiguration,
+        WorldSocketMgr,
+    },
+    AtomicCell,
 };
 use std::sync::{
     atomic::{AtomicU16, Ordering},
@@ -16,9 +20,10 @@ use tokio::time::Duration;
 async fn test_game_loop() {
     let world = Box::new(MyWorld {
         counter: AtomicU16::new(0),
+        game_time: AtomicCell::new(GameTime::default()),
     });
     let world = Box::leak(world);
-    let mut server = WorldSocketMgr::new(world);
+    let mut server = WorldSocketMgr::with_configuration(world, WorldSocketConfiguration::default());
     let t = tokio::spawn(async move {
         let _ = server
             .start_game_loop(Duration::from_millis(100))
@@ -56,13 +61,14 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
 struct MyWorld {
     counter: AtomicU16,
+    game_time: AtomicCell<GameTime>,
 }
 
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
 
     fn update(&'static self, diff: i64, game_time: GameTime) {
-        assert!(game_time.timestamp != 0);
+        assert_eq!(game_time.timestamp, self.game_time.load().timestamp);
         let c = self.counter.fetch_add(1, Ordering::Relaxed) + 1;
 
         // First diff is 0
@@ -73,5 +79,9 @@ impl World for MyWorld {
         if c == 10 {
             panic!("test");
         }
+    }
+
+    fn game_time(&'static self) -> Option<&'static AtomicCell<GameTime>> {
+        Some(&self.game_time)
     }
 }

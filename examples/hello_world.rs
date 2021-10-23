@@ -1,11 +1,10 @@
-use rollo::game::GameTime;
-use rollo::packet::to_bytes;
-use rollo::server::{tokio, WorldSocketConfiguration};
-use rollo::AtomicCell;
 use rollo::{
     error::Error,
+    game::GameTime,
+    packet::to_bytes,
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
+    tokio, AtomicCell,
 };
 use std::sync::Arc;
 use std::time::Duration;
@@ -16,11 +15,7 @@ async fn main() {
         game_time: AtomicCell::new(GameTime::default()),
     }));
 
-    let mut socket_manager = WorldSocketMgr::with_configuration(
-        world,
-        WorldSocketConfiguration::default(),
-        &world.game_time,
-    );
+    let mut socket_manager = WorldSocketMgr::new(world);
     // Run the server and the game loop with an interval (15ms)
     socket_manager
         .start_game_loop(Duration::from_millis(15))
@@ -37,6 +32,10 @@ impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
     fn update(&'static self, _diff: i64, game_time: GameTime) {
         println!("Update at : {}", game_time.timestamp);
+    }
+
+    fn game_time(&'static self) -> Option<&'static AtomicCell<GameTime>> {
+        Some(&self.game_time)
     }
 }
 

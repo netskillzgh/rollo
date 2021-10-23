@@ -10,6 +10,9 @@ pub trait World: Sized + Sync + Send {
     type WorldSessionimplementer: WorldSession<Self> + 'static + Send + Sync;
 
     async fn on_start(_game_time: &'static AtomicCell<GameTime>) {}
+    fn game_time(&'static self) -> Option<&'static AtomicCell<GameTime>> {
+        None
+    }
 
     /// Update
     fn update(&'static self, _diff: i64, _game_time: GameTime) {}

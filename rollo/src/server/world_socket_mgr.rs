@@ -42,21 +42,21 @@ where
             world,
             counter: 0,
             configuration: WorldSocketConfiguration::default(),
-            game_time: Box::leak(Box::new(AtomicCell::new(GameTime::new()))),
+            game_time: world
+                .game_time()
+                .get_or_insert(Box::leak(Box::new(AtomicCell::new(GameTime::new())))),
         }
     }
 
     /// Create WorldSocketMgr with custom configuration.
-    pub fn with_configuration(
-        world: &'static W,
-        configuration: WorldSocketConfiguration,
-        game_time: &'static AtomicCell<GameTime>,
-    ) -> Self {
+    pub fn with_configuration(world: &'static W, configuration: WorldSocketConfiguration) -> Self {
         Self {
             world,
             counter: 0,
             configuration,
-            game_time,
+            game_time: world
+                .game_time()
+                .get_or_insert(Box::leak(Box::new(AtomicCell::new(GameTime::new())))),
         }
     }
 
