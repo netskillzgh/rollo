@@ -10,9 +10,10 @@ pub struct GameTime {
 
 impl GameTime {
     pub fn new() -> Self {
+        let duration = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
         Self {
-            system_time: SystemTime::now().duration_since(UNIX_EPOCH).unwrap(),
-            timestamp: Self::current_timestamp().unwrap().as_millis() as i64,
+            system_time: duration,
+            timestamp: duration.as_millis() as i64,
             instant: Instant::now(),
             elapsed: Duration::ZERO,
         }

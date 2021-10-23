@@ -1,6 +1,7 @@
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 use rollo::game::{Event, EventProcessor, GameTime};
+use rollo::AtomicCell;
 use rollo::{
     error::Error,
     packet::Packet,
@@ -11,9 +12,10 @@ use std::sync::Arc;
 use std::time::Duration;
 
 static WORLD: Lazy<MyWorld> = Lazy::new(|| {
+    let game_time = GameTime::new();
     let world = MyWorld {
-        events: Mutex::new(EventProcessor::new(1000000)),
-        time: Mutex::new(GameTime::new()),
+        events: Mutex::new(EventProcessor::new(game_time.timestamp)),
+        game_time: AtomicCell::new(game_time),
     };
 
     // Add an event
@@ -40,7 +42,7 @@ struct MyEvent;
 
 impl Event for MyEvent {
     fn on_execute(&self, _diff: i64) {
-        println!("Event executed at {}", WORLD.time.lock().timestamp);
+        println!("Event executed at {}", WORLD.game_time.load().timestamp);
     }
 
     fn is_deletable(&self) -> bool {
@@ -50,15 +52,17 @@ impl Event for MyEvent {
 
 struct MyWorld {
     events: Mutex<EventProcessor<MyEvent>>,
-    time: Mutex<GameTime>,
+    game_time: AtomicCell<GameTime>,
 }
 
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
-    fn update(&'static self, diff: i64, game_time: GameTime) {
-        *self.time.lock() = game_time;
-        println!("Update at {}", game_time.timestamp);
-        self.events.lock().update(diff);
+    fn update(&'static self, _diff: i64, game_time: GameTime) {
+        self.events.lock().update(game_time.timestamp);
+    }
+
+    fn game_time(&'static self) -> Option<&'static AtomicCell<GameTime>> {
+        Some(&self.game_time)
     }
 }
 
