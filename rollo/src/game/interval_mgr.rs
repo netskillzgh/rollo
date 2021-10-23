@@ -99,10 +99,10 @@ impl IntervalMgr {
     }
 }
 
-/// Executed when interval passed
+/// Interval Executor
 pub trait IntervalExecutor {
     type Container;
-    /// Executed when interval passed
+    /// When event is executed.
     fn on_update(&self, _diff: i64, container: Self::Container);
 }
 
