@@ -36,22 +36,4 @@ cfg_server! {
     pub use bytes;
     pub use tokio;
     pub use crossbeam::atomic::AtomicCell;
-
-    cfg_macros! {
-        /// ## Implement WorldTime
-        /// ### Examples
-        /// ```rust, no_run
-        /// use std::sync::atomic::AtomicI64;
-        ///
-        /// let world = MyWorld {
-        ///     time: AtomicI64::new(0)
-        /// };
-        ///
-        /// let time = world.time();
-        ///
-        /// #[rollo::world_time]
-        /// struct MyWorld {}
-        /// ```
-        pub use rollo_macros::world_time;
-    }
 }

@@ -651,7 +651,6 @@ dependencies = [
  "parking_lot",
  "rand",
  "rand_xoshiro",
- "rollo-macros 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustls-pemfile",
  "serial_test",
  "spin_sleep",
@@ -662,17 +661,6 @@ dependencies = [
 [[package]]
 name = "rollo-macros"
 version = "0.6.1"
-dependencies = [
- "crossbeam",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "rollo-macros"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a4b6b3f121326ce0b674403fdcd79a797501810a59d3bb9f3c75e5b9f801e0b"
 dependencies = [
  "crossbeam",
  "quote",

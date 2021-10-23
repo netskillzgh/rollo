@@ -1,6 +1,7 @@
 use rollo::game::GameTime;
 use rollo::packet::to_bytes;
-use rollo::server::tokio;
+use rollo::server::{tokio, WorldSocketConfiguration};
+use rollo::AtomicCell;
 use rollo::{
     error::Error,
     packet::Packet,
@@ -11,9 +12,15 @@ use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
-    let world = Box::leak(Box::new(MyWorld {}));
+    let world = Box::leak(Box::new(MyWorld {
+        game_time: AtomicCell::new(GameTime::default()),
+    }));
 
-    let mut socket_manager = WorldSocketMgr::new(world);
+    let mut socket_manager = WorldSocketMgr::with_configuration(
+        world,
+        WorldSocketConfiguration::default(),
+        &world.game_time,
+    );
     // Run the server and the game loop with an interval (15ms)
     socket_manager
         .start_game_loop(Duration::from_millis(15))
@@ -22,7 +29,9 @@ async fn main() {
         .unwrap();
 }
 
-struct MyWorld {}
+struct MyWorld {
+    game_time: AtomicCell<GameTime>,
+}
 
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;

@@ -36,7 +36,7 @@ impl<W> WorldSocketMgr<W>
 where
     W: Send + Sync + 'static + World,
 {
-    /// Create WorldSocketMgr with default configuration
+    /// Create WorldSocketMgr with default configuration.
     pub fn new(world: &'static W) -> Self {
         Self {
             world,
@@ -46,7 +46,7 @@ where
         }
     }
 
-    /// Create WorldSocketMgr with custom configuration
+    /// Create WorldSocketMgr with custom configuration.
     pub fn with_configuration(
         world: &'static W,
         configuration: WorldSocketConfiguration,
