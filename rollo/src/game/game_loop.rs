@@ -58,7 +58,7 @@ impl GameLoop {
     }
 
     fn get_sleep_time(&mut self) -> i64 {
-        let new_date = GameTime::current_timestamp();
+        let new_date = GameTime::current_timestamp().map(|time| time.as_millis() as i64);
         if let Ok(new_date) = new_date {
             let execution_diff = new_date - self.game_time.timestamp;
 

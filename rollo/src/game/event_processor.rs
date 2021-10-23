@@ -169,16 +169,19 @@ where
 
 /// Events for an Event.
 pub trait Event {
-    /// Execute an event
+    /// Execute an event.
     fn on_execute(&self, _diff: i64);
+
     /// Event lifetime
     fn is_deletable(&self) -> bool {
         true
     }
+
     /// Abort at next update
     fn to_abort(&self) -> bool {
         false
     }
+
     /// Event aborted
     fn on_abort(&self) {}
 }

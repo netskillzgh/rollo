@@ -20,7 +20,7 @@ use tokio::time::Duration;
 async fn test_game_loop() {
     let world = Box::new(MyWorld {
         counter: AtomicU16::new(0),
-        game_time: AtomicCell::new(GameTime::default()),
+        game_time: AtomicCell::new(GameTime::new()),
     });
     let world = Box::leak(world);
     let mut server = WorldSocketMgr::with_configuration(world, WorldSocketConfiguration::default());
@@ -69,6 +69,9 @@ impl World for MyWorld {
 
     fn update(&'static self, diff: i64, game_time: GameTime) {
         assert_eq!(game_time.timestamp, self.game_time.load().timestamp);
+        assert_eq!(game_time.elapsed, self.game_time.load().elapsed);
+        assert_eq!(game_time.system_time, self.game_time.load().system_time);
+
         let c = self.counter.fetch_add(1, Ordering::Relaxed) + 1;
 
         // First diff is 0
