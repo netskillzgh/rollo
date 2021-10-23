@@ -25,11 +25,11 @@ pub fn world_time(args: TokenStream, input: TokenStream) -> TokenStream {
 
         impl WorldTime for #name {
             fn time(&self) -> rollo::game::GameTime {
-                self.time.load()
+                self.game_time.load()
             }
 
             fn update_time(&self, new_time: rollo::game::GameTime) {
-                self.time.store(new_time);
+                self.game_time.store(new_time);
             }
         }
     };

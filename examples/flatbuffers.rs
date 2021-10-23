@@ -6,15 +6,12 @@ use rollo::{
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
-use std::sync::atomic::AtomicI64;
 use std::sync::Arc;
 use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
-    let world = Box::leak(Box::new(MyWorld {
-        time: AtomicI64::new(0),
-    }));
+    let world = Box::leak(Box::new(MyWorld {}));
 
     // Create the pool.
     rollo::flatbuffers_pool!(100, BUILDERS, get_builder);
@@ -31,7 +28,6 @@ async fn main() {
         .unwrap();
 }
 
-#[rollo::world_time]
 struct MyWorld {}
 
 impl World for MyWorld {

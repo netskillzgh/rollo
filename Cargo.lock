@@ -272,9 +272,9 @@ dependencies = [
 
 [[package]]
 name = "half"
-version = "1.8.1"
+version = "1.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3bd566f08830dd1fa75b2a5f1d8def8336de7f08b2692a9a71efbe7188aea36f"
+checksum = "eabb4a44450da02c90444cf74558da904edde8fb4e9035a9a6a4e15445af0bd7"
 
 [[package]]
 name = "hermit-abi"
@@ -326,9 +326,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.104"
+version = "0.2.105"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b2f96d100e1cf1929e7719b7edb3b90ab5298072638fccd77be9ce942ecdfce"
+checksum = "869d572136620d55835903746bcb5cdc54cb2851fd0aeec53220b4bb65ef3013"
 
 [[package]]
 name = "lock_api"
@@ -651,7 +651,7 @@ dependencies = [
  "parking_lot",
  "rand",
  "rand_xoshiro",
- "rollo-macros 0.6.0",
+ "rollo-macros 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustls-pemfile",
  "serial_test",
  "spin_sleep",
@@ -661,9 +661,7 @@ dependencies = [
 
 [[package]]
 name = "rollo-macros"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee3cc6545cac0706c834b96a88f1910966499ade30847e9b1c22723076a4424c"
+version = "0.6.1"
 dependencies = [
  "crossbeam",
  "quote",
@@ -673,6 +671,8 @@ dependencies = [
 [[package]]
 name = "rollo-macros"
 version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7a4b6b3f121326ce0b674403fdcd79a797501810a59d3bb9f3c75e5b9f801e0b"
 dependencies = [
  "crossbeam",
  "quote",

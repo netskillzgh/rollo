@@ -2,9 +2,11 @@ use super::dos_protection::{DosPolicy, DosProtection};
 use super::world::World;
 use super::world_session::WorldSession;
 use crate::error::{Error, Result};
+use crate::game::GameTime;
 use crate::io::read::{Reader, MAX_SIZE};
 use crate::packet::Packet;
 use bytes::Bytes;
+use crossbeam::atomic::AtomicCell;
 use std::convert::TryInto;
 use std::marker::PhantomData;
 use std::sync::atomic::Ordering;
@@ -76,13 +78,14 @@ where
         rx: UnboundedReceiver<WriterMessage>,
         mut reader: BufReader<ReadHalf<S>>,
         writer: WriteHalf<S>,
+        game_time: &'static AtomicCell<GameTime>,
     ) where
         S: AsyncWrite + AsyncRead,
     {
         let (mut tx_packet, t) = self.dispatch_client_packets();
 
         select! {
-            _ = self.read(&mut reader, &mut tx_packet) => {}
+            _ = self.read(&mut reader, &mut tx_packet, game_time) => {}
             _ = Self::write(writer, rx) => {}
         }
 
@@ -116,13 +119,16 @@ where
         }
     }
 
-    async fn process_packet(
-        &mut self,
-        reader: &mut Reader<'_, BufReader<ReadHalf<S>>>,
-        tx: &mut UnboundedSender<PacketDispatcher>,
+    async fn process_packet<'a>(
+        &'a mut self,
+        reader: &'a mut Reader<'_, BufReader<ReadHalf<S>>>,
+        tx: &'a mut UnboundedSender<PacketDispatcher>,
+        game_time: &'static AtomicCell<GameTime>,
     ) -> Result<()> {
         let result = {
-            if let Ok(result) = timeout(Duration::from_secs(20), self.read_packet(reader)).await {
+            if let Ok(result) =
+                timeout(Duration::from_secs(20), self.read_packet(reader, game_time)).await
+            {
                 match result {
                     Ok(packet) if packet.cmd == 0 => self.handle_ping(packet),
                     Ok(packet) => tx
@@ -138,14 +144,15 @@ where
         result
     }
 
-    async fn read(
-        &mut self,
-        buffer: &mut BufReader<ReadHalf<S>>,
-        tx: &mut UnboundedSender<PacketDispatcher>,
+    async fn read<'a>(
+        &'a mut self,
+        buffer: &'a mut BufReader<ReadHalf<S>>,
+        tx: &'a mut UnboundedSender<PacketDispatcher>,
+        game_time: &'static AtomicCell<GameTime>,
     ) {
         let mut reader = Reader::new(buffer);
         loop {
-            let result = self.process_packet(&mut reader, tx).await;
+            let result = self.process_packet(&mut reader, tx, game_time).await;
 
             if result.is_err() {
                 break;
@@ -155,9 +162,10 @@ where
         }
     }
 
-    async fn read_packet(
-        &mut self,
-        reader: &mut Reader<'_, BufReader<ReadHalf<S>>>,
+    async fn read_packet<'a>(
+        &'a mut self,
+        reader: &'a mut Reader<'_, BufReader<ReadHalf<S>>>,
+        game_time: &'static AtomicCell<GameTime>,
     ) -> Result<Packet> {
         let size = reader.read_size().await?;
         let cmd = reader.read_cmd().await?;
@@ -169,7 +177,7 @@ where
             return Err(Error::PacketSize);
         }
 
-        let time = self.world.time();
+        let time = game_time.load().timestamp;
 
         let global_result = self.dos_protection.evaluate_global_limit(
             time,

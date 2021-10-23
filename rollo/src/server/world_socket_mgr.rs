@@ -4,8 +4,12 @@ use super::{
     world_session::{SocketTools, WorldSession},
     world_socket::WorldSocket,
 };
-use crate::error::{Error, Result};
 use crate::game::game_loop::GameLoop;
+use crate::{
+    error::{Error, Result},
+    game::GameTime,
+};
+use crossbeam::atomic::AtomicCell;
 use std::{net::SocketAddr, path::Path, sync::Arc, time::Duration};
 use tokio::{
     io::{AsyncRead, AsyncWrite, BufReader, ReadHalf, WriteHalf},
@@ -25,6 +29,7 @@ where
     world: &'static W,
     counter: u64,
     configuration: WorldSocketConfiguration,
+    game_time: &'static AtomicCell<GameTime>,
 }
 
 impl<W> WorldSocketMgr<W>
@@ -37,6 +42,7 @@ where
             world,
             counter: 0,
             configuration: WorldSocketConfiguration::default(),
+            game_time: Box::leak(Box::new(AtomicCell::new(GameTime::new()))),
         }
     }
 
@@ -46,22 +52,24 @@ where
             world,
             counter: 0,
             configuration,
+            game_time: Box::leak(Box::new(AtomicCell::new(GameTime::new()))),
         }
     }
 
     /// Start the GameLoop with an interval.
     pub fn start_game_loop(&mut self, interval: Duration) -> &mut Self {
         let world = self.world;
+        let game_time = self.game_time;
         tokio::spawn(async move {
             let mut game_loop = GameLoop::new(interval);
-            game_loop.start(world).await;
+            game_loop.start(world, Some(game_time)).await;
         });
 
         self
     }
 
     /// Start TCP Server
-    pub async fn start_network(
+    pub async fn start_network<'a>(
         &mut self,
         addr: impl AsRef<str>,
         security: ListenerSecurity<'_>,
@@ -78,6 +86,8 @@ where
 
         let no_delay = self.configuration.no_delay;
 
+        W::on_start(self.game_time).await;
+
         loop {
             if let Ok((mut socket, addr)) = listener.accept().await {
                 self.counter += 1;
@@ -85,10 +95,11 @@ where
                 let acceptor = tls_acceptor.clone();
 
                 let world = self.world;
+                let game_time = self.game_time;
                 tokio::spawn(async move {
                     if Self::set_up_socket(&mut socket, no_delay).is_ok() {
                         if let Ok((reader, writer)) = Self::try_tls(acceptor, socket).await {
-                            Self::create_socket(addr, world, id, reader, writer).await;
+                            Self::create_socket(addr, world, id, reader, writer, game_time).await;
                         }
                     }
                 });
@@ -104,6 +115,7 @@ where
         id: u64,
         reader: BufReader<ReadHalf<S>>,
         writer: WriteHalf<S>,
+        game_time: &'static AtomicCell<GameTime>,
     ) where
         S: AsyncRead + AsyncWrite,
     {
@@ -112,7 +124,7 @@ where
 
         if let Ok(world_session) = W::WorldSessionimplementer::on_open(socket_tools, world).await {
             let mut world_socket = WorldSocket::new(Arc::clone(&world_session), world);
-            world_socket.handle(rx, reader, writer).await;
+            world_socket.handle(rx, reader, writer, game_time).await;
             W::WorldSessionimplementer::on_close(&world_session, world).await;
         }
     }

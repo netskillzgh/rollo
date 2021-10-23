@@ -2,11 +2,12 @@
 use async_trait::async_trait;
 use rollo::{
     error::Error,
+    game::GameTime,
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
 use std::sync::{
-    atomic::{AtomicI64, AtomicU16, Ordering},
+    atomic::{AtomicU16, Ordering},
     Arc,
 };
 use tokio::time::Duration;
@@ -15,7 +16,6 @@ use tokio::time::Duration;
 async fn test_game_loop() {
     let world = Box::new(MyWorld {
         counter: AtomicU16::new(0),
-        time: AtomicI64::new(0),
     });
     let world = Box::leak(world);
     let mut server = WorldSocketMgr::new(world);
@@ -54,7 +54,6 @@ impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}
 }
 
-#[rollo::world_time]
 struct MyWorld {
     counter: AtomicU16,
 }
@@ -62,8 +61,8 @@ struct MyWorld {
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
 
-    fn update(&'static self, diff: i64) {
-        assert!(self.time() != 0);
+    fn update(&'static self, diff: i64, game_time: GameTime) {
+        assert!(game_time.timestamp != 0);
         let c = self.counter.fetch_add(1, Ordering::Relaxed) + 1;
 
         // First diff is 0

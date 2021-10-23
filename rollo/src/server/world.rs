@@ -1,11 +1,18 @@
+use crossbeam::atomic::AtomicCell;
+
 use super::{dos_protection::DosPolicy, world_session::WorldSession};
+use crate::game::GameTime;
+use async_trait::async_trait;
 
 /// Events for the World
-pub trait World: Sized + Sync + WorldTime + Send {
+#[async_trait]
+pub trait World: Sized + Sync + Send {
     type WorldSessionimplementer: WorldSession<Self> + 'static + Send + Sync;
 
+    async fn on_start(_game_time: &'static AtomicCell<GameTime>) {}
+
     /// Update
-    fn update(&'static self, _diff: i64) {}
+    fn update(&'static self, _diff: i64, _game_time: GameTime) {}
 
     /// Packet limit.
     /// (amount, size, policy)
@@ -23,13 +30,4 @@ pub trait World: Sized + Sync + WorldTime + Send {
         // 5000 bytes maximum per second.
         (50, 5000)
     }
-}
-
-/// Current World Time
-pub trait WorldTime: Sized + Sync {
-    /// Current Time.
-    fn time(&self) -> i64;
-    /// Update the time.
-    /// new_time (new time in milliseconds).
-    fn update_time(&self, new_time: i64);
 }

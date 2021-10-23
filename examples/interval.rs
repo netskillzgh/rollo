@@ -1,3 +1,4 @@
+use rollo::game::GameTime;
 use rollo::server::tokio;
 use rollo::{
     error::Error,
@@ -5,14 +6,12 @@ use rollo::{
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
-use std::sync::atomic::AtomicI64;
 use std::sync::Arc;
 use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
     let world = Box::new(MyWorld {
-        time: AtomicI64::new(0),
         bg: Arc::new(BattlegroundManager {
             timer: IntervalMgr::new(Duration::from_secs(2)),
             name: String::from("Battleground 1"),
@@ -28,14 +27,13 @@ async fn main() {
         .unwrap();
 }
 
-#[rollo::world_time]
 struct MyWorld {
     bg: Arc<BattlegroundManager>,
 }
 
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
-    fn update(&'static self, diff: i64) {
+    fn update(&'static self, diff: i64, _game_time: GameTime) {
         self.bg.timer.update(diff, &*self.bg, Arc::clone(&self.bg));
     }
 }

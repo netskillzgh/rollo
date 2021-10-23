@@ -1,20 +1,17 @@
 use rollo::server::tokio;
 use rollo::server::DosPolicy;
-use rollo::world_time;
+
 use rollo::{
     error::Error,
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
-use std::sync::atomic::AtomicI64;
 use std::sync::Arc;
 use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
-    let world = Box::leak(Box::new(MyWorld {
-        time: AtomicI64::new(0),
-    }));
+    let world = Box::leak(Box::new(MyWorld {}));
 
     let mut socket_manager = WorldSocketMgr::new(world);
     socket_manager
@@ -24,7 +21,6 @@ async fn main() {
         .unwrap();
 }
 
-#[world_time]
 struct MyWorld {}
 
 impl World for MyWorld {

@@ -6,11 +6,7 @@ use rollo::{
     packet::Packet,
     server::{DosPolicy, ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
-use std::{
-    convert::TryInto,
-    sync::{atomic::AtomicI64, Arc},
-    time::Duration,
-};
+use std::{convert::TryInto, sync::Arc, time::Duration};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::TcpStream,
@@ -72,10 +68,7 @@ fn packet(number: u16, cmd: u16) -> BytesMut {
 }
 
 async fn setup(port: u32, sender: UnboundedSender<u16>) -> JoinHandle<()> {
-    let world = Box::new(MyWorld {
-        sender,
-        time: AtomicI64::new(0),
-    });
+    let world = Box::new(MyWorld { sender });
     let world = Box::leak(world);
 
     let mut server = WorldSocketMgr::new(world);
@@ -124,7 +117,6 @@ impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}
 }
 
-#[rollo::world_time]
 struct MyWorld {
     sender: UnboundedSender<u16>,
 }

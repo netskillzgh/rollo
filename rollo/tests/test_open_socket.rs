@@ -5,10 +5,7 @@ use rollo::{
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
-use std::{
-    sync::{atomic::AtomicI64, Arc},
-    time::Duration,
-};
+use std::{sync::Arc, time::Duration};
 use tokio::{io::AsyncReadExt, net::TcpStream, task::JoinHandle, time::sleep};
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
@@ -30,9 +27,7 @@ async fn test_connect_server() {
 }
 
 async fn setup(port: u32) -> JoinHandle<()> {
-    let world = Box::new(MyWorld {
-        time: AtomicI64::new(0),
-    });
+    let world = Box::new(MyWorld {});
     let world = Box::leak(world);
     let mut server = WorldSocketMgr::new(world);
 
@@ -75,7 +70,6 @@ impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_dos_attack(_world_session: &Arc<Self>, _world: &'static MyWorld, _cmd: u16) {}
 }
 
-#[rollo::world_time]
 struct MyWorld {}
 
 impl World for MyWorld {

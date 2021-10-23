@@ -1,9 +1,7 @@
+use super::GameTime;
 use crate::server::world::World;
-use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};
-use std::{
-    sync::atomic::{AtomicI64, Ordering},
-    time::Duration,
-};
+use crossbeam::atomic::AtomicCell;
+use std::time::Duration;
 use tokio::task::yield_now;
 
 cfg_not_precise_time! {
@@ -17,8 +15,8 @@ cfg_precise_time! {
 /// Main Loop with an interval
 #[derive(Debug)]
 pub struct GameLoop {
-    date: AtomicI64,
     interval: i64,
+    game_time: GameTime,
 }
 
 impl GameLoop {
@@ -31,27 +29,27 @@ impl GameLoop {
     /// ```
     pub fn new(interval: Duration) -> Self {
         Self {
-            date: AtomicI64::new(Self::current_timestamp().unwrap()),
             interval: interval.as_millis() as i64,
+            game_time: GameTime::new(),
         }
     }
 
-    fn current_timestamp() -> Result<i64, SystemTimeError> {
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map(|time| time.as_millis() as i64)
-    }
-
     /// Start the Game Loop
-    pub async fn start(&mut self, world: &'static impl World) {
+    pub async fn start(
+        &mut self,
+        world: &'static impl World,
+        game_time: Option<&'static AtomicCell<GameTime>>,
+    ) {
         loop {
-            let last_time = self.date.load(Ordering::Acquire);
-            let current = self.update_game_time();
-            let diff = GameLoop::get_diff(last_time, current);
+            let old = self.game_time.timestamp;
+            self.game_time.update_time();
+            let diff = GameLoop::get_diff(old, self.game_time.timestamp);
 
-            world.update_time(current);
+            if let Some(game_time) = game_time {
+                game_time.store(self.game_time);
+            }
 
-            World::update(world, diff);
+            World::update(world, diff, self.game_time);
 
             self.sleep_until_interval().await;
 
@@ -59,10 +57,10 @@ impl GameLoop {
         }
     }
 
-    fn get_sleep_time(&self) -> i64 {
-        let new_date = Self::current_timestamp();
+    fn get_sleep_time(&mut self) -> i64 {
+        let new_date = GameTime::current_timestamp();
         if let Ok(new_date) = new_date {
-            let execution_diff = new_date - self.date.load(Ordering::Acquire);
+            let execution_diff = new_date - self.game_time.timestamp;
 
             if self.interval > execution_diff {
                 return self.interval - execution_diff;
@@ -80,23 +78,11 @@ impl GameLoop {
         }
     }
 
-    fn update_game_time(&mut self) -> i64 {
-        let current = Self::current_timestamp();
-
-        if let Ok(current) = current {
-            self.date.store(current, Ordering::Release);
-
-            current
-        } else {
-            self.date.load(Ordering::Relaxed)
-        }
-    }
-
     async fn sleep_until_interval(&mut self) {
         let sleep_time = self.get_sleep_time();
         if sleep_time > 0 {
             #[cfg(all(not(test), not(feature = "precise_time")))]
-            sleep(Duration::from_millis(self.get_sleep_time() as u64)).await;
+            sleep(Duration::from_millis(self.get_sleep_time(game_time) as u64)).await;
             #[cfg(any(test, feature = "precise_time"))]
             SpinSleeper::default().sleep(Duration::from_millis(self.get_sleep_time() as u64));
         }
@@ -107,7 +93,7 @@ impl GameLoop {
 mod tests {
     use std::{sync::Arc, time::Instant};
 
-    use crate::server::{world::WorldTime, world_session::WorldSession};
+    use crate::server::world_session::WorldSession;
 
     use super::*;
     use async_trait::async_trait;
@@ -118,15 +104,15 @@ mod tests {
         let mut game_loop = GameLoop::new(Duration::from_millis(75));
         sleep(Duration::from_millis(500)).await;
         assert_eq!(game_loop.get_sleep_time(), 0);
-        game_loop.update_game_time();
+        game_loop.game_time.update_time();
         sleep(Duration::from_millis(10)).await;
         let time = game_loop.get_sleep_time();
         assert!(time > 55 && time < 70);
-        game_loop.update_game_time();
+        game_loop.game_time.update_time();
         sleep(Duration::from_millis(50)).await;
         let time = game_loop.get_sleep_time();
         assert!(time > 10 && time < 30);
-        game_loop.update_game_time();
+        game_loop.game_time.update_time();
         sleep(Duration::from_millis(75)).await;
         assert_eq!(game_loop.get_sleep_time(), 0);
     }
@@ -139,13 +125,13 @@ mod tests {
         let sleep_time = timer.elapsed().as_millis();
         assert!((21..=30).contains(&sleep_time));
 
-        game_loop.update_game_time();
+        game_loop.game_time.update_time();
 
         game_loop.sleep_until_interval().await;
         let sleep_time = timer.elapsed().as_millis();
         assert!((42..=57).contains(&sleep_time));
 
-        game_loop.update_game_time();
+        game_loop.game_time.update_time();
 
         game_loop.sleep_until_interval().await;
         let sleep_time = timer.elapsed().as_millis();
@@ -156,8 +142,9 @@ mod tests {
     async fn test_update_time() {
         let mut game_loop = GameLoop::new(Duration::from_millis(25));
         sleep(Duration::from_millis(10)).await;
-        let old = game_loop.date.load(Ordering::Acquire);
-        let new_date = game_loop.update_game_time();
+        let old = game_loop.game_time.timestamp;
+        game_loop.game_time.update_time();
+        let new_date = game_loop.game_time.timestamp;
         assert!(old != new_date && new_date > old);
     }
 
@@ -165,11 +152,9 @@ mod tests {
     #[tokio::test]
     async fn test_loop() {
         let mut game_loop = GameLoop::new(Duration::from_millis(25));
-        let world = Box::new(TestGameLoop {
-            time: AtomicI64::new(0),
-        });
+        let world = Box::new(TestGameLoop {});
         let world = Box::leak(world);
-        tokio::time::timeout(Duration::from_secs(1), game_loop.start(world))
+        tokio::time::timeout(Duration::from_secs(1), game_loop.start(world, None))
             .await
             .unwrap();
     }
@@ -208,28 +193,13 @@ mod tests {
         }
     }
 
-    struct TestGameLoop {
-        time: AtomicI64,
-    }
+    struct TestGameLoop {}
 
     impl World for TestGameLoop {
         type WorldSessionimplementer = SessionTest;
 
-        fn update(&'static self, _diff: i64) {
+        fn update(&'static self, _diff: i64, _game_time: GameTime) {
             panic!("Test : update");
-        }
-    }
-
-    impl WorldTime for TestGameLoop {
-        fn time(&self) -> i64 {
-            self.time.load(Ordering::Acquire)
-        }
-
-        fn update_time(&self, new_time: i64) {
-            let old = self.time();
-            self.time.store(new_time, Ordering::Release);
-            assert!(new_time > old);
-            assert_ne!(10, new_time);
         }
     }
 }
