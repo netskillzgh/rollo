@@ -30,12 +30,13 @@ struct MyWorld {
 
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
-    fn update(&'static self, _diff: i64, _game_time: GameTime) {
-        //println!("Update at : {}", game_time.timestamp);
+    fn update(&'static self, _diff: i64, game_time: GameTime) {
+        // it's cheaper than an Atomic.
+        println!("Update at : {}", game_time.timestamp);
         println!("Elapsed is {}", self.game_time.load().elapsed.as_millis());
     }
 
-    // Your GameTime reference will be update automatically.
+    // Your GameTime will be update automatically.
     fn game_time(&'static self) -> Option<&'static AtomicCell<GameTime>> {
         Some(&self.game_time)
     }
