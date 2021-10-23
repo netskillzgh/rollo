@@ -13,7 +13,7 @@ pub fn world_time(args: TokenStream, input: TokenStream) -> TokenStream {
     if let syn::Fields::Named(ref mut fields) = item_struct.fields {
         fields.named.push(
             syn::Field::parse_named
-                .parse2(quote! { game_time: crossbeam::atomic::AtomicCell })
+                .parse2(quote! { game_time: crossbeam::atomic::AtomicCell<rollo::game::GameTime> })
                 .unwrap(),
         );
     }
