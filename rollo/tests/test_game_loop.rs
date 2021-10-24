@@ -79,9 +79,7 @@ impl World for MyWorld {
             assert!((93..107).contains(&diff));
         }
 
-        if c == 10 {
-            panic!("test");
-        }
+        assert!(!(c == 10), "test");
     }
 
     fn game_time(&'static self) -> Option<&'static AtomicCell<GameTime>> {
