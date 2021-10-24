@@ -6,8 +6,7 @@ use rollo::{
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
     tokio, AtomicCell,
 };
-use std::sync::Arc;
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 #[tokio::main]
 async fn main() {
