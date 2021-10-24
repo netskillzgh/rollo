@@ -13,7 +13,7 @@ use std::{collections::HashMap, sync::Arc, time::Duration};
 /// let event = Arc::new(event);
 /// // The duration is the delay before the execution.
 /// event_processor.add_event(event, Duration::from_secs(5));
-/// event_processor.update(100);
+/// event_processor.update(1005000);
 ///
 /// struct MyEvent;
 ///
@@ -40,7 +40,7 @@ where
     /// ```rust, no_run
     /// use rollo::game::{EventProcessor, Event};
     ///
-    /// let event_processor = EventProcessor::<MyEvent>::new(10000);
+    /// let event_processor = EventProcessor::<MyEvent>::new(1000000);
     ///
     /// struct MyEvent;
     ///
