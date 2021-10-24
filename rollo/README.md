@@ -16,6 +16,10 @@
     <img src="https://docs.rs/rollo/badge.svg"
     alt="Documentation" />
   </a>
+   <a href="https://github.com/netskillzgh/rollo/actions/workflows/rust.yml">
+    <img src="https://github.com/netskillzgh/rollo/actions/workflows/rust.yml/badge.svg"
+    alt="Github Action" />
+  </a>
    <a href="https://github.com/netskillzgh/rollo#license">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg"
     alt="License" />
