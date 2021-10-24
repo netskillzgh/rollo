@@ -58,6 +58,7 @@ use std::{sync::Arc, time::Duration};
 
 #[tokio::main]
 async fn main() {
+    // lazy_static works as well.
     let world = Box::leak(Box::new(MyWorld {
         game_time: AtomicCell::new(GameTime::new()),
     }));
@@ -80,10 +81,11 @@ impl World for MyWorld {
     fn update(&'static self, _diff: i64, game_time: GameTime) {
         // it's cheaper than an Atomic.
         println!("Update at : {}", game_time.timestamp);
+
         println!("Elapsed is {}", self.game_time.load().elapsed.as_millis());
     }
 
-    // Your GameTime will be updated automatically.
+    // Your GameTime will be updated automatically. (Optional)
     fn game_time(&'static self) -> Option<&'static AtomicCell<GameTime>> {
         Some(&self.game_time)
     }
