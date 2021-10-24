@@ -129,7 +129,12 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
 ### Diagram
 
-![](https://github.com/netskillzgh/rollo/blob/master/doc/simple-description.png)
+<a href="https://raw.githubusercontent.com/netskillzgh/rollo/master/doc/simple-description.png">
+	<img alt="Rust : Multiplayer Framework"
+		src="https://raw.githubusercontent.com/netskillzgh/rollo/master/doc/simple-description.png"
+		width="300"
+		height="300" />
+</a>
 
 ## License
 
