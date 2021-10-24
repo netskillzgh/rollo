@@ -10,6 +10,7 @@ pub struct GameTime {
 }
 
 impl GameTime {
+    /// New GameTime
     /// ```rust, no_run
     /// let game_time = GameTime::new();
     /// ```
