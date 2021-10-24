@@ -1,13 +1,12 @@
-use rollo::game::GameTime;
 use rollo::{
     error::Error,
+    game::GameTime,
     game::{IntervalExecutor, IntervalMgr},
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
     tokio,
 };
-use std::sync::Arc;
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 #[tokio::main]
 async fn main() {

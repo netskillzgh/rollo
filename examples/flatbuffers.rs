@@ -1,14 +1,12 @@
-use rollo::flatbuffers_helpers::flatbuffers;
-use rollo::packet::to_bytes;
-
 use rollo::{
     error::Error,
+    flatbuffers_helpers::flatbuffers,
+    packet::to_bytes,
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
     tokio,
 };
-use std::sync::Arc;
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 #[tokio::main]
 async fn main() {
