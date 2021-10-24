@@ -77,7 +77,7 @@ where
 
         let mut keys_to_remove = HashMap::new();
 
-        for (time, events) in self.events.iter_all() {
+        for (time, events_i) in self.events.iter_all() {
             if *time > m_time {
                 continue;
             }
@@ -85,7 +85,7 @@ where
             keys_to_remove.insert(*time, Vec::new());
 
             if let Some(retain) = keys_to_remove.get_mut(&time.clone()) {
-                for event in events {
+                for event in events_i.iter() {
                     if event.1.to_abort() {
                         event.1.on_abort();
                     } else {
