@@ -12,6 +12,8 @@ pub struct GameTime {
 impl GameTime {
     /// New GameTime
     /// ```rust, no_run
+    /// use rollo::game::GameTime;
+    ///
     /// let game_time = GameTime::new();
     /// ```
     pub fn new() -> Self {

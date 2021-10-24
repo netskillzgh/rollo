@@ -1,6 +1,6 @@
 [package]
 name = "rollo"
-version = "0.6.3"
+version = "0.6.4"
 edition = "2018"
 license = "MIT"
 readme = "README.md"
