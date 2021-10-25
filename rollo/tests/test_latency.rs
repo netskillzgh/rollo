@@ -22,7 +22,7 @@ async fn test_latency() {
     let mut connect = TcpStream::connect("127.0.0.1:6666").await.unwrap();
     connect.set_nodelay(true).unwrap();
 
-    connect.write(&packet().to_vec()).await.unwrap();
+    connect.write_all(&latency_packet().to_vec()).await.unwrap();
 
     let size = connect.read_u32().await.unwrap();
     let cmd = connect.read_u16().await.unwrap();
@@ -32,15 +32,28 @@ async fn test_latency() {
     assert_eq!(size, 16);
     assert_eq!(cmd, 0);
     assert_eq!(date, 1625663748);
-    assert_eq!(latency, 75);
+    assert_eq!(latency, 26);
+
+    connect.write_all(&message_packet()).await.unwrap();
+
+    connect.read_u32().await.unwrap();
 }
 
-fn packet() -> BytesMut {
+fn latency_packet() -> BytesMut {
     let mut bytes = BytesMut::new();
     bytes.put_u32(16);
     bytes.put_u16(0);
     bytes.put_u64(1625663748);
-    bytes.put_i64(75);
+    bytes.put_i64(26);
+
+    bytes
+}
+
+fn message_packet() -> BytesMut {
+    let mut bytes = BytesMut::new();
+    bytes.put_u32(4);
+    bytes.put_u16(6);
+    bytes.put_u32(2021);
 
     bytes
 }
@@ -77,7 +90,12 @@ impl WorldSession<MyWorld> for MyWorldSession {
         &self.socket_tools
     }
 
-    async fn on_message(_world_session: &Arc<Self>, _world: &'static MyWorld, _packet: Packet) {}
+    async fn on_message(world_session: &Arc<Self>, _world: &'static MyWorld, packet: Packet) {
+        assert_eq!(world_session.socket_tools().get_latency(), 26);
+        assert_eq!(packet.cmd, 4);
+        assert!(packet.payload.is_some());
+        world_session.socket_tools.send(packet.cmd, None);
+    }
 
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}
 }

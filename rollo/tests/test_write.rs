@@ -6,6 +6,7 @@ use rollo::{
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
 };
+use std::convert::TryInto;
 use std::{sync::Arc, time::Duration};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
@@ -75,12 +76,16 @@ impl WorldSession<MyWorld> for MyWorldSession {
     }
 
     async fn on_message(world_session: &Arc<Self>, _world: &'static MyWorld, packet: Packet) {
-        assert!(packet.payload.is_some());
+        let packet = packet.freeze();
+        assert_eq!(
+            u32::from_be_bytes(packet.payload.clone().unwrap()[0..4].try_into().unwrap()),
+            2021
+        );
         assert_eq!(6, packet.cmd);
 
         world_session
             .socket_tools
-            .send(packet.cmd, Some(&packet.payload.unwrap()));
+            .send(packet.cmd, Some(&packet.payload.as_ref().unwrap()));
     }
 
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}
