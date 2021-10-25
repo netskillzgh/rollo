@@ -92,7 +92,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
     async fn on_message(world_session: &Arc<Self>, _world: &'static MyWorld, packet: Packet) {
         assert_eq!(world_session.socket_tools().get_latency(), 26);
-        assert_eq!(packet.cmd, 4);
+        assert_eq!(packet.cmd, 6);
         assert!(packet.payload.is_some());
         world_session.socket_tools.send(packet.cmd, None);
     }
