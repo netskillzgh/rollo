@@ -218,6 +218,28 @@ mod tests {
     use std::sync::atomic::{AtomicBool, AtomicI32, Ordering};
 
     #[test]
+    fn test_add_event() {
+        let mut event_processor = EventProcessor::<MyEventTest>::new(0);
+        let event = new();
+        let second_event = new();
+        assert!(event_processor.is_empty());
+        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        assert_eq!(event_processor.events.get_index(0).unwrap().1.len(), 1);
+        assert_eq!(event_processor.events.len(), 1);
+        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        assert_eq!(event_processor.events.get_index(0).unwrap().1.len(), 2);
+        assert_eq!(event_processor.events.len(), 1);
+        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2600));
+        assert_eq!(event_processor.events.len(), 2);
+        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2600));
+        assert_eq!(event_processor.events.get_index(1).unwrap().1.len(), 2);
+        assert_eq!(event_processor.events.len(), 2);
+        event_processor.add_event(Arc::clone(&second_event), Duration::from_millis(2600));
+        assert_eq!(event_processor.events.get_index(1).unwrap().1.len(), 3);
+        assert_eq!(event_processor.events.len(), 2);
+    }
+
+    #[test]
     fn test_calcul_time_success() {
         let mut event_processor = EventProcessor::<MyEventTest>::new(0);
         event_processor.m_time = 10;
@@ -267,6 +289,7 @@ mod tests {
         let event = Arc::new(event);
 
         event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        assert_eq!(event_processor.events.first().unwrap().1.len(), 1);
         event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
 
         assert_eq!(event_processor.events.len(), 1);
