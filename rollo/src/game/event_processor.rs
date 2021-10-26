@@ -165,6 +165,10 @@ where
     fn calcul_target_time(&self, add_time: i64) -> i64 {
         self.m_time + add_time
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.events.is_empty()
+    }
 }
 
 /// Events for an Event.
