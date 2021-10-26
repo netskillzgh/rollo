@@ -1,4 +1,4 @@
-use indexmap::IndexMap;
+use multimap::MultiMap;
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
 /// # Event Processor
@@ -26,7 +26,7 @@ pub struct EventProcessor<T>
 where
     T: Event,
 {
-    events: IndexMap<i64, Vec<(i64, Arc<T>)>>,
+    events: MultiMap<i64, (i64, Arc<T>)>,
     m_time: i64,
 }
 
@@ -51,7 +51,7 @@ where
     pub fn new(time: i64) -> Self {
         Self {
             m_time: time,
-            events: IndexMap::new(),
+            events: MultiMap::new(),
         }
     }
 
@@ -77,7 +77,7 @@ where
 
         let mut keys_to_remove = HashMap::new();
 
-        for (time, events_i) in self.events.iter() {
+        for (time, events_i) in self.events.iter_all() {
             if *time > m_time {
                 continue;
             }
@@ -101,15 +101,11 @@ where
         }
 
         keys_to_remove.iter().for_each(|(key, events)| {
-            self.events.shift_remove(key);
+            self.events.remove(key);
 
             events.iter().for_each(|event| {
                 let new_time = m_time + event.0;
-                if let Some(events) = self.events.get_mut(&new_time) {
-                    events.push(event.clone());
-                } else {
-                    self.events.insert(new_time, vec![event.clone()]);
-                }
+                self.events.insert(new_time, event.clone());
             });
         });
     }
@@ -135,14 +131,9 @@ where
     /// ```
     pub fn add_event(&mut self, event: Arc<T>, add_time: Duration) {
         let target_time = self.calcul_target_time(add_time.as_millis() as i64);
-        if let Some(events) = self.events.get_mut(&target_time) {
-            events.push((add_time.as_millis() as i64, event.clone()));
-        } else {
-            self.events.insert(
-                target_time,
-                vec![(add_time.as_millis() as i64, event.clone())],
-            );
-        }
+
+        self.events
+            .insert(target_time, (add_time.as_millis() as i64, event));
     }
 
     /// ## Remove Events
@@ -164,7 +155,7 @@ where
     pub fn remove_events(&mut self, abort: bool) {
         if abort {
             self.events
-                .iter()
+                .iter_all()
                 .for_each(|events| events.1.iter().for_each(|event| event.1.on_abort()));
         }
 
@@ -303,11 +294,11 @@ mod tests {
 
         assert_eq!(event_processor.events.len(), 2);
 
-        assert_eq!(event_processor.events.get(&2500).unwrap().len(), 3);
+        assert_eq!(event_processor.events.get_vec(&2500).unwrap().len(), 3);
 
         event_processor.update(2600);
         assert_eq!(event_processor.events.len(), 1);
-        assert_eq!(event_processor.events.get(&3000).unwrap().len(), 1);
+        assert_eq!(event_processor.events.get_vec(&3000).unwrap().len(), 1);
 
         event_processor.update(3100);
 
