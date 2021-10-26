@@ -166,6 +166,19 @@ where
         self.m_time + add_time
     }
 
+    /// ### Examples
+    /// ```rust, no_run
+    /// use rollo::game::{EventProcessor, Event};
+    ///
+    /// let event_processor = EventProcessor::<MyEvent>::new(1000000);
+    /// assert!(event_processor.is_empty());
+    ///
+    /// struct MyEvent;
+    ///
+    /// impl Event for MyEvent {
+    ///     fn on_execute(&self, _diff: i64){}
+    /// }
+    /// ```
     pub fn is_empty(&self) -> bool {
         self.events.is_empty()
     }
