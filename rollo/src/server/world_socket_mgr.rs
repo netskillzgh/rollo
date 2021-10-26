@@ -10,15 +10,16 @@ use crate::{
     game::GameTime,
 };
 use crossbeam::atomic::AtomicCell;
+use log::info;
 use std::{net::SocketAddr, path::Path, sync::Arc, time::Duration};
 use tokio::{
-    io::{AsyncRead, AsyncWrite, BufReader, ReadHalf, WriteHalf},
+    io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, BufReader, ReadHalf, WriteHalf},
     net::{TcpListener, TcpStream},
     sync::mpsc::unbounded_channel,
     task,
     time::timeout,
 };
-use tokio_rustls::TlsAcceptor;
+use tokio_rustls::{TlsAcceptor, TlsStream};
 
 /// World Socket Manager
 #[derive(Debug, Clone)]
@@ -96,13 +97,20 @@ where
             if let Ok((mut socket, addr)) = listener.accept().await {
                 self.counter += 1;
                 let id = self.counter;
-                let acceptor = tls_acceptor.clone();
+                let tls_acceptor = tls_acceptor.clone();
 
                 let world = self.world;
                 let game_time = self.game_time;
                 tokio::spawn(async move {
                     if Self::set_up_socket(&mut socket, no_delay).is_ok() {
-                        if let Ok((reader, writer)) = Self::try_tls(acceptor, socket).await {
+                        if let Some(tls_acceptor) = tls_acceptor {
+                            if let Ok((reader, writer)) = Self::try_tls(socket, tls_acceptor).await
+                            {
+                                Self::create_socket(addr, world, id, reader, writer, game_time)
+                                    .await;
+                            }
+                        } else {
+                            let (reader, writer) = Self::split_socket(socket);
                             Self::create_socket(addr, world, id, reader, writer, game_time).await;
                         }
                     }
@@ -144,29 +152,26 @@ where
     const TIMEOUT_TLS: u64 = 15;
 
     async fn try_tls<S>(
-        tls_acceptor: Option<TlsAcceptor>,
         socket: S,
-    ) -> Result<(BufReader<ReadHalf<S>>, WriteHalf<S>)>
+        tls_acceptor: TlsAcceptor,
+    ) -> Result<(BufReader<ReadHalf<TlsStream<S>>>, WriteHalf<TlsStream<S>>)>
     where
-        S: AsyncWrite + AsyncRead + Unpin,
+        S: AsyncRead + AsyncWrite + Unpin,
     {
-        if let Some(acceptor) = tls_acceptor.clone() {
-            let socket = timeout(
-                Duration::from_secs(Self::TIMEOUT_TLS),
-                acceptor.accept(socket),
-            )
-            .await
-            .map_err(|_| Error::TlsAcceptTimeout)?
-            .map_err(|_| Error::TlsAccept)?;
-            Ok(Self::split_socket(socket.into_inner().0))
-        } else {
-            Ok(Self::split_socket(socket))
-        }
+        let socket = timeout(
+            Duration::from_secs(Self::TIMEOUT_TLS),
+            tls_acceptor.accept(socket),
+        )
+        .await
+        .map_err(|_| Error::TlsAcceptTimeout)?
+        .map_err(|_| Error::TlsAccept)?;
+        info!("Connection accepted [TLS]");
+        Ok(Self::split_socket(tokio_rustls::TlsStream::Server(socket)))
     }
 
     fn split_socket<S>(socket: S) -> (BufReader<ReadHalf<S>>, WriteHalf<S>)
     where
-        S: AsyncRead + AsyncWrite + Unpin,
+        S: AsyncReadExt + AsyncWriteExt + Unpin,
     {
         let (reader, writer) = tokio::io::split(socket);
         let reader = BufReader::new(reader);
