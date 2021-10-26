@@ -28,8 +28,10 @@ fn test_event_processor() {
     assert!(!second_event.executed.load(Ordering::SeqCst));
     event_processor.update(14999);
     assert!(!second_event.executed.load(Ordering::SeqCst));
+    assert!(!event_processor.is_empty());
     event_processor.update(15001);
     assert!(second_event.executed.load(Ordering::SeqCst));
+    assert!(event_processor.is_empty());
 }
 
 struct MyEvent {

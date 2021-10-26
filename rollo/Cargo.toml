@@ -32,7 +32,7 @@ server = [
 
 game = [
     "parking_lot",
-    "multimap",
+    "indexmap",
     "crossbeam",
     "rand",
     "server",
@@ -56,7 +56,6 @@ tokio-rustls = { version = "0.23.0", optional = true }
 bytes = { version = "1.0.1", optional = true }
 rustls-pemfile = { version = "0.2.1", optional = true }
 crossbeam = { version = "0.8.1", optional = true }
-multimap = { version = "0.8.3", optional = true }
 parking_lot = { version = "0.11.1", optional = true }
 rand = { version = "0.8.4", optional = true }
 lazy_static = { version = "1.4.0", optional = true }
@@ -65,6 +64,8 @@ crossbeam-queue = { version = "0.3.2", optional = true }
 spin_sleep = { version = "1.0.0", optional = true }
 log = { version = "0.4.0", default-features = false }
 rand_xoshiro ={ version =  "0.6.0", optional = true }
+indexmap = {version = "1.7.0", optional = true }
+
 
 [dev-dependencies]
 spin_sleep = { version = "1.0.0" } 

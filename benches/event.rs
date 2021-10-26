@@ -18,6 +18,21 @@ fn event_iter(c: &mut Criterion) {
     });
 }
 
+fn event_iter_rev(c: &mut Criterion) {
+    c.bench_function("event_iter_rev", |b| {
+        let mut event_processor = EventProcessor::<MyEvent>::new(1000000);
+        for i in (0..1250).rev() {
+            for _ in (0..300).rev() {
+                event_processor.add_event(Arc::new(MyEvent), Duration::from_secs(i));
+            }
+        }
+        b.iter(|| {
+            event_processor.update(black_box(1000));
+        });
+        assert!(!event_processor.is_empty());
+    });
+}
+
 fn event_pass(c: &mut Criterion) {
     c.bench_function("event_pass", |b| {
         let mut event_processor = EventProcessor::<MyEvent>::new(1000000);
@@ -43,5 +58,5 @@ impl Event for MyEvent {
     }
 }
 
-criterion_group!(benches, event_iter, event_pass);
+criterion_group!(benches, event_iter, event_pass, event_iter_rev);
 criterion_main!(benches);
