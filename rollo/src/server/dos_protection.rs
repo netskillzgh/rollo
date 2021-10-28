@@ -129,11 +129,11 @@ mod tests {
     #[test]
     fn test_evaluate_cmd() {
         let mut dos_protection = DosProtection::new();
-        assert!(dos_protection.evaluate_cmd(10, 1, 0)); // 0 - 0(1000) True
-        assert!(!dos_protection.evaluate_cmd(10, 1, 900)); // 1 - 900 (1000) False
-        assert!(dos_protection.evaluate_cmd(10, 1, 1900)); // 1 - 1900 (1000) True
-        assert!(!dos_protection.evaluate_cmd(10, 1, 1901)); // 1 - 1901 (2900) False
-        assert!(dos_protection.evaluate_cmd(10, 1, 2901)); // 1 - 2901 (2901) True
+        assert!(dos_protection.evaluate_cmd(10, 1, 0));
+        assert!(!dos_protection.evaluate_cmd(10, 1, 900));
+        assert!(dos_protection.evaluate_cmd(10, 1, 1900));
+        assert!(!dos_protection.evaluate_cmd(10, 1, 1901));
+        assert!(dos_protection.evaluate_cmd(10, 1, 2901));
         assert!(!dos_protection.evaluate_cmd(10, 1, 2905));
         assert!(dos_protection.evaluate_cmd(10, 1, 10000));
         assert!(!dos_protection.evaluate_cmd(10, 1, 10001));
@@ -145,22 +145,22 @@ mod tests {
 
     #[test]
     fn test_evaluate_global() {
+        // Size
         let mut dos_protection = DosProtection::new();
         assert!(dos_protection.evaluate_global_limit(1000, 100, 200, 4));
         assert!(dos_protection.evaluate_global_limit(1500, 100, 200, 4));
-        // Size
         assert!(!dos_protection.evaluate_global_limit(1999, 100, 200, 4));
 
+        // Amount
         let mut dos_protection = DosProtection::new();
         assert!(dos_protection.evaluate_global_limit(1000, 100, 500, 3));
         assert!(dos_protection.evaluate_global_limit(1500, 100, 500, 3));
         assert!(dos_protection.evaluate_global_limit(1998, 100, 500, 3));
-        // Amount
         assert!(!dos_protection.evaluate_global_limit(1998, 100, 500, 3));
 
+        // Both
         assert!(dos_protection.evaluate_global_limit(2010, 100, 200, 2));
         assert!(dos_protection.evaluate_global_limit(2500, 100, 200, 2));
-        // Both
         assert!(!dos_protection.evaluate_global_limit(2600, 100, 200, 2));
     }
 }

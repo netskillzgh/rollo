@@ -138,10 +138,8 @@ where
         if let Some(events) = self.events.get_mut(&target_time) {
             events.push((add_time.as_millis() as i64, event));
         } else {
-            self.events.insert(
-                target_time,
-                vec![(add_time.as_millis() as i64, event)],
-            );
+            self.events
+                .insert(target_time, vec![(add_time.as_millis() as i64, event)]);
         }
     }
 
@@ -222,19 +220,30 @@ mod tests {
         let mut event_processor = EventProcessor::<MyEventTest>::new(0);
         let event = new();
         let second_event = new();
+
         assert!(event_processor.is_empty());
+
         event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+
         assert_eq!(event_processor.events.get_index(0).unwrap().1.len(), 1);
         assert_eq!(event_processor.events.len(), 1);
+
         event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+
         assert_eq!(event_processor.events.get_index(0).unwrap().1.len(), 2);
         assert_eq!(event_processor.events.len(), 1);
+
         event_processor.add_event(Arc::clone(&event), Duration::from_millis(2600));
+
         assert_eq!(event_processor.events.len(), 2);
+
         event_processor.add_event(Arc::clone(&event), Duration::from_millis(2600));
+
         assert_eq!(event_processor.events.get_index(1).unwrap().1.len(), 2);
         assert_eq!(event_processor.events.len(), 2);
+
         event_processor.add_event(Arc::clone(&second_event), Duration::from_millis(2600));
+
         assert_eq!(event_processor.events.get_index(1).unwrap().1.len(), 3);
         assert_eq!(event_processor.events.len(), 2);
     }
@@ -326,15 +335,11 @@ mod tests {
         let mut event_processor = EventProcessor::new(0);
         let event = new();
 
-        {
-            event_processor.add_event(event, Duration::from_millis(2500));
-        }
+        event_processor.add_event(event, Duration::from_millis(2500));
 
         assert_eq!(event_processor.events.len(), 1);
 
-        {
-            event_processor.remove_events(false);
-        }
+        event_processor.remove_events(false);
 
         assert_eq!(event_processor.events.len(), 0);
     }
@@ -351,15 +356,14 @@ mod tests {
         event_processor.add_event(Arc::clone(&second_event), Duration::from_secs(3));
 
         assert_eq!(event_processor.events.len(), 2);
-
         assert_eq!(event_processor.events.get(&2500).unwrap().len(), 3);
 
         event_processor.update(2600);
+
         assert_eq!(event_processor.events.len(), 1);
         assert_eq!(event_processor.events.get(&3000).unwrap().len(), 1);
 
         event_processor.update(3100);
-
         assert_eq!(event_processor.events.len(), 0);
     }
 

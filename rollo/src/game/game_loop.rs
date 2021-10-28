@@ -102,18 +102,31 @@ mod tests {
     #[tokio::test]
     async fn test_get_sleep_time() {
         let mut game_loop = GameLoop::new(Duration::from_millis(75));
+
         sleep(Duration::from_millis(500)).await;
+
         assert_eq!(game_loop.get_sleep_time(), 0);
+
         game_loop.game_time.update_time();
+
         sleep(Duration::from_millis(10)).await;
+
         let time = game_loop.get_sleep_time();
+
         assert!(time > 55 && time < 70);
+
         game_loop.game_time.update_time();
+
         sleep(Duration::from_millis(50)).await;
+
         let time = game_loop.get_sleep_time();
+
         assert!(time > 10 && time < 30);
+
         game_loop.game_time.update_time();
+
         sleep(Duration::from_millis(75)).await;
+
         assert_eq!(game_loop.get_sleep_time(), 0);
     }
 
@@ -141,10 +154,13 @@ mod tests {
     #[tokio::test]
     async fn test_update_time() {
         let mut game_loop = GameLoop::new(Duration::from_millis(25));
+
         sleep(Duration::from_millis(10)).await;
+
         let old = game_loop.game_time.timestamp;
         game_loop.game_time.update_time();
         let new_date = game_loop.game_time.timestamp;
+
         assert!(old != new_date && new_date > old);
     }
 
