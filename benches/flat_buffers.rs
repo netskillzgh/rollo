@@ -3,9 +3,9 @@ use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rollo::flatbuffers_pool;
 
 fn basic_get(c: &mut Criterion) {
+    flatbuffers_pool!(1000, TEST, get_builder);
+    generate_builders(1);
     c.bench_function("flat_buffers", |b| {
-        flatbuffers_pool!(1000, TEST, get_builder);
-        generate_builders(1);
         b.iter(|| {
             (0..500).into_par_iter().for_each(|_| {
                 get_builder();
