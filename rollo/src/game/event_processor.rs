@@ -136,11 +136,11 @@ where
     pub fn add_event(&mut self, event: Arc<T>, add_time: Duration) {
         let target_time = self.calcul_target_time(add_time.as_millis() as i64);
         if let Some(events) = self.events.get_mut(&target_time) {
-            events.push((add_time.as_millis() as i64, event.clone()));
+            events.push((add_time.as_millis() as i64, event));
         } else {
             self.events.insert(
                 target_time,
-                vec![(add_time.as_millis() as i64, event.clone())],
+                vec![(add_time.as_millis() as i64, event)],
             );
         }
     }
