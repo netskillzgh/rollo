@@ -645,7 +645,7 @@ dependencies = [
 
 [[package]]
 name = "rollo"
-version = "0.6.6"
+version = "0.6.7"
 dependencies = [
  "async-trait",
  "bytes",
