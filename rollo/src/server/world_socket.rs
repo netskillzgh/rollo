@@ -9,8 +9,7 @@ use bytes::Bytes;
 use crossbeam::atomic::AtomicCell;
 use std::convert::TryInto;
 use std::marker::PhantomData;
-use std::sync::atomic::Ordering;
-use std::sync::Arc;
+use std::sync::{atomic::Ordering, Arc};
 use std::time::Duration;
 use tokio::io::AsyncWriteExt;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedSender};
@@ -170,7 +169,7 @@ where
         let size = reader.read_size().await?;
         let cmd = reader.read_cmd().await?;
 
-        let (gloabl_amount_limit, global_size_limit) = self.world.global_limit();
+        let (global_amount_limit, global_size_limit) = self.world.global_limit();
         let (packet_amount_limit, packet_size_limit, policy) = self.world.get_packet_limit(cmd);
 
         if size >= MAX_SIZE || (size as u32) >= packet_size_limit {
@@ -183,7 +182,7 @@ where
             time,
             size as u32,
             global_size_limit,
-            gloabl_amount_limit,
+            global_amount_limit,
         );
 
         if !global_result

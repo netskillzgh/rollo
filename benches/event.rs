@@ -1,7 +1,6 @@
-use std::{sync::Arc, time::Duration};
-
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use rollo::game::{Event, EventProcessor};
+use std::{sync::Arc, time::Duration};
 
 fn event_iter(c: &mut Criterion) {
     c.bench_function("event_iter", |b| {
