@@ -10,7 +10,6 @@ use crate::{
     game::GameTime,
 };
 use crossbeam::atomic::AtomicCell;
-use log::info;
 use std::{net::SocketAddr, path::Path, sync::Arc, time::Duration};
 use tokio::{
     io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, BufReader, ReadHalf, WriteHalf},
@@ -93,6 +92,15 @@ where
 
         W::on_start(self.game_time).await;
 
+        self.listen(listener, tls_acceptor, no_delay).await
+    }
+
+    async fn listen(
+        &mut self,
+        listener: TcpListener,
+        tls_acceptor: Option<TlsAcceptor>,
+        no_delay: bool,
+    ) -> ! {
         loop {
             if let Ok((mut socket, addr)) = listener.accept().await {
                 self.counter += 1;
@@ -165,7 +173,7 @@ where
         .await
         .map_err(|_| Error::TlsAcceptTimeout)?
         .map_err(|_| Error::TlsAccept)?;
-        info!("Connection accepted [TLS]");
+
         Ok(Self::split_socket(tokio_rustls::TlsStream::Server(socket)))
     }
 
