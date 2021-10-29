@@ -31,7 +31,7 @@
 <hr>
 
 - Tcp (support Tls).
-- Packet Manager (command/payload).
+- Packet (command/payload).
 - Game Loop (Update).
 - Event Manager | [example](https://github.com/netskillzgh/rollo/blob/master/examples/event.rs).
 - Interval Manager | [example](https://github.com/netskillzgh/rollo/blob/master/examples/interval.rs).
@@ -131,15 +131,6 @@ impl WorldSession<MyWorld> for MyWorldSession {
 ## Packet
 
 [Payload size(u32); Command(u16); Payload]
-
-### Diagram
-
-<a href="https://raw.githubusercontent.com/netskillzgh/rollo/master/doc/simple-description.png">
-	<img alt="Rust : Multiplayer Framework"
-		src="https://raw.githubusercontent.com/netskillzgh/rollo/master/doc/simple-description.png"
-		width="300"
-		height="300" />
-</a>
 
 ## License
 
