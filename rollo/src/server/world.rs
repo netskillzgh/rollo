@@ -9,7 +9,7 @@ use async_trait::async_trait;
 pub trait World: Sized + Sync + Send {
     type WorldSessionimplementer: WorldSession<Self> + 'static + Send + Sync;
 
-    // Executed when server start.
+    // When server start.
     async fn on_start(_game_time: &'static AtomicCell<GameTime>) {}
 
     // Reference to a GameTime.
