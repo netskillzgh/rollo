@@ -101,7 +101,7 @@ where
         }
 
         keys_to_remove.iter().for_each(|(key, events)| {
-            self.events.shift_remove(key);
+            self.events.remove(key);
 
             events.iter().for_each(|event| {
                 let new_time = m_time + event.0;
