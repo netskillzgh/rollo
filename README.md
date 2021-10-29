@@ -36,7 +36,7 @@
 - Event Manager | [example](https://github.com/netskillzgh/rollo/blob/master/examples/event.rs).
 - Interval Manager | [example](https://github.com/netskillzgh/rollo/blob/master/examples/interval.rs).
 - Dos protection | [example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs).
-- flatbuffers | [example](https://github.com/netskillzgh/rollo/blob/master/examples/flatbuffers.rs)
+- Flatbuffers | [example](https://github.com/netskillzgh/rollo/blob/master/examples/flatbuffers.rs)
 
 ```toml
 [dependencies]
