@@ -1,4 +1,4 @@
-use std::time::{Duration, Instant, SystemTime, SystemTimeError, UNIX_EPOCH};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 /// GameTime
 #[derive(Debug, Clone, Copy)]
@@ -27,18 +27,15 @@ impl GameTime {
     }
 
     pub(crate) fn update_time(&mut self) -> bool {
-        if let Ok(duration) = Self::current_timestamp() {
-            self.system_time = duration;
-            self.timestamp = duration.as_millis() as i64;
-            self.elapsed = self.instant.elapsed();
-            true
-        } else {
-            false
-        }
+        let duration = Self::current_timestamp();
+        self.system_time = duration;
+        self.timestamp = duration.as_millis() as i64;
+        self.elapsed = self.instant.elapsed();
+        true
     }
 
-    pub(crate) fn current_timestamp() -> Result<Duration, SystemTimeError> {
-        SystemTime::now().duration_since(UNIX_EPOCH)
+    pub(crate) fn current_timestamp() -> Duration {
+        SystemTime::now().duration_since(UNIX_EPOCH).unwrap()
     }
 }
 
@@ -67,7 +64,7 @@ mod tests {
     #[test]
     fn test_current_timestamp() {
         let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-        assert!(GameTime::current_timestamp().unwrap() >= timestamp);
+        assert!(GameTime::current_timestamp() >= timestamp);
     }
 
     #[test]

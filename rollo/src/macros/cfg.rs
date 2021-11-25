@@ -57,21 +57,3 @@ macro_rules! cfg_flatbuffers_helpers {
         )*
     }
 }
-
-macro_rules! cfg_not_precise_time {
-    ($($item:item)*) => {
-        $(
-            #[cfg(all(not(test), not(feature = "precise_time")))]
-            $item
-        )*
-    }
-}
-
-macro_rules! cfg_precise_time {
-    ($($item:item)*) => {
-        $(
-            #[cfg(any(test, feature = "precise_time"))]
-            $item
-        )*
-    }
-}

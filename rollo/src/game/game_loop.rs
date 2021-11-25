@@ -1,16 +1,9 @@
 use super::GameTime;
 use crate::server::world::World;
 use crossbeam::atomic::AtomicCell;
+use spin_sleep::SpinSleeper;
 use std::time::Duration;
 use tokio::task::yield_now;
-
-cfg_not_precise_time! {
-    use tokio::time::sleep;
-}
-
-cfg_precise_time! {
-    use spin_sleep::SpinSleeper;
-}
 
 /// Main Loop with an interval
 #[derive(Debug)]
@@ -58,13 +51,12 @@ impl GameLoop {
     }
 
     fn get_sleep_time(&mut self) -> i64 {
-        let new_date = GameTime::current_timestamp().map(|time| time.as_millis() as i64);
-        if let Ok(new_date) = new_date {
-            let execution_diff = new_date - self.game_time.timestamp;
+        let new_date = GameTime::current_timestamp().as_millis() as i64;
 
-            if self.interval > execution_diff {
-                return self.interval - execution_diff;
-            }
+        let execution_diff = new_date - self.game_time.timestamp;
+
+        if self.interval > execution_diff {
+            return self.interval - execution_diff;
         }
 
         0
@@ -81,9 +73,6 @@ impl GameLoop {
     async fn sleep_until_interval(&mut self) {
         let sleep_time = self.get_sleep_time();
         if sleep_time > 0 {
-            #[cfg(all(not(test), not(feature = "precise_time")))]
-            sleep(Duration::from_millis(self.get_sleep_time(game_time) as u64)).await;
-            #[cfg(any(test, feature = "precise_time"))]
             SpinSleeper::default().sleep(Duration::from_millis(self.get_sleep_time() as u64));
         }
     }
