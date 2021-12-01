@@ -31,6 +31,7 @@ impl GameTime {
         self.system_time = duration;
         self.timestamp = duration.as_millis() as i64;
         self.elapsed = self.instant.elapsed();
+
         true
     }
 
