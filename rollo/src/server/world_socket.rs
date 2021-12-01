@@ -78,13 +78,14 @@ where
         mut reader: BufReader<ReadHalf<S>>,
         writer: WriteHalf<S>,
         game_time: &'static AtomicCell<GameTime>,
+        timeout_read: u64,
     ) where
         S: AsyncWrite + AsyncRead,
     {
         let (mut tx_packet, t) = self.dispatch_client_packets();
 
         select! {
-            _ = self.read(&mut reader, &mut tx_packet, game_time) => {}
+            _ = self.read(&mut reader, &mut tx_packet, game_time, timeout_read) => {}
             _ = Self::write(writer, rx) => {}
         }
 
@@ -123,10 +124,14 @@ where
         reader: &'a mut Reader<'_, BufReader<ReadHalf<S>>>,
         tx: &'a mut UnboundedSender<PacketDispatcher>,
         game_time: &'static AtomicCell<GameTime>,
+        timeout_read: u64,
     ) -> Result<()> {
         let result = {
-            if let Ok(result) =
-                timeout(Duration::from_secs(20), self.read_packet(reader, game_time)).await
+            if let Ok(result) = timeout(
+                Duration::from_secs(timeout_read),
+                self.read_packet(reader, game_time),
+            )
+            .await
             {
                 match result {
                     Ok(packet) if packet.cmd == 0 => self.handle_ping(packet),
@@ -148,10 +153,13 @@ where
         buffer: &'a mut BufReader<ReadHalf<S>>,
         tx: &'a mut UnboundedSender<PacketDispatcher>,
         game_time: &'static AtomicCell<GameTime>,
+        timeout_read: u64,
     ) {
         let mut reader = Reader::new(buffer);
         loop {
-            let result = self.process_packet(&mut reader, tx, game_time).await;
+            let result = self
+                .process_packet(&mut reader, tx, game_time, timeout_read)
+                .await;
 
             if result.is_err() {
                 break;

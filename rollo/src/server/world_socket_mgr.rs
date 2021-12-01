@@ -101,6 +101,7 @@ where
         tls_acceptor: Option<TlsAcceptor>,
         no_delay: bool,
     ) -> ! {
+        let timeout_read = self.configuration.timeout;
         loop {
             if let Ok((mut socket, addr)) = listener.accept().await {
                 self.counter += 1;
@@ -114,12 +115,29 @@ where
                         if let Some(tls_acceptor) = tls_acceptor {
                             if let Ok((reader, writer)) = Self::try_tls(socket, tls_acceptor).await
                             {
-                                Self::create_socket(addr, world, id, reader, writer, game_time)
-                                    .await;
+                                Self::create_socket(
+                                    addr,
+                                    world,
+                                    id,
+                                    reader,
+                                    writer,
+                                    game_time,
+                                    timeout_read,
+                                )
+                                .await;
                             }
                         } else {
                             let (reader, writer) = Self::split_socket(socket);
-                            Self::create_socket(addr, world, id, reader, writer, game_time).await;
+                            Self::create_socket(
+                                addr,
+                                world,
+                                id,
+                                reader,
+                                writer,
+                                game_time,
+                                timeout_read,
+                            )
+                            .await;
                         }
                     }
                 });
@@ -136,6 +154,7 @@ where
         reader: BufReader<ReadHalf<S>>,
         writer: WriteHalf<S>,
         game_time: &'static AtomicCell<GameTime>,
+        timeout_read: u64,
     ) where
         S: AsyncRead + AsyncWrite,
     {
@@ -144,7 +163,9 @@ where
 
         if let Ok(world_session) = W::WorldSessionimplementer::on_open(socket_tools, world).await {
             let mut world_socket = WorldSocket::new(Arc::clone(&world_session), world);
-            world_socket.handle(rx, reader, writer, game_time).await;
+            world_socket
+                .handle(rx, reader, writer, game_time, timeout_read)
+                .await;
             W::WorldSessionimplementer::on_close(&world_session, world).await;
         }
     }
@@ -199,20 +220,28 @@ pub enum ListenerSecurity<'a> {
 #[derive(Debug, Clone, Copy)]
 pub struct WorldSocketConfiguration {
     no_delay: bool,
+    pub(crate) timeout: u64,
 }
 
 impl WorldSocketConfiguration {
     ///```rust, no_run
     /// use rollo::server::WorldSocketConfiguration;
-    /// let conf = WorldSocketConfiguration::new(true);
+    /// let conf = WorldSocketConfiguration::with_custom_configuration(true, 20);
     /// ```
-    pub fn new(no_delay: bool) -> Self {
-        Self { no_delay }
+    pub fn with_custom_configuration(no_delay: bool, timeout: u64) -> Self {
+        Self { no_delay, timeout }
+    }
+
+    pub fn new() -> Self {
+        Self::default()
     }
 }
 
 impl Default for WorldSocketConfiguration {
     fn default() -> Self {
-        Self { no_delay: true }
+        Self {
+            no_delay: true,
+            timeout: 20,
+        }
     }
 }
