@@ -220,7 +220,7 @@ pub enum ListenerSecurity<'a> {
 #[derive(Debug, Clone, Copy)]
 pub struct WorldSocketConfiguration {
     no_delay: bool,
-    pub(crate) timeout: u64,
+    timeout: u64,
 }
 
 impl WorldSocketConfiguration {
@@ -233,15 +233,15 @@ impl WorldSocketConfiguration {
     }
 
     pub fn new() -> Self {
-        Self::default()
+        Self {
+            no_delay: true,
+            timeout: 20,
+        }
     }
 }
 
 impl Default for WorldSocketConfiguration {
     fn default() -> Self {
-        Self {
-            no_delay: true,
-            timeout: 20,
-        }
+        Self::new()
     }
 }
