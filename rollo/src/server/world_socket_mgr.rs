@@ -228,11 +228,11 @@ impl WorldSocketConfiguration {
     /// use rollo::server::WorldSocketConfiguration;
     /// let conf = WorldSocketConfiguration::with_custom_configuration(true, 20);
     /// ```
-    pub fn with_custom_configuration(no_delay: bool, timeout: u64) -> Self {
+    pub const fn with_custom_configuration(no_delay: bool, timeout: u64) -> Self {
         Self { no_delay, timeout }
     }
 
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             no_delay: true,
             timeout: 20,
