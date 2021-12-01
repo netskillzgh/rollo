@@ -1,8 +1,7 @@
-use crossbeam::atomic::AtomicCell;
-
 use super::{dos_protection::DosPolicy, world_session::WorldSession};
 use crate::game::GameTime;
 use async_trait::async_trait;
+use crossbeam::atomic::AtomicCell;
 
 /// Events for the World
 #[async_trait]
