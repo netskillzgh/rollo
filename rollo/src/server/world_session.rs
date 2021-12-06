@@ -174,7 +174,9 @@ impl Clone for SocketTools {
     fn clone(&self) -> Self {
         Self {
             latency: AtomicI64::new(self.latency.load(Ordering::Relaxed)),
-            ..self.clone()
+            tx: self.tx.clone(),
+            id: self.id,
+            socket_addr: self.socket_addr,
         }
     }
 }
