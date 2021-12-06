@@ -74,7 +74,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
             let data = builder.finished_data();
 
-            to_bytes(10, Some(data)).map(|bytes| bytes.freeze())
+            to_bytes(10, Some(data)).freeze()
         });
 
         // The message will be sent to the session then reset() will be called.

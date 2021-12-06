@@ -253,11 +253,11 @@ where
                 }
                 #[cfg(feature = "flatbuffers_helpers")]
                 WriterMessage::SendFlatbuffers(f) => {
-                    if let Ok(bytes) = f(&mut builder) {
-                        if writer.write_all(&bytes).await.is_err() {
-                            break;
-                        }
+                    let bytes = f(&mut builder);
+                    if writer.write_all(&bytes).await.is_err() {
+                        break;
                     }
+
                     builder.reset();
                 }
             }
@@ -285,7 +285,7 @@ pub(crate) enum WriterMessage {
     CloseDelayed(Duration),
     Bytes(Bytes),
     #[cfg(feature = "flatbuffers_helpers")]
-    SendFlatbuffers(Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> Result<Bytes> + Send + Sync>),
+    SendFlatbuffers(Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> Bytes + Send + Sync>),
 }
 
 pub(crate) enum PacketDispatcher {

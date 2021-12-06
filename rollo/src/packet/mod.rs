@@ -1,6 +1,5 @@
-use crate::error::Error;
 use bytes::{BufMut, BytesMut};
-use std::{convert::TryFrom, mem, sync::Arc};
+use std::{mem, sync::Arc};
 
 /// Message representation Cmd + Payload
 #[derive(Debug, Clone)]
@@ -36,23 +35,23 @@ const HEADER_SIZE: usize = mem::size_of::<u32>() + mem::size_of::<u16>();
 /// use rollo::packet::to_bytes;
 ///
 /// // Cmd 10 with a payload
-/// let result = to_bytes(10, Some(&[1, 1, 1])).unwrap();
+/// let result = to_bytes(10, Some(&[1, 1, 1]));
 /// // Converts BytesMut into an immutable Bytes.
 /// result.freeze();
 /// // You can now send it to the player.
 /// ```
-pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> Result<BytesMut, Error> {
+pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> BytesMut {
     let payload_size = payload.as_ref().map_or_else(|| 0, |p| p.as_ref().len());
     let mut buffer = BytesMut::with_capacity(HEADER_SIZE + payload_size);
 
-    let size = u32::try_from(payload_size).map_err(|_| Error::NumberConversion)?;
+    let size = payload_size as u32;
     buffer.put_u32(size);
     buffer.put_u16(cmd);
     if let Some(payload) = payload {
         buffer.extend_from_slice(payload.as_ref());
     }
 
-    Ok(buffer)
+    buffer
 }
 
 #[cfg(test)]
@@ -62,7 +61,7 @@ mod tests {
     #[test]
     fn test_to_bytes() {
         let content = [1, 1, 2];
-        let result = to_bytes(1, Some(&content)).unwrap();
+        let result = to_bytes(1, Some(&content));
         assert_eq!(result.len(), 9);
         let size = u32::from_be_bytes(result[..4].try_into().unwrap());
         assert_eq!(size, 3);

@@ -112,10 +112,9 @@ impl WorldSession<MyWorld> for MyWorldSession {
         if packet.cmd == 1 {
             // Create a packet without payload
             let new_packet = to_bytes(10, None);
-            if let Ok(new_packet) = new_packet {
-                // Send it to the player
-                world_session.socket_tools.send_data(new_packet.freeze());
-            }
+            let new_packet = new_packet;
+            // Send it to the player
+            world_session.socket_tools.send_data(new_packet.freeze());
         }
     }
 

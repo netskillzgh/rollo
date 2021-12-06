@@ -65,10 +65,9 @@ impl SocketTools {
     /// ```
     pub fn send(&self, cmd: u16, payload: Option<&[u8]>) {
         if !self.is_closed() {
-            if let Ok(bytes) = to_bytes(cmd, payload) {
-                if self.tx.send(WriterMessage::Bytes(bytes.freeze())).is_err() {
-                    log::error!("Can't send the data to the channel.");
-                }
+            let bytes = to_bytes(cmd, payload);
+            if self.tx.send(WriterMessage::Bytes(bytes.freeze())).is_err() {
+                log::error!("Can't send the data to the channel.");
             }
         }
     }
@@ -80,7 +79,7 @@ impl SocketTools {
     /// use rollo::packet::to_bytes;
     ///
     /// fn on_message(socket: SocketTools) {
-    ///     let bytes = to_bytes(1, None).unwrap().freeze();
+    ///     let bytes = to_bytes(1, None).freeze();
     ///     socket.send_data(bytes);
     /// }
     /// ```
@@ -105,7 +104,7 @@ impl SocketTools {
 
     #[cfg(feature = "flatbuffers_helpers")]
     pub fn send_flatbuffers<
-        F: 'static + Fn(&mut FlatBufferBuilder<'static>) -> Result<Bytes> + Send + Sync,
+        F: 'static + Fn(&mut FlatBufferBuilder<'static>) -> Bytes + Send + Sync,
     >(
         &self,
         f: F,
