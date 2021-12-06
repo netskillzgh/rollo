@@ -1,5 +1,5 @@
 use indexmap::IndexMap;
-use std::{collections::HashMap, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
 /// # Event Processor
 /// ## Usage
@@ -75,7 +75,7 @@ where
         self.m_time = time;
         let m_time = self.m_time;
 
-        let mut keys_to_remove = HashMap::new();
+        let mut keys_to_remove = IndexMap::new();
 
         for (time, events_i) in self.events.iter() {
             if *time > m_time {

@@ -6,6 +6,7 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![cfg_attr(docsrs, allow(unused_attributes))]
 #![doc = include_str!("../README.md")]
+#![forbid(unsafe_code)]
 
 #[macro_use]
 #[doc(hidden)]

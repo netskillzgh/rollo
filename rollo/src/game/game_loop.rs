@@ -6,7 +6,7 @@ use std::time::Duration;
 use tokio::task::yield_now;
 
 /// Main Loop with an interval
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct GameLoop {
     interval: i64,
     game_time: GameTime,
