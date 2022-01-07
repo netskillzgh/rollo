@@ -262,7 +262,9 @@ where
                     builder.reset();
                 }
                 WriterMessage::Flush => {
-                    let _ = writer.flush().await;
+                    if let Err(error) = writer.flush().await {
+                        log::error!("Error when flushing {:?}", error);
+                    }
                 }
             }
 
