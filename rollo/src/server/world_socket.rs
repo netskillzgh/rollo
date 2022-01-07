@@ -99,6 +99,7 @@ where
     fn handle_ping(&self, packet: Packet) -> Result<()> {
         if let Some(content) = packet.payload {
             self.world_session.socket_tools().send(0, Some(&content));
+            self.world_session.socket_tools().flush();
             let latency = parse_ping(content)?;
             self.world_session
                 .socket_tools()

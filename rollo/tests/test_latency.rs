@@ -95,6 +95,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
         assert_eq!(packet.cmd, 6);
         assert!(packet.payload.is_some());
         world_session.socket_tools.send(packet.cmd, None);
+        world_session.socket_tools.flush();
     }
 
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}

@@ -88,6 +88,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
         world_session
             .socket_tools
             .send(packet.cmd, Some(&packet.payload.unwrap()));
+        world_session.socket_tools.flush();
     }
 
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}
