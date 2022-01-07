@@ -11,7 +11,7 @@ use std::convert::TryInto;
 use std::marker::PhantomData;
 use std::sync::{atomic::Ordering, Arc};
 use std::time::Duration;
-use tokio::io::AsyncWriteExt;
+use tokio::io::{AsyncWriteExt, BufWriter};
 use tokio::sync::mpsc::{unbounded_channel, UnboundedSender};
 use tokio::task::{yield_now, JoinHandle};
 use tokio::time::{sleep, timeout};
@@ -231,7 +231,8 @@ where
         Error::DosProtection
     }
 
-    async fn write(mut writer: WriteHalf<S>, mut rx: UnboundedReceiver<WriterMessage>) {
+    async fn write(writer: WriteHalf<S>, mut rx: UnboundedReceiver<WriterMessage>) {
+        let mut writer = BufWriter::new(writer);
         #[cfg(feature = "flatbuffers_helpers")]
         let mut builder = flatbuffers::FlatBufferBuilder::new();
         while let Some(message) = rx.recv().await {
@@ -260,6 +261,9 @@ where
 
                     builder.reset();
                 }
+                WriterMessage::Flush => {
+                    let _ = writer.flush().await;
+                }
             }
 
             yield_now().await;
@@ -282,6 +286,7 @@ fn parse_ping(content: Vec<u8>) -> Result<i64> {
 
 pub(crate) enum WriterMessage {
     Close,
+    Flush,
     CloseDelayed(Duration),
     Bytes(Bytes),
     #[cfg(feature = "flatbuffers_helpers")]

@@ -89,6 +89,12 @@ impl SocketTools {
         }
     }
 
+    pub fn flush(&self) {
+        if !self.is_closed() && self.tx.send(WriterMessage::Flush).is_err() {
+            log::error!("Can't send the data to the channel.");
+        }
+    }
+
     /// get Latency
     /// ## Examples
     /// ```rust, no_run
