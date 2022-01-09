@@ -99,7 +99,6 @@ where
     fn handle_ping(&self, packet: Packet) -> Result<()> {
         if let Some(content) = packet.payload {
             self.world_session.socket_tools().send(0, Some(&content));
-            self.world_session.socket_tools().flush();
             let latency = parse_ping(content)?;
             self.world_session
                 .socket_tools()
@@ -243,7 +242,7 @@ where
                     sleep(duration).await;
                     break;
                 }
-                WriterMessage::Bytes(data) => {
+                WriterMessage::Send(data, flush) => {
                     if data.is_empty() {
                         yield_now().await;
                         continue;
@@ -251,6 +250,12 @@ where
 
                     if writer.write_all(&data).await.is_err() {
                         break;
+                    }
+
+                    if flush {
+                        if let Err(error) = writer.flush().await {
+                            log::error!("Error when flushing {:?}", error);
+                        }
                     }
                 }
                 #[cfg(feature = "flatbuffers_helpers")]
@@ -291,7 +296,7 @@ pub(crate) enum WriterMessage {
     Close,
     Flush,
     CloseDelayed(Duration),
-    Bytes(Bytes),
+    Send(Bytes, bool),
     #[cfg(feature = "flatbuffers_helpers")]
     SendFlatbuffers(Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> Bytes + Send + Sync>),
 }

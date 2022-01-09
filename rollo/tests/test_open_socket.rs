@@ -53,7 +53,6 @@ impl WorldSession<MyWorld> for MyWorldSession {
 
         let age: u16 = 25;
         tools.send(10, Some(&age.to_be_bytes()));
-        tools.flush();
 
         Ok(Arc::new(Self {
             socket_tools: tools,

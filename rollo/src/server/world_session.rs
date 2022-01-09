@@ -66,7 +66,11 @@ impl SocketTools {
     pub fn send(&self, cmd: u16, payload: Option<&[u8]>) {
         if !self.is_closed() {
             let bytes = to_bytes(cmd, payload);
-            if self.tx.send(WriterMessage::Bytes(bytes.freeze())).is_err() {
+            if self
+                .tx
+                .send(WriterMessage::Send(bytes.freeze(), true))
+                .is_err()
+            {
                 log::error!("Can't send the data to the channel.");
             }
         }
@@ -84,7 +88,13 @@ impl SocketTools {
     /// }
     /// ```
     pub fn send_data(&self, bytes: Bytes) {
-        if !self.is_closed() && self.tx.send(WriterMessage::Bytes(bytes)).is_err() {
+        if !self.is_closed() && self.tx.send(WriterMessage::Send(bytes, true)).is_err() {
+            log::error!("Can't send the data to the channel.");
+        }
+    }
+
+    pub fn write_data(&self, bytes: Bytes) {
+        if !self.is_closed() && self.tx.send(WriterMessage::Send(bytes, false)).is_err() {
             log::error!("Can't send the data to the channel.");
         }
     }
