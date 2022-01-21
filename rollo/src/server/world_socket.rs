@@ -12,8 +12,7 @@ use std::marker::PhantomData;
 use std::sync::{atomic::Ordering, Arc};
 use std::time::Duration;
 use tokio::io::{AsyncWriteExt, BufWriter};
-use tokio::sync::mpsc::{unbounded_channel, UnboundedSender};
-use tokio::task::{yield_now, JoinHandle};
+use tokio::task::yield_now;
 use tokio::time::{sleep, timeout};
 use tokio::{
     io::{AsyncRead, AsyncWrite, BufReader, ReadHalf, WriteHalf},
@@ -43,57 +42,22 @@ where
     S: AsyncRead + AsyncWrite,
     W: 'static + Send + Sync + World,
 {
-    async fn dispatch_channel(
-        mut rx: UnboundedReceiver<PacketDispatcher>,
-        world_session: Arc<T>,
-        world: &'static W,
-    ) {
-        while let Some(message) = rx.recv().await {
-            match message {
-                PacketDispatcher::Close => break,
-                PacketDispatcher::Packet(packet) => {
-                    T::on_message(&world_session, world, packet).await
-                }
-            }
-
-            task::yield_now().await;
-        }
-    }
-
-    fn dispatch_client_packets(&self) -> (UnboundedSender<PacketDispatcher>, JoinHandle<()>) {
-        let (tx, rx) = unbounded_channel();
-
-        let world = self.world;
-        let world_session = Arc::clone(&self.world_session);
-        let t = tokio::spawn(async move {
-            Self::dispatch_channel(rx, world_session, world).await;
-        });
-
-        (tx, t)
-    }
-
-    pub(crate) async fn handle(
-        &mut self,
+    pub(crate) async fn handle<'a>(
+        &'a mut self,
         rx: UnboundedReceiver<WriterMessage>,
         mut reader: BufReader<ReadHalf<S>>,
         writer: WriteHalf<S>,
         game_time: &'static AtomicCell<GameTime>,
         timeout_read: u64,
+        world_session: &'a Arc<T>,
+        world: &'static W,
     ) where
         S: AsyncWrite + AsyncRead,
     {
-        let (mut tx_packet, t) = self.dispatch_client_packets();
-
         select! {
-            _ = self.read(&mut reader, &mut tx_packet, game_time, timeout_read) => {}
+            _ = self.read(&mut reader, game_time, timeout_read, world_session, world) => {}
             _ = Self::write(writer, rx) => {}
         }
-
-        if tx_packet.send(PacketDispatcher::Close).is_err() {
-            log::info!("Can't close the channel.");
-        }
-
-        if t.await.is_err() {}
     }
 
     fn handle_ping(&self, packet: Packet) -> Result<()> {
@@ -122,9 +86,10 @@ where
     async fn process_packet<'a>(
         &'a mut self,
         reader: &'a mut Reader<'_, BufReader<ReadHalf<S>>>,
-        tx: &'a mut UnboundedSender<PacketDispatcher>,
         game_time: &'static AtomicCell<GameTime>,
         timeout_read: u64,
+        world_session: &'a Arc<T>,
+        world: &'static W,
     ) -> Result<()> {
         let result = {
             if let Ok(result) = timeout(
@@ -135,9 +100,10 @@ where
             {
                 match result {
                     Ok(packet) if packet.cmd == 0 => self.handle_ping(packet),
-                    Ok(packet) => tx
-                        .send(PacketDispatcher::Packet(packet))
-                        .map_err(|_| Error::Channel),
+                    Ok(packet) => {
+                        T::on_message(world_session, world, packet).await;
+                        Ok(())
+                    }
                     Err(error) => Err(error),
                 }
             } else {
@@ -151,14 +117,15 @@ where
     async fn read<'a>(
         &'a mut self,
         buffer: &'a mut BufReader<ReadHalf<S>>,
-        tx: &'a mut UnboundedSender<PacketDispatcher>,
         game_time: &'static AtomicCell<GameTime>,
         timeout_read: u64,
+        world_session: &'a Arc<T>,
+        world: &'static W,
     ) {
         let mut reader = Reader::new(buffer);
         loop {
             let result = self
-                .process_packet(&mut reader, tx, game_time, timeout_read)
+                .process_packet(&mut reader, game_time, timeout_read, &world_session, world)
                 .await;
 
             if result.is_err() {
@@ -299,11 +266,6 @@ pub(crate) enum WriterMessage {
     Send(Bytes, bool),
     #[cfg(feature = "flatbuffers_helpers")]
     SendFlatbuffers(Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> Bytes + Send + Sync>),
-}
-
-pub(crate) enum PacketDispatcher {
-    Close,
-    Packet(Packet),
 }
 
 #[cfg(test)]
