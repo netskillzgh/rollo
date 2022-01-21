@@ -39,6 +39,8 @@ mod tests {
     #[test]
     fn test_roll() {
         assert!(!roll(0f32).0);
+        // Might be false...
+        assert!(roll(99f32).0);
         assert!(roll(0f32).1 >= 0.0);
         assert!(roll(100f32).0);
         assert!(roll(100f32).1 <= 100.0);
