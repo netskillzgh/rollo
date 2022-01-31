@@ -3,6 +3,7 @@ use crate::error::{Error, Result};
 use crate::packet::{to_bytes, Packet};
 use async_trait::async_trait;
 use bytes::Bytes;
+use crossbeam::atomic::AtomicCell;
 #[cfg(feature = "flatbuffers_helpers")]
 use flatbuffers::FlatBufferBuilder;
 use std::{
@@ -38,6 +39,7 @@ pub struct SocketTools {
     pub(crate) tx: UnboundedSender<WriterMessage>,
     pub id: u64,
     pub(crate) latency: AtomicI64,
+    closed: AtomicCell<bool>,
 }
 
 impl SocketTools {
@@ -51,6 +53,7 @@ impl SocketTools {
             tx,
             id,
             latency: AtomicI64::new(0),
+            closed: AtomicCell::new(false),
         }
     }
 
@@ -146,6 +149,7 @@ impl SocketTools {
     /// }
     /// ```
     pub fn close(&self) -> Result<()> {
+        self.closed.store(true);
         self.tx
             .send(WriterMessage::Close)
             .map_err(|_| Error::Channel)
@@ -181,7 +185,7 @@ impl SocketTools {
     /// }
     /// ```
     pub fn is_closed(&self) -> bool {
-        self.tx.is_closed()
+        self.tx.is_closed() || self.closed.load()
     }
 }
 
@@ -192,6 +196,7 @@ impl Clone for SocketTools {
             tx: self.tx.clone(),
             id: self.id,
             socket_addr: self.socket_addr,
+            closed: AtomicCell::new(self.closed.load()),
         }
     }
 }
