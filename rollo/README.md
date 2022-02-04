@@ -40,7 +40,7 @@
 
 ```toml
 [dependencies]
-rollo = { version = "0.9.0", features = ["full"] }
+rollo = { version = "0.10.0", features = ["full"] }
 ```
 
 ## Example
