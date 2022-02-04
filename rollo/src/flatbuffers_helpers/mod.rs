@@ -1,5 +1,5 @@
-use easy_pool::pool_array_queue::PoolArrayQueue;
 use easy_pool::Clear;
+use easy_pool::PoolArrayQueue;
 pub use flatbuffers;
 pub use flatbuffers::{FlatBufferBuilder, WIPOffset};
 use once_cell::sync::Lazy;

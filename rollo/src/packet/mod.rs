@@ -1,5 +1,6 @@
 use bytes::BufMut;
-use easy_pool::{pool_mutex::PoolMutex, PoolObjectContainer};
+
+use easy_pool::{PoolMutex, PoolObjectContainer};
 use once_cell::sync::Lazy;
 use std::{mem, sync::Arc};
 

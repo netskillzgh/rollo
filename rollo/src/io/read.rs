@@ -1,5 +1,5 @@
 use crate::error::{Error, Result};
-use easy_pool::{pool_mutex::PoolMutex, PoolObjectContainer};
+use easy_pool::{PoolMutex, PoolObjectContainer};
 use once_cell::sync::Lazy;
 use std::{convert::TryFrom, sync::Arc};
 use tokio::io::AsyncReadExt;

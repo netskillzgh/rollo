@@ -241,9 +241,9 @@ dependencies = [
 
 [[package]]
 name = "easy-pool"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "afa3c39dd7c8c9fe0686fc78e839267190e4641822d73b2b60897c0e51791935"
+checksum = "b320c302148198c9617f1a907875e2e9ed9ff0fc048080cc1a2c5da348c99251"
 dependencies = [
  "crossbeam",
  "parking_lot 0.12.0",
@@ -690,7 +690,7 @@ dependencies = [
 
 [[package]]
 name = "rollo"
-version = "0.10.2"
+version = "0.10.3"
 dependencies = [
  "async-trait",
  "byteorder",
