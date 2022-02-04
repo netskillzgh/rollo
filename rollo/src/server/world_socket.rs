@@ -125,7 +125,7 @@ where
         let mut reader = Reader::new(buffer);
         loop {
             let result = self
-                .process_packet(&mut reader, game_time, timeout_read, &world_session, world)
+                .process_packet(&mut reader, game_time, timeout_read, world_session, world)
                 .await;
 
             if result.is_err() {
@@ -246,7 +246,7 @@ where
     }
 }
 
-fn parse_ping(content: &Vec<u8>) -> Result<i64> {
+fn parse_ping(content: &[u8]) -> Result<i64> {
     if content.len() == 16 {
         let middle = content.len() / 2;
         let latency = content[middle..]
