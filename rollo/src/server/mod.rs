@@ -10,6 +10,6 @@ pub use world_session::{SocketTools, WorldSession};
 mod world_socket_mgr;
 pub use world_socket_mgr::{ListenerSecurity, WorldSocketConfiguration, WorldSocketMgr};
 
-mod world_socket;
+pub(crate) mod world_socket;
 
 mod tls;

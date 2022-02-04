@@ -33,6 +33,7 @@ cfg_game! {
 cfg_server! {
     pub mod packet;
     pub mod server;
+    pub use server::world_socket::ContainerBytes;
     pub use async_trait::async_trait;
     pub use bytes;
     pub use tokio;
