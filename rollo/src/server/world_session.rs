@@ -2,8 +2,8 @@ use super::world_socket::WriterMessage;
 use crate::error::{Error, Result};
 use crate::packet::{to_bytes, Packet};
 use async_trait::async_trait;
-use bytes::Bytes;
 use crossbeam::atomic::AtomicCell;
+use easy_pool::PoolObjectContainer;
 #[cfg(feature = "flatbuffers_helpers")]
 use flatbuffers::FlatBufferBuilder;
 use std::{
@@ -71,7 +71,7 @@ impl SocketTools {
             let bytes = to_bytes(cmd, payload);
             if self
                 .tx
-                .send(WriterMessage::Send(bytes.freeze(), true))
+                .send(WriterMessage::Send(Arc::new(bytes), true))
                 .is_err()
             {
                 log::error!("Can't send the data to the channel.");
@@ -84,19 +84,20 @@ impl SocketTools {
     /// ```rust, no_run
     /// use rollo::server::SocketTools;
     /// use rollo::packet::to_bytes;
+    /// use std::sync::Arc;
     ///
     /// fn on_message(socket: SocketTools) {
-    ///     let bytes = to_bytes(1, None).freeze();
-    ///     socket.send_data(bytes);
+    ///     let bytes = to_bytes(1, None);
+    ///     socket.send_data(Arc::new(bytes));
     /// }
     /// ```
-    pub fn send_data(&self, bytes: Bytes) {
+    pub fn send_data(&self, bytes: Arc<PoolObjectContainer<Vec<u8>>>) {
         if !self.is_closed() && self.tx.send(WriterMessage::Send(bytes, true)).is_err() {
             log::error!("Can't send the data to the channel.");
         }
     }
 
-    pub fn write_data(&self, bytes: Bytes) {
+    pub fn write_data(&self, bytes: Arc<PoolObjectContainer<Vec<u8>>>) {
         if !self.is_closed() && self.tx.send(WriterMessage::Send(bytes, false)).is_err() {
             log::error!("Can't send the data to the channel.");
         }
@@ -123,7 +124,7 @@ impl SocketTools {
 
     #[cfg(feature = "flatbuffers_helpers")]
     pub fn send_flatbuffers<
-        F: 'static + Fn(&mut FlatBufferBuilder<'static>) -> Bytes + Send + Sync,
+        F: 'static + Fn(&mut FlatBufferBuilder<'static>) -> PoolObjectContainer<Vec<u8>> + Send + Sync,
     >(
         &self,
         f: F,

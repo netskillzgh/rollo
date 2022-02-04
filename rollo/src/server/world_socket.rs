@@ -5,8 +5,8 @@ use crate::error::{Error, Result};
 use crate::game::GameTime;
 use crate::io::read::{Reader, MAX_SIZE};
 use crate::packet::Packet;
-use bytes::Bytes;
 use crossbeam::atomic::AtomicCell;
+use easy_pool::PoolObjectContainer;
 use std::convert::TryInto;
 use std::marker::PhantomData;
 use std::sync::{atomic::Ordering, Arc};
@@ -263,9 +263,11 @@ pub(crate) enum WriterMessage {
     Close,
     Flush,
     CloseDelayed(Duration),
-    Send(Bytes, bool),
+    Send(Arc<PoolObjectContainer<Vec<u8>>>, bool),
     #[cfg(feature = "flatbuffers_helpers")]
-    SendFlatbuffers(Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> Bytes + Send + Sync>),
+    SendFlatbuffers(
+        Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> PoolObjectContainer<Vec<u8>> + Send + Sync>,
+    ),
 }
 
 #[cfg(test)]

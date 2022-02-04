@@ -1,5 +1,6 @@
-use bytes::{BufMut, BytesMut};
-use easy_pool::PoolObjectContainer;
+use bytes::BufMut;
+use easy_pool::{pool_mutex::PoolMutex, PoolObjectContainer};
+use once_cell::sync::Lazy;
 use std::{mem, sync::Arc};
 
 /// Message representation Cmd + Payload
@@ -37,23 +38,32 @@ const HEADER_SIZE: usize = mem::size_of::<u32>() + mem::size_of::<u16>();
 ///
 /// // Cmd 10 with a payload
 /// let result = to_bytes(10, Some(&[1, 1, 1]));
-/// // Converts BytesMut into an immutable Bytes.
-/// result.freeze();
 /// // You can now send it to the player.
 /// ```
-pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> BytesMut {
+pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> PoolObjectContainer<Vec<u8>> {
     let payload_size = payload.as_ref().map_or_else(|| 0, |p| p.as_ref().len());
-    let mut buffer = BytesMut::with_capacity(HEADER_SIZE + payload_size);
-
     let size = payload_size as u32;
-    buffer.put_u32(size);
-    buffer.put_u16(cmd);
-    if let Some(payload) = payload {
-        buffer.extend_from_slice(payload.as_ref());
+    let target_capacity = HEADER_SIZE + size as usize;
+    let mut vec = POOL_VEC.create();
+    let current_capacity = vec.capacity();
+    if target_capacity > current_capacity {
+        debug_assert!(vec.capacity() < target_capacity);
+        let diff = target_capacity - current_capacity;
+        vec.reserve_exact(diff);
     }
 
-    buffer
+    debug_assert!(vec.capacity() >= target_capacity);
+
+    vec.put_u32(size);
+    vec.put_u16(cmd);
+    if let Some(payload) = payload {
+        vec.extend_from_slice(payload.as_ref());
+    }
+
+    vec
 }
+
+static POOL_VEC: Lazy<Arc<PoolMutex<Vec<u8>>>> = Lazy::new(|| Arc::new(PoolMutex::new()));
 
 #[cfg(test)]
 mod tests {
