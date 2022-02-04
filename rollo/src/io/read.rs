@@ -1,8 +1,11 @@
 use crate::error::{Error, Result};
-use std::convert::TryFrom;
+use easy_pool::{Pool, PoolObjectContainer};
+use once_cell::sync::Lazy;
+use std::{convert::TryFrom, sync::Arc};
 use tokio::io::AsyncReadExt;
 
 pub(crate) const MAX_SIZE: usize = 1024 * 14;
+static POOL_VEC: Lazy<Arc<Pool<Vec<u8>>>> = Lazy::new(|| Arc::new(Pool::new()));
 
 pub(crate) struct Reader<'a, R>
 where
@@ -11,7 +14,7 @@ where
     size: [u8; 4],
     cmd: [u8; 2],
     buffer: &'a mut R,
-    payload: [u8; MAX_SIZE],
+    payload: PoolObjectContainer<Vec<u8>>,
 }
 
 impl<'a, R> Reader<'a, R>
@@ -19,11 +22,15 @@ where
     R: AsyncReadExt + Unpin,
 {
     pub(crate) fn new(buffer: &'a mut R) -> Self {
+        let mut vec = POOL_VEC.create();
+        vec.resize(MAX_SIZE, 0);
+        debug_assert_eq!(vec.len(), MAX_SIZE);
+
         Self {
             size: [0; 4],
             cmd: [0; 2],
             buffer,
-            payload: [0; MAX_SIZE],
+            payload: vec,
         }
     }
 
@@ -51,7 +58,10 @@ where
         Ok(cmd)
     }
 
-    pub(crate) async fn read_payload(&mut self, size: usize) -> Result<Option<Vec<u8>>>
+    pub(crate) async fn read_payload(
+        &mut self,
+        size: usize,
+    ) -> Result<Option<PoolObjectContainer<Vec<u8>>>>
     where
         R: AsyncReadExt + Unpin,
     {
@@ -69,11 +79,15 @@ where
             return Err(Error::PacketSize);
         }
 
-        let payload = Vec::from(&self.payload[0..size]);
+        let mut payload = POOL_VEC_PACKET.create();
+        debug_assert!(payload.is_empty());
+        payload.extend_from_slice(&self.payload[0..size]);
 
         Ok(Some(payload))
     }
 }
+
+static POOL_VEC_PACKET: Lazy<Arc<Pool<Vec<u8>>>> = Lazy::new(|| Arc::new(Pool::new()));
 
 #[cfg(test)]
 mod tests {
@@ -118,7 +132,7 @@ mod tests {
         let mut buffer = Cursor::new(content.clone());
         let mut reader = Reader::new(&mut buffer);
         let result = reader.read_payload(2).await.unwrap();
-        assert_eq!(result.unwrap(), content);
+        assert_eq!(*result.unwrap(), content);
     }
 
     #[tokio::test]
@@ -127,6 +141,6 @@ mod tests {
         let mut buffer = Cursor::new(content.clone());
         let mut reader = Reader::new(&mut buffer);
         let result = reader.read_payload(0).await.unwrap();
-        assert_eq!(result, None);
+        assert!(result.is_none());
     }
 }

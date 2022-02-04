@@ -63,7 +63,7 @@ where
     fn handle_ping(&self, packet: Packet) -> Result<()> {
         if let Some(content) = packet.payload {
             self.world_session.socket_tools().send(0, Some(&content));
-            let latency = parse_ping(content)?;
+            let latency = parse_ping(&*content)?;
             self.world_session
                 .socket_tools()
                 .latency
@@ -246,7 +246,7 @@ where
     }
 }
 
-fn parse_ping(content: Vec<u8>) -> Result<i64> {
+fn parse_ping(content: &Vec<u8>) -> Result<i64> {
     if content.len() == 16 {
         let middle = content.len() / 2;
         let latency = content[middle..]
@@ -282,6 +282,6 @@ mod tests {
         bytes.put_u16(100); // Ping Date
         bytes.put_i64(75); // Latency
 
-        assert_eq!(parse_ping(bytes.to_vec()).unwrap(), 75);
+        assert_eq!(parse_ping(&bytes.to_vec()).unwrap(), 75);
     }
 }

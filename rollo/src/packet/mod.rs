@@ -1,15 +1,16 @@
 use bytes::{BufMut, BytesMut};
+use easy_pool::PoolObjectContainer;
 use std::{mem, sync::Arc};
 
 /// Message representation Cmd + Payload
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Packet {
     pub cmd: u16,
-    pub payload: Option<Vec<u8>>,
+    pub payload: Option<PoolObjectContainer<Vec<u8>>>,
 }
 
 impl Packet {
-    pub(crate) const fn new(cmd: u16, payload: Option<Vec<u8>>) -> Self {
+    pub(crate) const fn new(cmd: u16, payload: Option<PoolObjectContainer<Vec<u8>>>) -> Self {
         Self { cmd, payload }
     }
 
