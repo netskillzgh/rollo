@@ -236,8 +236,9 @@ dependencies = [
 [[package]]
 name = "easy-pool"
 version = "0.1.0"
-source = "git+https://github.com/netskillzgh/easy-pool.git#bd774cc840282926c5c8a1bfa2abb95c67ecaf56"
+source = "git+https://github.com/netskillzgh/easy-pool.git#f4a2372e96042320c37dbbfdaec7ad022d8a58d2"
 dependencies = [
+ "crossbeam",
  "parking_lot 0.12.0",
 ]
 

@@ -12,10 +12,8 @@ use std::{sync::Arc, time::Duration};
 async fn main() {
     let world = Box::leak(Box::new(MyWorld {}));
 
-    // Create the pool.
-    rollo::flatbuffers_pool!(100, BUILDERS, get_builder);
     // Get builder from the pool.
-    let builder = get_builder();
+    let builder = rollo::flatbuffers_helpers::FLAT_BUFFER_BUILDER_GENERATOR.create();
     drop(builder);
     // Builder returned.
 
