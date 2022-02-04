@@ -215,7 +215,7 @@ where
                         continue;
                     }
 
-                    if writer.write_all(&data).await.is_err() {
+                    if writer.write_all(&data.bytes()).await.is_err() {
                         break;
                     }
 
@@ -259,11 +259,32 @@ fn parse_ping(content: &[u8]) -> Result<i64> {
     }
 }
 
+pub enum ContainerBytes {
+    Raw(PoolObjectContainer<Vec<u8>>),
+    Arc(Arc<PoolObjectContainer<Vec<u8>>>),
+}
+
+impl ContainerBytes {
+    pub fn bytes(&self) -> &[u8] {
+        match self {
+            ContainerBytes::Raw(b) => &*b,
+            ContainerBytes::Arc(b) => &*b,
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        match self {
+            ContainerBytes::Raw(b) => b.is_empty(),
+            ContainerBytes::Arc(b) => b.is_empty(),
+        }
+    }
+}
+
 pub(crate) enum WriterMessage {
     Close,
     Flush,
     CloseDelayed(Duration),
-    Send(Arc<PoolObjectContainer<Vec<u8>>>, bool),
+    Send(ContainerBytes, bool),
     #[cfg(feature = "flatbuffers_helpers")]
     SendFlatbuffers(
         Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> PoolObjectContainer<Vec<u8>> + Send + Sync>,

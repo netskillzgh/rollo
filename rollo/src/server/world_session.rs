@@ -1,6 +1,7 @@
 use super::world_socket::WriterMessage;
 use crate::error::{Error, Result};
 use crate::packet::{to_bytes, Packet};
+use crate::server::world_socket::ContainerBytes;
 use async_trait::async_trait;
 use crossbeam::atomic::AtomicCell;
 use easy_pool::PoolObjectContainer;
@@ -71,7 +72,7 @@ impl SocketTools {
             let bytes = to_bytes(cmd, payload);
             if self
                 .tx
-                .send(WriterMessage::Send(Arc::new(bytes), true))
+                .send(WriterMessage::Send(bytes.into(), true))
                 .is_err()
             {
                 log::error!("Can't send the data to the channel.");
@@ -84,20 +85,19 @@ impl SocketTools {
     /// ```rust, no_run
     /// use rollo::server::SocketTools;
     /// use rollo::packet::to_bytes;
-    /// use std::sync::Arc;
     ///
     /// fn on_message(socket: SocketTools) {
     ///     let bytes = to_bytes(1, None);
-    ///     socket.send_data(Arc::new(bytes));
+    ///     socket.send_data(bytes.into());
     /// }
     /// ```
-    pub fn send_data(&self, bytes: Arc<PoolObjectContainer<Vec<u8>>>) {
+    pub fn send_data(&self, bytes: ContainerBytes) {
         if !self.is_closed() && self.tx.send(WriterMessage::Send(bytes, true)).is_err() {
             log::error!("Can't send the data to the channel.");
         }
     }
 
-    pub fn write_data(&self, bytes: Arc<PoolObjectContainer<Vec<u8>>>) {
+    pub fn write_data(&self, bytes: ContainerBytes) {
         if !self.is_closed() && self.tx.send(WriterMessage::Send(bytes, false)).is_err() {
             log::error!("Can't send the data to the channel.");
         }
@@ -208,3 +208,15 @@ impl PartialEq for SocketTools {
     }
 }
 impl Eq for SocketTools {}
+
+impl From<PoolObjectContainer<Vec<u8>>> for ContainerBytes {
+    fn from(b: PoolObjectContainer<Vec<u8>>) -> Self {
+        ContainerBytes::Raw(b)
+    }
+}
+
+impl From<Arc<PoolObjectContainer<Vec<u8>>>> for ContainerBytes {
+    fn from(b: Arc<PoolObjectContainer<Vec<u8>>>) -> Self {
+        ContainerBytes::Arc(b)
+    }
+}
