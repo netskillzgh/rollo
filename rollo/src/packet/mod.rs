@@ -50,7 +50,7 @@ pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> PoolObjectContainer<Vec<u8>
     if target_capacity > current_capacity {
         debug_assert!(vec.capacity() < target_capacity);
         let diff = target_capacity - current_capacity;
-        vec.reserve_exact(diff);
+        vec.reserve(diff);
     }
 
     debug_assert!(vec.capacity() >= target_capacity);
