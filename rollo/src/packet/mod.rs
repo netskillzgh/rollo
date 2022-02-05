@@ -47,6 +47,7 @@ pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> PoolObjectContainer<Vec<u8>
     let size = payload_size as u32;
     let target_capacity = HEADER_SIZE + size as usize;
     let mut vec = POOL_VEC.create();
+    debug_assert!(vec.is_empty());
     vec.reserve(target_capacity);
 
     info!("Current {}, target {}", vec.capacity(), target_capacity);
