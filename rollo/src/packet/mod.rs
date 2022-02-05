@@ -80,4 +80,24 @@ mod tests {
         assert_eq!(op_code, 1);
         assert_eq!(result[6..], content);
     }
+
+    #[test]
+    fn test_to_bytes_loop() {
+        for i in 0..25 {
+            if i % 2 == 0 {
+                let mut x = POOL_VEC.create();
+                x.extend_from_slice(&[0, 5, 5, 25]);
+                drop(x);
+            }
+
+            let content = [1, 1, 2];
+            let result = to_bytes(1, Some(&content));
+            assert_eq!(result.len(), 9);
+            let size = u32::from_be_bytes(result[..4].try_into().unwrap());
+            assert_eq!(size, 3);
+            let op_code = u16::from_be_bytes(result[4..6].try_into().unwrap());
+            assert_eq!(op_code, 1);
+            assert_eq!(result[6..], content);
+        }
+    }
 }

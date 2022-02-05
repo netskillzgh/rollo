@@ -138,6 +138,22 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_parse_content_loop() {
+        for i in 0..25 {
+            let mut content = vec![0x00, 0xc1];
+
+            if i % 2 == 0 {
+                content.push(i);
+            }
+
+            let mut buffer = Cursor::new(content.clone());
+            let mut reader = Reader::new(&mut buffer);
+            let result = reader.read_payload(content.len()).await.unwrap();
+            assert_eq!(*result.unwrap(), content);
+        }
+    }
+
+    #[tokio::test]
     async fn test_parse_content_fail() {
         let content = vec![];
         let mut buffer = Cursor::new(content.clone());
