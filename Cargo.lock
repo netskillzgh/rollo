@@ -241,9 +241,9 @@ dependencies = [
 
 [[package]]
 name = "easy-pool"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b320c302148198c9617f1a907875e2e9ed9ff0fc048080cc1a2c5da348c99251"
+checksum = "528ffb4f83e7077d99e19e7cec0bfe106dc38743865024bcbe1ef2c96034e4b7"
 dependencies = [
  "crossbeam",
  "parking_lot 0.12.0",
