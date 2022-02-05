@@ -82,6 +82,7 @@ where
         let mut payload = POOL_VEC_PACKET.create();
         debug_assert!(payload.is_empty());
         payload.extend_from_slice(&self.payload[0..size]);
+        debug_assert!(payload.len() == size);
 
         Ok(Some(payload))
     }
