@@ -20,10 +20,6 @@ use tokio::{
 };
 use tokio::{select, task};
 
-cfg_flatbuffers_helpers! {
-    use flatbuffers::FlatBufferBuilder;
-}
-
 #[derive(Debug)]
 pub(crate) struct WorldSocket<T, S, W>
 where
@@ -201,7 +197,6 @@ where
     async fn write(writer: WriteHalf<S>, mut rx: UnboundedReceiver<WriterMessage>) {
         let mut writer = BufWriter::new(writer);
         #[cfg(feature = "flatbuffers_helpers")]
-        let mut builder = flatbuffers::FlatBufferBuilder::new();
         while let Some(message) = rx.recv().await {
             match message {
                 WriterMessage::Close => break,
@@ -224,15 +219,6 @@ where
                             log::error!("Error when flushing {:?}", error);
                         }
                     }
-                }
-                #[cfg(feature = "flatbuffers_helpers")]
-                WriterMessage::SendFlatbuffers(f) => {
-                    let bytes = f(&mut builder);
-                    if writer.write_all(&bytes).await.is_err() {
-                        break;
-                    }
-
-                    builder.reset();
                 }
                 WriterMessage::Flush => {
                     if let Err(error) = writer.flush().await {
@@ -285,10 +271,6 @@ pub(crate) enum WriterMessage {
     Flush,
     CloseDelayed(Duration),
     Send(ContainerBytes, bool),
-    #[cfg(feature = "flatbuffers_helpers")]
-    SendFlatbuffers(
-        Box<dyn Fn(&mut FlatBufferBuilder<'static>) -> PoolObjectContainer<Vec<u8>> + Send + Sync>,
-    ),
 }
 
 #[cfg(test)]

@@ -1,7 +1,6 @@
 use rollo::{
     error::Error,
     flatbuffers_helpers::flatbuffers,
-    packet::to_bytes,
     packet::Packet,
     server::{ListenerSecurity, SocketTools, World, WorldSession, WorldSocketMgr},
     tokio,
@@ -50,33 +49,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
         &self.socket_tools
     }
 
-    async fn on_message(world_session: &Arc<Self>, _world: &'static MyWorld, _packet: Packet) {
-        // Why use this function ? It's better to re-uses the FlatBufferBuilder.
-        // From the FlatBufferBuilder documentation :
-        // "Reset the FlatBufferBuilder internal state. Use this method after a call to a finish function in order to re-use a FlatBufferBuilder.
-        // This function is the only way to reset the finished state and start again.
-        // If you are using a FlatBufferBuilder repeatedly, make sure to use this function, because it re-uses the FlatBufferBuilder’s existing heap-allocated Vec<u8> internal buffer.
-        // This offers significant speed improvements as compared to creating a new FlatBufferBuilder for every new object."
-        // https://docs.rs/flatbuffers/2.0.0/flatbuffers/struct.FlatBufferBuilder.html#method.reset
-        let name = "Sword";
-        world_session.socket_tools.send_flatbuffers(move |builder| {
-            let name = builder.create_string(name);
-            let weapon = Weapon::create(
-                builder,
-                &WeaponArgs {
-                    name: Some(name),
-                    damage: 10,
-                },
-            );
-            builder.finish(weapon, None);
-
-            let data = builder.finished_data();
-
-            to_bytes(10, Some(data))
-        });
-
-        // The message will be sent to the session then reset() will be called.
-    }
+    async fn on_message(_world_session: &Arc<Self>, _world: &'static MyWorld, _packet: Packet) {}
 
     async fn on_close(_world_session: &Arc<Self>, _world: &'static MyWorld) {}
 }

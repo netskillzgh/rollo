@@ -5,8 +5,6 @@ use crate::server::world_socket::ContainerBytes;
 use async_trait::async_trait;
 use crossbeam::atomic::AtomicCell;
 use easy_pool::PoolObjectContainer;
-#[cfg(feature = "flatbuffers_helpers")]
-use flatbuffers::FlatBufferBuilder;
 use std::{
     fmt::Debug,
     net::SocketAddr,
@@ -120,22 +118,6 @@ impl SocketTools {
     /// ```
     pub fn get_latency(&self) -> i64 {
         self.latency.load(Ordering::Acquire)
-    }
-
-    #[cfg(feature = "flatbuffers_helpers")]
-    pub fn send_flatbuffers<
-        F: 'static + Fn(&mut FlatBufferBuilder<'static>) -> PoolObjectContainer<Vec<u8>> + Send + Sync,
-    >(
-        &self,
-        f: F,
-    ) {
-        if self
-            .tx
-            .send(WriterMessage::SendFlatbuffers(Box::new(f)))
-            .is_err()
-        {
-            log::error!("Can't send the data to the channel.");
-        }
     }
 
     /// Close the session
