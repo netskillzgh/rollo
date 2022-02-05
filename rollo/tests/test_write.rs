@@ -78,11 +78,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
     async fn on_message(world_session: &Arc<Self>, _world: &'static MyWorld, packet: Packet) {
         let packet = packet.freeze();
         assert_eq!(
-            u32::from_be_bytes(
-                packet.payload.as_deref().unwrap()[0..4]
-                    .try_into()
-                    .unwrap()
-            ),
+            u32::from_be_bytes(packet.payload.as_deref().unwrap()[0..4].try_into().unwrap()),
             2021
         );
         assert_eq!(6, packet.cmd);
