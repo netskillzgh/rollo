@@ -48,10 +48,8 @@ pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> PoolObjectContainer<Vec<u8>
     let target_capacity = HEADER_SIZE + size as usize;
     let mut vec = POOL_VEC.create_with(|| Vec::with_capacity(0));
     debug_assert!(vec.is_empty());
+
     vec.reserve(target_capacity);
-
-    info!("Current {}, target {}", vec.capacity(), target_capacity);
-
     debug_assert!(vec.capacity() >= target_capacity);
 
     vec.put_u32(size);
@@ -59,6 +57,8 @@ pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> PoolObjectContainer<Vec<u8>
     if let Some(payload) = payload {
         vec.extend_from_slice(payload.as_ref());
     }
+
+    debug_assert!(vec.len() == target_capacity);
 
     vec
 }
