@@ -52,12 +52,6 @@ pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> PoolObjectContainer<Vec<u8>
         debug_assert!(vec.capacity() < target_capacity);
         vec.reserve(target_capacity);
     }
-
-    info!(
-        "Vec capacity {} and target capacity {}",
-        vec.capacity(),
-        target_capacity
-    );
     debug_assert!(vec.capacity() >= target_capacity);
 
     vec.put_u32(size);
