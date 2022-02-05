@@ -164,15 +164,7 @@ where
         if let Ok(world_session) = W::WorldSessionimplementer::on_open(socket_tools, world).await {
             let mut world_socket = WorldSocket::new(Arc::clone(&world_session), world);
             world_socket
-                .handle(
-                    rx,
-                    reader,
-                    writer,
-                    game_time,
-                    timeout_read,
-                    &world_session,
-                    world,
-                )
+                .handle(rx, reader, writer, game_time, timeout_read, &world_session)
                 .await;
             W::WorldSessionimplementer::on_close(&world_session, world).await;
         }

@@ -79,7 +79,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
         let packet = packet.freeze();
         assert_eq!(
             u32::from_be_bytes(
-                packet.payload.as_deref().clone().unwrap()[0..4]
+                packet.payload.as_deref().unwrap()[0..4]
                     .try_into()
                     .unwrap()
             ),

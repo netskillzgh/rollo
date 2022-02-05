@@ -46,12 +46,11 @@ where
         game_time: &'static AtomicCell<GameTime>,
         timeout_read: u64,
         world_session: &'a Arc<T>,
-        world: &'static W,
     ) where
         S: AsyncWrite + AsyncRead,
     {
         select! {
-            _ = self.read(&mut reader, game_time, timeout_read, world_session, world) => {}
+            _ = self.read(&mut reader, game_time, timeout_read, world_session, self.world) => {}
             _ = Self::write(writer, rx) => {}
         }
     }
@@ -210,7 +209,7 @@ where
                         continue;
                     }
 
-                    if writer.write_all(&data.bytes()).await.is_err() {
+                    if writer.write_all(data.bytes()).await.is_err() {
                         break;
                     }
 
