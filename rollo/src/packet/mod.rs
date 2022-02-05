@@ -1,6 +1,6 @@
 use bytes::BufMut;
 
-use easy_pool::{PoolMutex, PoolObjectContainer};
+use easy_pool::{PoolObjectContainer, PoolSegQueue};
 use once_cell::sync::Lazy;
 use std::{mem, sync::Arc};
 
@@ -64,7 +64,7 @@ pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> PoolObjectContainer<Vec<u8>
     vec
 }
 
-static POOL_VEC: Lazy<Arc<PoolMutex<Vec<u8>>>> = Lazy::new(|| Arc::new(PoolMutex::new()));
+static POOL_VEC: Lazy<Arc<PoolSegQueue<Vec<u8>>>> = Lazy::new(|| Arc::new(PoolSegQueue::new(4096)));
 
 #[cfg(test)]
 mod tests {

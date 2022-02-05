@@ -1,11 +1,11 @@
 use crate::error::{Error, Result};
-use easy_pool::{PoolMutex, PoolObjectContainer};
+use easy_pool::{PoolObjectContainer, PoolSegQueue};
 use once_cell::sync::Lazy;
 use std::{convert::TryFrom, sync::Arc};
 use tokio::io::AsyncReadExt;
 
 pub(crate) const MAX_SIZE: usize = 1024 * 14;
-static POOL_VEC: Lazy<Arc<PoolMutex<Vec<u8>>>> = Lazy::new(|| Arc::new(PoolMutex::new()));
+static POOL_VEC: Lazy<Arc<PoolSegQueue<Vec<u8>>>> = Lazy::new(|| Arc::new(PoolSegQueue::new(4096)));
 
 pub(crate) struct Reader<'a, R>
 where
@@ -87,7 +87,8 @@ where
     }
 }
 
-static POOL_VEC_PACKET: Lazy<Arc<PoolMutex<Vec<u8>>>> = Lazy::new(|| Arc::new(PoolMutex::new()));
+static POOL_VEC_PACKET: Lazy<Arc<PoolSegQueue<Vec<u8>>>> =
+    Lazy::new(|| Arc::new(PoolSegQueue::new(4096)));
 
 #[cfg(test)]
 mod tests {
