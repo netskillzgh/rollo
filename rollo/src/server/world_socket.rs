@@ -7,7 +7,6 @@ use crate::io::read::{Reader, MAX_SIZE};
 use crate::packet::Packet;
 use crossbeam::atomic::AtomicCell;
 use easy_pool::PoolObjectContainer;
-use log::info;
 use std::convert::TryInto;
 use std::marker::PhantomData;
 use std::sync::{atomic::Ordering, Arc};
@@ -139,8 +138,6 @@ where
     ) -> Result<Packet> {
         let size = reader.read_size().await?;
         let cmd = reader.read_cmd().await?;
-
-        info!("Receive Cmd : {} for size : {}", cmd, size);
 
         let (global_amount_limit, global_size_limit) = self.world.global_limit();
         let (packet_amount_limit, packet_size_limit, policy) = self.world.get_packet_limit(cmd);
