@@ -152,6 +152,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[should_panic]
     async fn test_parse_content_fail() {
         let content = vec![];
         let mut buffer = Cursor::new(content.clone());

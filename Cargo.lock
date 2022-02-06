@@ -265,6 +265,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "fastrand"
+version = "1.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c3fcf0cee53519c866c09b5de1f6c56ff9d647101f81c1964fa632e148896cdf"
+dependencies = [
+ "instant",
+]
+
+[[package]]
 name = "flatbuffers"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -698,6 +707,7 @@ dependencies = [
  "crossbeam",
  "crossbeam-queue",
  "easy-pool",
+ "fastrand",
  "flatbuffers",
  "indexmap",
  "lazy_static",

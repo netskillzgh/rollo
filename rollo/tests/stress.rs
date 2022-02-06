@@ -36,6 +36,7 @@ async fn test_stress() {
         assert_eq!(cmd, 6);
         assert_eq!(payload, i);
         counter += 1;
+        sleep(Duration::from_millis(fastrand::u64(0..1))).await;
     }
 
     assert_eq!(counter, 500);

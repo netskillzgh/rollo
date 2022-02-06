@@ -67,6 +67,7 @@ byteorder = "1.4.3"
 
 [dev-dependencies]
 serial_test = "0.5.1"
+fastrand = "1.7.0"
 
 [package.metadata.docs.rs]
 all-features = true
