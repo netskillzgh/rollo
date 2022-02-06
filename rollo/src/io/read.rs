@@ -65,9 +65,7 @@ where
     where
         R: AsyncReadExt + Unpin,
     {
-        if size == 0 {
-            return Ok(None);
-        }
+        debug_assert!(self.payload.len() == MAX_SIZE);
 
         let size = self
             .buffer
