@@ -2,6 +2,7 @@ use bytes::BufMut;
 
 use easy_pool::{PoolObjectContainer, PoolSegQueue};
 use once_cell::sync::Lazy;
+use rayon::iter::ParallelExtend;
 use std::{mem, sync::Arc};
 
 /// Message representation Cmd + Payload
@@ -55,7 +56,7 @@ pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> PoolObjectContainer<Vec<u8>
     vec.put_u16(cmd);
 
     if let Some(payload) = payload {
-        vec.extend_from_slice(payload.as_ref());
+        vec.par_extend(payload.as_ref());
     }
 
     debug_assert!(vec.len() == target_capacity);
