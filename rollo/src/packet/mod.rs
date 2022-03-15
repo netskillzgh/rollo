@@ -46,7 +46,6 @@ pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> PoolObjectContainer<Vec<u8>
     let size = payload_size as u32;
     let target_capacity = HEADER_SIZE + size as usize;
     let mut vec = POOL_VEC.create();
-    return vec;
     debug_assert!(vec.is_empty());
 
     vec.reserve(target_capacity);
@@ -64,7 +63,7 @@ pub fn to_bytes(cmd: u16, payload: Option<&[u8]>) -> PoolObjectContainer<Vec<u8>
     vec
 }
 
-static POOL_VEC: Lazy<Arc<PoolSegQueue<Vec<u8>>>> = Lazy::new(|| Arc::new(PoolSegQueue::new(1)));
+static POOL_VEC: Lazy<Arc<PoolSegQueue<Vec<u8>>>> = Lazy::new(|| Arc::new(PoolSegQueue::new(4096)));
 
 #[cfg(test)]
 mod tests {
