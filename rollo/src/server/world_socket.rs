@@ -217,14 +217,6 @@ where
                         if let Err(error) = writer.flush().await {
                             log::error!("Error when flushing {:?}", error);
                         }
-
-                        println!(
-                            "Sent at {}",
-                            SystemTime::now()
-                                .duration_since(UNIX_EPOCH)
-                                .unwrap()
-                                .as_millis()
-                        );
                     }
                 }
                 WriterMessage::Flush => {
