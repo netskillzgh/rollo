@@ -10,7 +10,7 @@ use easy_pool::PoolObjectContainer;
 use std::convert::TryInto;
 use std::marker::PhantomData;
 use std::sync::{atomic::Ordering, Arc};
-use std::time::Duration;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tokio::io::{AsyncWriteExt, BufWriter};
 use tokio::task::yield_now;
 use tokio::time::{sleep, timeout};
@@ -217,6 +217,14 @@ where
                         if let Err(error) = writer.flush().await {
                             log::error!("Error when flushing {:?}", error);
                         }
+
+                        println!(
+                            "Sent at {}",
+                            SystemTime::now()
+                                .duration_since(UNIX_EPOCH)
+                                .unwrap()
+                                .as_millis()
+                        );
                     }
                 }
                 WriterMessage::Flush => {
