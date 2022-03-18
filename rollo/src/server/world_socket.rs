@@ -10,7 +10,7 @@ use easy_pool::PoolObjectContainer;
 use std::convert::TryInto;
 use std::marker::PhantomData;
 use std::sync::{atomic::Ordering, Arc};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::Duration;
 use tokio::io::{AsyncWriteExt, BufWriter};
 use tokio::task::yield_now;
 use tokio::time::{sleep, timeout};
