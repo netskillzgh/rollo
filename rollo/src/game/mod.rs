@@ -9,6 +9,3 @@ pub use game_time::GameTime;
 
 mod interval_mgr;
 pub use interval_mgr::{IntervalExecutor, IntervalMgr};
-
-mod rand_rng;
-pub use rand_rng::roll;
