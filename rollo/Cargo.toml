@@ -15,7 +15,8 @@ default = []
 full = [
     "server",
     "game",
-    "macros"
+    "macros",
+    "flatbuffers_helpers"
 ]
 
 macros = []
