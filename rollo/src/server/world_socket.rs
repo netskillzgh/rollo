@@ -171,7 +171,7 @@ where
                     return Err(self.close_dos());
                 }
                 DosPolicy::Log => {
-                    log::info!("Potential dos attack detected for Cmd {}.", cmd);
+                    log::info!("Possible DOS attack detected for command {}.", cmd);
                 }
                 DosPolicy::None => {}
             }
