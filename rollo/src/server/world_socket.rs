@@ -195,7 +195,7 @@ where
 
     async fn write(writer: WriteHalf<S>, mut rx: UnboundedReceiver<WriterMessage>) {
         let mut writer = BufWriter::new(writer);
-        #[cfg(feature = "flatbuffers_helpers")]
+
         while let Some(message) = rx.recv().await {
             match message {
                 WriterMessage::Close => break,
