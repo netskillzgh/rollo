@@ -11,7 +11,7 @@ pub trait World: Sized + Sync + Send {
     // When server start.
     async fn on_start(_game_time: &'static AtomicCell<GameTime>) {}
 
-    // Reference to a GameTime.
+    // GameTime.
     fn game_time(&'static self) -> Option<&'static AtomicCell<GameTime>> {
         None
     }
@@ -28,7 +28,7 @@ pub trait World: Sized + Sync + Send {
         (15, 10 * 1024, DosPolicy::Log)
     }
 
-    /// Limit for all packets per second.
+    /// Global packet limit per second.
     /// (amount of packets, size of packets)
     fn global_limit(&self) -> (u16, u32) {
         // 50 packets maximum per second.
