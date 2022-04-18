@@ -19,7 +19,6 @@ impl CustomFlatBuffersBuilder {
         }
     }
 
-    #[allow(dead_code)]
     pub fn finish<T>(&mut self, root: WIPOffset<T>) -> &[u8] {
         self.builder.finish(root, None);
 
