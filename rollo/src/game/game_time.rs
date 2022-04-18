@@ -65,7 +65,8 @@ mod tests {
     #[test]
     fn test_current_timestamp() {
         let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-        assert!(GameTime::current_timestamp() >= timestamp);
+        let game_time = GameTime::current_timestamp();
+        assert!(game_time >= timestamp && game_time < (timestamp + Duration::from_millis(10)));
     }
 
     #[test]
