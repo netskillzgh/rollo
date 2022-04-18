@@ -12,14 +12,6 @@
 #[doc(hidden)]
 pub(crate) mod macros;
 
-cfg_server! {
-    mod io;
-}
-
-#[doc(hidden)]
-#[cfg(any(feature = "flatbuffers_helpers"))]
-pub extern crate lazy_static;
-
 pub mod error;
 
 cfg_flatbuffers_helpers! {
@@ -38,4 +30,5 @@ cfg_server! {
     pub use bytes;
     pub use tokio;
     pub use crossbeam::atomic::AtomicCell;
+    mod io;
 }
