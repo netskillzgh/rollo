@@ -388,6 +388,8 @@ mod tests {
         event_processor.add_event(second_event.clone(), Duration::from_millis(2500));
         event_processor.add_event(second_event.clone(), Duration::from_secs(3));
 
+        event_processor.update(20);
+
         assert_eq!(event_processor.events.len(), 2);
         assert_eq!(event_processor.events.get(&2500).unwrap().len(), 3);
 
