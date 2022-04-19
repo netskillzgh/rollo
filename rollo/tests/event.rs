@@ -35,6 +35,10 @@ fn test_event_processor() {
     event_processor.update(15001);
     assert!(second_event.executed.load(Ordering::SeqCst));
     assert!(event_processor.is_empty());
+
+    event_processor.add_event(second_event.clone(), Duration::from_secs(15));
+    event_processor.add_event(second_event.clone(), Duration::from_secs(15));
+    assert!(!event_processor.is_empty());
 }
 
 #[derive(Clone)]
