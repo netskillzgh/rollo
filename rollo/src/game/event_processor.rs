@@ -336,12 +336,22 @@ mod tests {
 
         event_processor.add_event(event.clone(), Duration::from_millis(2500));
 
-        assert_eq!(event_processor.events.len(), 1);
+        let event_second = MyEventTest {
+            data: Arc::new(GameData {
+                life: AtomicI32::new(0),
+                to_abort: AtomicBool::new(true),
+                is_deletable: AtomicBool::new(false),
+            }),
+        };
+
+        event_processor.add_event(event_second.clone(), Duration::from_millis(26500));
+
+        assert_eq!(event_processor.events.len(), 2);
 
         event_processor.update(2600);
 
         assert_eq!(event.data.life.load(Ordering::Acquire), 5);
-        assert_eq!(event_processor.events.len(), 0);
+        assert_eq!(event_processor.events.len(), 1);
     }
 
     #[test]
