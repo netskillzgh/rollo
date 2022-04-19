@@ -101,6 +101,7 @@ where
 
         keys_to_remove.into_iter().for_each(|(_, events)| {
             events.into_iter().for_each(|(t, event)| {
+                debug_assert!(!event.is_deletable());
                 let new_time = m_time + t;
                 self.events
                     .entry(new_time)
