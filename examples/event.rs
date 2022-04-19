@@ -20,7 +20,7 @@ static WORLD: Lazy<MyWorld> = Lazy::new(|| {
     world
         .events
         .lock()
-        .add_event(Arc::new(MyEvent), Duration::from_secs(5));
+        .add_event(MyEvent, Duration::from_secs(5));
 
     world
 });

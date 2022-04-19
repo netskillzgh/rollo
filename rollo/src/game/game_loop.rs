@@ -131,13 +131,13 @@ mod tests {
 
         game_loop.sleep_until_interval().await;
         let sleep_time = timer.elapsed().as_millis();
-        assert!((42..=57).contains(&sleep_time));
+        assert!((42..=65).contains(&sleep_time));
 
         game_loop.game_time.update_time();
 
         game_loop.sleep_until_interval().await;
         let sleep_time = timer.elapsed().as_millis();
-        assert!((68..=85).contains(&sleep_time));
+        assert!((68..=95).contains(&sleep_time));
     }
 
     #[tokio::test]
