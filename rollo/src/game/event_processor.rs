@@ -216,6 +216,47 @@ mod tests {
     };
 
     #[test]
+    fn mix_tests() {
+        let mut event_processor = EventProcessor::<MyEventTest>::new(0);
+        let event = new();
+
+        event_processor.add_event(event.clone(), Duration::from_millis(2500));
+        event_processor.add_event(event.clone(), Duration::from_millis(3500));
+        event_processor.add_event(event.clone(), Duration::from_millis(5500));
+        event_processor.add_event(event.clone(), Duration::from_millis(7500));
+
+        assert_eq!(event_processor.events.len(), 4);
+        (0..4).into_iter().for_each(|i| {
+            assert_eq!(event_processor.events[i as usize].len(), 1);
+        });
+
+        event_processor.update(10);
+
+        assert_eq!(event_processor.events.len(), 4);
+        (0..4).into_iter().for_each(|i| {
+            assert_eq!(event_processor.events[i as usize].len(), 1);
+        });
+
+        event_processor.update(2660);
+
+        assert_eq!(event_processor.events.len(), 3);
+        (0..3).into_iter().for_each(|i| {
+            assert_eq!(event_processor.events[i as usize].len(), 1);
+        });
+
+        event_processor.update(3650);
+
+        assert_eq!(event_processor.events.len(), 2);
+        (0..2).into_iter().for_each(|i| {
+            assert_eq!(event_processor.events[i as usize].len(), 1);
+        });
+
+        event_processor.update(365000);
+
+        assert_eq!(event_processor.events.len(), 0);
+    }
+
+    #[test]
     fn test_add_event() {
         let mut event_processor = EventProcessor::<MyEventTest>::new(0);
         let event = new();
