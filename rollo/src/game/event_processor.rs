@@ -1,5 +1,5 @@
 use indexmap::IndexMap;
-use std::{sync::Arc, time::Duration};
+use std::{collections::VecDeque, time::Duration};
 
 /// # Event Processor
 /// ## Usage
@@ -26,7 +26,7 @@ pub struct EventProcessor<T>
 where
     T: Event,
 {
-    events: IndexMap<i64, Vec<(i64, Arc<T>)>>,
+    events: IndexMap<i64, VecDeque<(i64, T)>>,
     m_time: i64,
 }
 
@@ -77,15 +77,9 @@ where
 
         let mut keys_to_remove = IndexMap::new();
 
-        for (time, events_i) in self.events.iter() {
-            if *time > m_time {
-                continue;
-            }
-
-            keys_to_remove.insert(*time, Vec::new());
-
-            if let Some(retain) = keys_to_remove.get_mut(&time.clone()) {
-                for event in events_i.iter() {
+        self.events.retain(|time, events| {
+            if m_time >= *time {
+                while let Some(event) = events.pop_front() {
                     if event.1.to_abort() {
                         event.1.on_abort();
                     } else {
@@ -93,23 +87,27 @@ where
                         event.1.on_execute(diff);
 
                         if !event.1.is_deletable() {
-                            retain.push((event.0, Arc::clone(&event.1)));
+                            keys_to_remove
+                                .entry(*time)
+                                .or_insert(VecDeque::with_capacity(1))
+                                .push_back((event.0, event.1));
                         }
                     }
                 }
+
+                false
+            } else {
+                true
             }
-        }
+        });
 
-        keys_to_remove.iter().for_each(|(key, events)| {
-            self.events.remove(key);
-
-            events.iter().for_each(|event| {
-                let new_time = m_time + event.0;
-                if let Some(events) = self.events.get_mut(&new_time) {
-                    events.push(event.clone());
-                } else {
-                    self.events.insert(new_time, vec![event.clone()]);
-                }
+        keys_to_remove.into_iter().for_each(|(_, events)| {
+            events.into_iter().for_each(|(t, event)| {
+                let new_time = m_time + t;
+                self.events
+                    .entry(new_time)
+                    .or_default()
+                    .push_back((t, event))
             });
         });
     }
@@ -133,13 +131,15 @@ where
     ///     fn on_execute(&self, _diff: i64){}
     /// }
     /// ```
-    pub fn add_event(&mut self, event: Arc<T>, add_time: Duration) {
+    pub fn add_event(&mut self, event: T, add_time: Duration) {
         let target_time = self.calcul_target_time(add_time.as_millis() as i64);
         if let Some(events) = self.events.get_mut(&target_time) {
-            events.push((add_time.as_millis() as i64, event));
+            events.push_back((add_time.as_millis() as i64, event));
         } else {
-            self.events
-                .insert(target_time, vec![(add_time.as_millis() as i64, event)]);
+            self.events.insert(
+                target_time,
+                VecDeque::from([(add_time.as_millis() as i64, event)]),
+            );
         }
     }
 
@@ -196,7 +196,7 @@ pub trait Event {
     /// Execute an event.
     fn on_execute(&self, _diff: i64);
 
-    /// Event lifetime
+    /// Is the event permanent?
     fn is_deletable(&self) -> bool {
         true
     }
@@ -213,7 +213,10 @@ pub trait Event {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::atomic::{AtomicBool, AtomicI32, Ordering};
+    use std::sync::{
+        atomic::{AtomicBool, AtomicI32, Ordering},
+        Arc,
+    };
 
     #[test]
     fn test_add_event() {
@@ -223,26 +226,26 @@ mod tests {
 
         assert!(event_processor.is_empty());
 
-        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        event_processor.add_event(event.clone(), Duration::from_millis(2500));
 
         assert_eq!(event_processor.events.get_index(0).unwrap().1.len(), 1);
         assert_eq!(event_processor.events.len(), 1);
 
-        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        event_processor.add_event(event.clone(), Duration::from_millis(2500));
 
         assert_eq!(event_processor.events.get_index(0).unwrap().1.len(), 2);
         assert_eq!(event_processor.events.len(), 1);
 
-        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2600));
+        event_processor.add_event(event.clone(), Duration::from_millis(2600));
 
         assert_eq!(event_processor.events.len(), 2);
 
-        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2600));
+        event_processor.add_event(event, Duration::from_millis(2600));
 
         assert_eq!(event_processor.events.get_index(1).unwrap().1.len(), 2);
         assert_eq!(event_processor.events.len(), 2);
 
-        event_processor.add_event(Arc::clone(&second_event), Duration::from_millis(2600));
+        event_processor.add_event(second_event, Duration::from_millis(2600));
 
         assert_eq!(event_processor.events.get_index(1).unwrap().1.len(), 3);
         assert_eq!(event_processor.events.len(), 2);
@@ -262,13 +265,13 @@ mod tests {
         let event = new();
         let second_event = new();
 
-        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
-        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
-        event_processor.add_event(Arc::clone(&second_event), Duration::from_millis(2500));
-        event_processor.add_event(Arc::clone(&second_event), Duration::from_secs(3));
+        event_processor.add_event(event.clone(), Duration::from_millis(2500));
+        event_processor.add_event(event.clone(), Duration::from_millis(2500));
+        event_processor.add_event(second_event.clone(), Duration::from_millis(2500));
+        event_processor.add_event(second_event.clone(), Duration::from_secs(3));
 
-        assert_eq!(event.life.load(Ordering::Acquire), 0);
-        assert_eq!(second_event.life.load(Ordering::Acquire), 0);
+        assert_eq!(event.data.life.load(Ordering::Acquire), 0);
+        assert_eq!(second_event.data.life.load(Ordering::Acquire), 0);
         assert_eq!(event_processor.events.get_index(0).unwrap().1.len(), 3);
         assert_eq!(event_processor.events.get_index(1).unwrap().1.len(), 1);
 
@@ -277,56 +280,71 @@ mod tests {
         assert_eq!(event_processor.events.get_index(0).unwrap().1.len(), 1);
         assert_eq!(event_processor.events.len(), 1);
 
-        assert_eq!(event.life.load(Ordering::Acquire), 20);
-        assert_eq!(second_event.life.load(Ordering::Acquire), 10);
+        assert_eq!(event.data.life.load(Ordering::Acquire), 20);
+        assert_eq!(second_event.data.life.load(Ordering::Acquire), 10);
 
         event_processor.update(3600);
 
         assert_eq!(event_processor.events.len(), 0);
-        assert_eq!(20, event.life.load(Ordering::Acquire));
-        assert_eq!(20, second_event.life.load(Ordering::Acquire));
+        assert_eq!(20, event.data.life.load(Ordering::Acquire));
+        assert_eq!(20, second_event.data.life.load(Ordering::Acquire));
     }
 
     #[test]
     fn test_not_deletable() {
         let mut event_processor = EventProcessor::new(0);
         let event = MyEventTest {
-            life: AtomicI32::new(0),
-            to_abort: AtomicBool::new(false),
-            is_deletable: AtomicBool::new(false),
+            data: Arc::new(GameData {
+                life: AtomicI32::new(0),
+                to_abort: AtomicBool::new(false),
+                is_deletable: AtomicBool::new(false),
+            }),
         };
-        let event = Arc::new(event);
 
-        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        event_processor.add_event(event.clone(), Duration::from_millis(2500));
         assert_eq!(event_processor.events.first().unwrap().1.len(), 1);
-        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        event_processor.add_event(event.clone(), Duration::from_millis(2500));
 
         assert_eq!(event_processor.events.len(), 1);
         assert_eq!(event_processor.events.first().unwrap().1.len(), 2);
 
         event_processor.update(2600);
 
+        assert_eq!(event.data.life.load(Ordering::Acquire), 20);
         assert_eq!(event_processor.events.len(), 1);
         assert_eq!(event_processor.events.first().unwrap().1.len(), 2);
+
+        event_processor.update(5500);
+
+        assert_eq!(event.data.life.load(Ordering::Acquire), 40);
+        assert_eq!(event_processor.events.len(), 1);
+        assert_eq!(event_processor.events.first().unwrap().1.len(), 2);
+
+        event.data.is_deletable.store(true, Ordering::Release);
+        event_processor.update(8500);
+
+        assert_eq!(event.data.life.load(Ordering::Acquire), 60);
+        assert_eq!(event_processor.events.len(), 0);
     }
 
     #[test]
     fn test_abort() {
         let mut event_processor = EventProcessor::new(0);
         let event = MyEventTest {
-            life: AtomicI32::new(0),
-            to_abort: AtomicBool::new(true),
-            is_deletable: AtomicBool::new(false),
+            data: Arc::new(GameData {
+                life: AtomicI32::new(0),
+                to_abort: AtomicBool::new(true),
+                is_deletable: AtomicBool::new(false),
+            }),
         };
-        let event = Arc::new(event);
 
-        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
+        event_processor.add_event(event.clone(), Duration::from_millis(2500));
 
         assert_eq!(event_processor.events.len(), 1);
 
         event_processor.update(2600);
 
-        assert_eq!(event.life.load(Ordering::Acquire), 5);
+        assert_eq!(event.data.life.load(Ordering::Acquire), 5);
         assert_eq!(event_processor.events.len(), 0);
     }
 
@@ -350,10 +368,10 @@ mod tests {
         let event = new();
         let second_event = new();
 
-        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
-        event_processor.add_event(Arc::clone(&event), Duration::from_millis(2500));
-        event_processor.add_event(Arc::clone(&second_event), Duration::from_millis(2500));
-        event_processor.add_event(Arc::clone(&second_event), Duration::from_secs(3));
+        event_processor.add_event(event.clone(), Duration::from_millis(2500));
+        event_processor.add_event(event.clone(), Duration::from_millis(2500));
+        event_processor.add_event(second_event.clone(), Duration::from_millis(2500));
+        event_processor.add_event(second_event.clone(), Duration::from_secs(3));
 
         assert_eq!(event_processor.events.len(), 2);
         assert_eq!(event_processor.events.get(&2500).unwrap().len(), 3);
@@ -367,35 +385,42 @@ mod tests {
         assert_eq!(event_processor.events.len(), 0);
     }
 
-    struct MyEventTest {
+    struct GameData {
         life: AtomicI32,
         to_abort: AtomicBool,
         is_deletable: AtomicBool,
     }
 
-    fn new() -> Arc<MyEventTest> {
-        Arc::new(MyEventTest {
-            life: AtomicI32::new(0),
-            to_abort: AtomicBool::new(false),
-            is_deletable: AtomicBool::new(true),
-        })
+    #[derive(Clone)]
+    struct MyEventTest {
+        data: Arc<GameData>,
+    }
+
+    fn new() -> MyEventTest {
+        MyEventTest {
+            data: Arc::new(GameData {
+                life: AtomicI32::new(0),
+                to_abort: AtomicBool::new(false),
+                is_deletable: AtomicBool::new(true),
+            }),
+        }
     }
 
     impl Event for MyEventTest {
         fn to_abort(&self) -> bool {
-            self.to_abort.load(Ordering::Acquire)
+            self.data.to_abort.load(Ordering::Acquire)
         }
 
         fn on_execute(&self, _diff: i64) {
-            self.life.fetch_add(10, Ordering::SeqCst);
+            self.data.life.fetch_add(10, Ordering::SeqCst);
         }
 
         fn on_abort(&self) {
-            self.life.store(5, Ordering::Release);
+            self.data.life.store(5, Ordering::Release);
         }
 
         fn is_deletable(&self) -> bool {
-            self.is_deletable.load(Ordering::Acquire)
+            self.data.is_deletable.load(Ordering::Acquire)
         }
     }
 }

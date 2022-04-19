@@ -9,14 +9,14 @@ use tokio::time::Duration;
 #[test]
 fn test_event_processor() {
     let mut event_processor = EventProcessor::<MyEvent>::new(0);
-    let first_event = Arc::new(MyEvent {
-        executed: AtomicBool::new(false),
-    });
-    event_processor.add_event(Arc::clone(&first_event), Duration::from_secs(10));
-    let second_event = Arc::new(MyEvent {
-        executed: AtomicBool::new(false),
-    });
-    event_processor.add_event(Arc::clone(&second_event), Duration::from_secs(15));
+    let first_event = MyEvent {
+        executed: Arc::new(AtomicBool::new(false)),
+    };
+    event_processor.add_event(first_event.clone(), Duration::from_secs(10));
+    let second_event = MyEvent {
+        executed: Arc::new(AtomicBool::new(false)),
+    };
+    event_processor.add_event(second_event.clone(), Duration::from_secs(15));
 
     // First Event
     event_processor.update(9000);
@@ -37,8 +37,9 @@ fn test_event_processor() {
     assert!(event_processor.is_empty());
 }
 
+#[derive(Clone)]
 struct MyEvent {
-    executed: AtomicBool,
+    executed: Arc<AtomicBool>,
 }
 
 impl Event for MyEvent {
