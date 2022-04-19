@@ -266,6 +266,8 @@ mod tests {
         event_processor.add_event(second_event.clone(), Duration::from_millis(2500));
         event_processor.add_event(second_event.clone(), Duration::from_secs(3));
 
+        event_processor.update(1);
+
         assert_eq!(event.data.life.load(Ordering::Acquire), 0);
         assert_eq!(second_event.data.life.load(Ordering::Acquire), 0);
         assert_eq!(event_processor.events.get_index(0).unwrap().1.len(), 3);
