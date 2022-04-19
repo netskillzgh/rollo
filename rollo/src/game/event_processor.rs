@@ -5,12 +5,10 @@ use std::{collections::VecDeque, time::Duration};
 /// ## Usage
 /// ```rust, no_run
 /// use rollo::game::{EventProcessor, Event};
-/// use std::sync::Arc;
 /// use std::time::Duration;
 ///
 /// let mut event_processor = EventProcessor::<MyEvent>::new(1000000);
 /// let event = MyEvent;
-/// let event = Arc::new(event);
 /// // The duration is the delay before the execution.
 /// event_processor.add_event(event, Duration::from_secs(5));
 /// event_processor.update(1005000);
@@ -116,12 +114,10 @@ where
     /// ### Examples
     /// ```rust, no_run
     /// use rollo::game::{EventProcessor, Event};
-    /// use std::sync::Arc;
     /// use std::time::Duration;
     ///
     /// let mut event_processor = EventProcessor::<MyEvent>::new(1000000);
     /// let event = MyEvent;
-    /// let event = Arc::new(event);
     /// // The duration is the delay before the execution.
     /// event_processor.add_event(event, Duration::from_secs(5));
     ///

@@ -1,6 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use rollo::game::{Event, EventProcessor};
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
 
 fn event_iter(c: &mut Criterion) {
     let mut event_processor = EventProcessor::<MyEvent>::new(1000000);
