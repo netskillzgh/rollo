@@ -367,6 +367,7 @@ mod tests {
         let mut event_processor = EventProcessor::new(0);
         let event = new();
 
+        event_processor.add_event(event.clone(), Duration::from_millis(2500));
         event_processor.add_event(event, Duration::from_millis(2500));
 
         assert_eq!(event_processor.events.len(), 1);
