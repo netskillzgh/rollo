@@ -279,6 +279,8 @@ mod tests {
         assert_eq!(event_processor.events.get_index(0).unwrap().1.len(), 1);
         assert_eq!(event_processor.events.len(), 1);
 
+        event_processor.update(2);
+
         assert_eq!(event.data.life.load(Ordering::Acquire), 20);
         assert_eq!(second_event.data.life.load(Ordering::Acquire), 10);
 
