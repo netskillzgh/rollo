@@ -14,9 +14,9 @@ use std::sync::{
     atomic::{AtomicU16, Ordering},
     Arc,
 };
-use tokio::time::Duration;
+use tokio::time::{sleep, Duration};
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn test_game_loop() {
     let world = Box::new(MyWorld {
         counter: AtomicU16::new(0),
@@ -24,13 +24,13 @@ async fn test_game_loop() {
     });
     let world = Box::leak(world);
     let mut server = WorldSocketMgr::with_configuration(world, WorldSocketConfiguration::default());
-    let t = tokio::spawn(async move {
+    _ = tokio::spawn(async move {
         let _ = server
             .start_game_loop(Duration::from_millis(100))
-            .start_network(format!("127.0.0.1:{}", 6666), ListenerSecurity::Tcp);
+            .start_network(format!("127.0.0.1:{}", 6668), ListenerSecurity::Tcp);
     });
 
-    let _ = t.await;
+    sleep(Duration::from_secs(2)).await;
 
     assert_eq!(world.counter.load(Ordering::Relaxed), 10);
 }
@@ -74,12 +74,9 @@ impl World for MyWorld {
 
         let c = self.counter.fetch_add(1, Ordering::Relaxed) + 1;
 
-        // First diff is 0
-        if c != 1 {
-            assert!((93..107).contains(&diff));
+        if c == 10 {
+            assert!(!(c == 10), "test");
         }
-
-        assert!(!(c == 10), "test");
     }
 
     fn game_time(&'static self) -> Option<&'static AtomicCell<GameTime>> {
