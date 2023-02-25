@@ -67,7 +67,7 @@ struct MyWorld {
 impl World for MyWorld {
     type WorldSessionimplementer = MyWorldSession;
 
-    fn update(&'static self, diff: i64, game_time: GameTime) {
+    fn update(&'static self, _diff: i64, game_time: GameTime) {
         assert_eq!(game_time.timestamp, self.game_time.load().timestamp);
         assert_eq!(game_time.elapsed, self.game_time.load().elapsed);
         assert_eq!(game_time.system_time, self.game_time.load().system_time);
