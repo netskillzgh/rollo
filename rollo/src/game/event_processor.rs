@@ -444,6 +444,28 @@ mod tests {
         assert_eq!(event_processor.events.len(), 0);
     }
 
+    #[test]
+    fn test_new() {
+        let event_processor = EventProcessor::<MyEvent>::new(1000000);
+        assert!(event_processor.is_empty());
+    }
+
+    #[test]
+    fn test_update() {
+        let mut event_processor = EventProcessor::<MyEvent>::new(1000000);
+        let event = MyEvent;
+        event_processor.add_event(event, Duration::from_secs(5));
+        event_processor.update(1005000);
+        assert!(event_processor.is_empty());
+    }
+
+    struct MyEvent;
+
+    impl Event for MyEvent {
+        fn on_execute(&self, _diff: i64) {}
+        fn on_abort(&self) {}
+    }
+
     struct GameData {
         life: AtomicI32,
         to_abort: AtomicBool,
