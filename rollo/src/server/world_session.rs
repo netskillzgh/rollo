@@ -16,32 +16,49 @@ use std::{
 };
 use tokio::sync::mpsc::UnboundedSender;
 
-/// Events for a WorldSession
+/// A trait for defining events for a WorldSession.
 #[async_trait]
 pub trait WorldSession<T: Send + Sync>
 where
     Self: Sync + Send,
 {
-    /// On Connection Open
+    /// Called when the connection is opened.
     async fn on_open(socket_tools: SocketTools, world: &'static T) -> Result<Arc<Self>>;
+
+    /// Returns a reference to the SocketTools object.
     fn socket_tools(&self) -> &SocketTools;
+
+    /// Called when a message is received.
     async fn on_message(world_session: &Arc<Self>, world: &'static T, packet: Packet);
-    /// On Connection Close
+
+    /// Called when the connection is closed.
     async fn on_close(world_session: &Arc<Self>, world: &'static T);
+
+    /// Called when a Denial of Service (DoS) attack is detected.
     async fn on_dos_attack(_world_session: &Arc<Self>, _world: &'static T, _cmd: u16) {}
 }
 
-/// Send packets, latency, SocketTools etc.
+/// A struct for sending packets, measuring latency, and managing the SocketTools object.
 #[derive(Debug)]
 pub struct SocketTools {
+    /// The socket address.
     pub socket_addr: SocketAddr,
+
+    /// The sender for the writer message.
     pub(crate) tx: UnboundedSender<WriterMessage>,
+
+    /// The ID of the SocketTools object.
     pub id: u64,
+
+    /// The latency of the connection.
     pub(crate) latency: AtomicI64,
+
+    /// Indicates whether the connection is closed.
     closed: AtomicCell<bool>,
 }
 
 impl SocketTools {
+    /// Creates a new SocketTools object.
     pub(crate) fn new(
         socket_addr: SocketAddr,
         tx: UnboundedSender<WriterMessage>,
@@ -56,15 +73,7 @@ impl SocketTools {
         }
     }
 
-    /// Send a packet to the session
-    /// ## Examples
-    /// ```rust, no_run
-    /// use rollo::server::SocketTools;
-    ///
-    /// fn on_message(socket: SocketTools) {
-    ///     socket.send(1, None);
-    /// }
-    /// ```
+    /// Sends a packet to the session.
     pub fn send(&self, cmd: u16, payload: Option<&[u8]>) {
         if !self.is_closed() {
             let bytes = to_bytes(cmd, payload);
@@ -78,59 +87,33 @@ impl SocketTools {
         }
     }
 
-    /// Send Bytes(Packet) to the session
-    /// ## Examples
-    /// ```rust, no_run
-    /// use rollo::server::SocketTools;
-    /// use rollo::packet::to_bytes;
-    ///
-    /// fn on_message(socket: SocketTools) {
-    ///     let bytes = to_bytes(1, None);
-    ///     socket.send_data(bytes.into());
-    /// }
-    /// ```
+    /// Sends bytes (Packet) to the session.
     pub fn send_data(&self, bytes: ContainerBytes) {
         if !self.is_closed() && self.tx.send(WriterMessage::Send(bytes, true)).is_err() {
             log::error!("Can't send the data to the channel.");
         }
     }
 
+    /// Writes bytes (Packet) to the session.
     pub fn write_data(&self, bytes: ContainerBytes) {
         if !self.is_closed() && self.tx.send(WriterMessage::Send(bytes, false)).is_err() {
             log::error!("Can't send the data to the channel.");
         }
     }
 
+    /// Flushes the session.
     pub fn flush(&self) {
         if !self.is_closed() && self.tx.send(WriterMessage::Flush).is_err() {
             log::error!("Can't send the data to the channel.");
         }
     }
 
-    /// get Latency
-    /// ## Examples
-    /// ```rust, no_run
-    /// use rollo::server::SocketTools;
-    ///
-    /// fn on_message(socket: SocketTools) {
-    ///     let latency = socket.get_latency();
-    /// }
-    /// ```
+    /// Returns the latency of the connection.
     pub fn get_latency(&self) -> i64 {
         self.latency.load(Ordering::Acquire)
     }
 
-    /// Close the session
-    /// ## Examples
-    /// ```rust, no_run
-    /// use rollo::server::SocketTools;
-    ///
-    /// fn on_message(socket: SocketTools) {
-    ///     if socket.close().is_err() {
-    ///         println!("Error when closing the session");
-    ///     }
-    /// }
-    /// ```
+    /// Closes the session.
     pub fn close(&self) -> Result<()> {
         self.closed.store(true);
         self.tx
@@ -138,35 +121,14 @@ impl SocketTools {
             .map_err(|_| Error::Channel)
     }
 
-    /// Close the session with a delay
-    /// ## Examples
-    /// ```rust, no_run
-    /// use rollo::server::SocketTools;
-    /// use std::time::Duration;
-    ///
-    /// fn on_message(socket: SocketTools) {
-    ///     if socket.close_with_delay(Duration::from_secs(1)).is_err() {
-    ///         println!("Error when closing the session");
-    ///     }
-    /// }
-    /// ```
+    /// Closes the session with a delay.
     pub fn close_with_delay(&self, delay: Duration) -> Result<()> {
         self.tx
             .send(WriterMessage::CloseDelayed(delay))
             .map_err(|_| Error::Channel)
     }
 
-    /// Is connection close ?
-    /// ## Examples
-    /// ```rust, no_run
-    /// use rollo::server::SocketTools;
-    ///
-    /// fn on_message(socket: SocketTools) {
-    ///     if socket.is_closed() {
-    ///     // Do something
-    ///     }
-    /// }
-    /// ```
+    /// Returns true if the connection is closed.
     pub fn is_closed(&self) -> bool {
         self.tx.is_closed() || self.closed.load()
     }
@@ -189,6 +151,7 @@ impl PartialEq for SocketTools {
         self.id == other.id
     }
 }
+
 impl Eq for SocketTools {}
 
 impl From<PoolObjectContainer<Vec<u8>>> for ContainerBytes {
