@@ -1,3 +1,4 @@
+<div align="center"><img align="center" src="/doc/rollo-logo.png" alt="logo" style="height: 100px; width:100px;"/></div>
 <h1 align="center">Rollo</h1>
 <div align="center">
  <strong>
