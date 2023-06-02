@@ -38,6 +38,10 @@
 - Dos protection | [example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs).
 - Flatbuffers | [example](https://github.com/netskillzgh/rollo/blob/master/examples/flatbuffers.rs)
 
+## Installation
+
+Add the following to your `Cargo.toml` file:
+
 ```toml
 [dependencies]
 rollo = { version = "0.12.0", features = ["full"] }
@@ -124,7 +128,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
 }
 ```
 
-## Packet
+## Packet Structure
 
 [Payload size(u32); Command(u16); Payload]
 
