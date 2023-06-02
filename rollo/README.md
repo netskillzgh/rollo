@@ -1,7 +1,7 @@
 <h1 align="center">Rollo</h1>
 <div align="center">
  <strong>
-   A multiplayer framework based on Rust.
+    A Rust-based multiplayer framework.
  </strong>
 </div>
 
