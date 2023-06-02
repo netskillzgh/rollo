@@ -10,13 +10,11 @@ use std::{sync::Arc, time::Duration};
 
 #[tokio::main]
 async fn main() {
-    // lazy_static works as well.
     let world = Box::leak(Box::new(MyWorld {
         game_time: AtomicCell::new(GameTime::new()),
     }));
 
     let mut socket_manager = WorldSocketMgr::new(world);
-    // Run the server and the game loop with an interval (15ms)
     socket_manager
         .start_game_loop(Duration::from_millis(15))
         .start_network("127.0.0.1:6666", ListenerSecurity::Tcp)
