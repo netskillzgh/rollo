@@ -1,7 +1,6 @@
 [workspace]
 members=  [
     "rollo",
-    "rollo-macros",
     "examples",
     "benches"
 ]

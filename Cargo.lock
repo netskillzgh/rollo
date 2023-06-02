@@ -660,15 +660,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rollo-macros"
-version = "0.6.1"
-dependencies = [
- "crossbeam",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
 name = "rustc_version"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
