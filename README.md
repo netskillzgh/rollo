@@ -30,13 +30,15 @@
 
 <hr>
 
-- Tcp (support Tls).
-- Packet (command/payload).
-- Game Loop (Update).
-- Event Manager | [example](https://github.com/netskillzgh/rollo/blob/master/examples/event.rs).
-- Interval Manager | [example](https://github.com/netskillzgh/rollo/blob/master/examples/interval.rs).
-- Dos protection | [example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs).
-- Flatbuffers | [example](https://github.com/netskillzgh/rollo/blob/master/examples/flatbuffers.rs)
+## Features
+
+- TCP (with TLS support)
+- Packet (command/payload)
+- Game Loop (Update)
+- Event Manager ([example](https://github.com/netskillzgh/rollo/blob/master/examples/event.rs))
+- Interval Manager ([example](https://github.com/netskillzgh/rollo/blob/master/examples/interval.rs))
+- DoS protection ([example](https://github.com/netskillzgh/rollo/blob/master/examples/dos.rs))
+- Flatbuffers ([example](https://github.com/netskillzgh/rollo/blob/master/examples/flatbuffers.rs))
 
 ## Installation
 
