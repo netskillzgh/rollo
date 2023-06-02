@@ -1,5 +1,5 @@
 <div align="center"><img src="/doc/rollo-logo.png" alt="logo" style="height: 65px; width:65px;"/>
-<h1>Rollo</h1></div>
+<h3>Rollo</h3></div>
 <div align="center">
  <strong>
     A Rust-based multiplayer framework.
