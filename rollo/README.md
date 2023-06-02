@@ -46,7 +46,7 @@ Add the following to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-rollo = { version = "0.12.0", features = ["full"] }
+rollo = { version = "0.13.0", features = ["full"] }
 ```
 
 ## Example
