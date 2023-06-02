@@ -1,24 +1,28 @@
 use bytes::BufMut;
-
 use easy_pool::{PoolObjectContainer, PoolSegQueue};
 use once_cell::sync::Lazy;
 use std::{mem, sync::Arc};
 
-/// Message representation Cmd + Payload
+/// Represents a message with a command and a payload.
 #[derive(Debug)]
 pub struct Packet {
+    /// The command of the message.
     pub cmd: u16,
+    /// The payload of the message.
     pub payload: Option<PoolObjectContainer<Vec<u8>>>,
 }
 
 impl Packet {
+    /// Creates a new Packet with the given command and payload.
     pub(crate) const fn new(cmd: u16, payload: Option<PoolObjectContainer<Vec<u8>>>) -> Self {
         Self { cmd, payload }
     }
 
-    /// ## Converts Packet to an Arc<Packet>
-    /// ### Examples
-    /// ```rust, no_run
+    /// Converts the Packet to an Arc<Packet>.
+    ///
+    /// # Examples
+    ///
+    /// ```
     /// use rollo::packet::Packet;
     ///
     /// fn on_message(packet: Packet) {
@@ -32,9 +36,11 @@ impl Packet {
 
 const HEADER_SIZE: usize = mem::size_of::<u32>() + mem::size_of::<u16>();
 
-/// ## Cmd + Payload to BytesMut
-/// ### Examples
-/// ```rust, no_run
+/// Converts a command and a payload to a byte buffer.
+///
+/// # Examples
+///
+/// ```
 /// use rollo::packet::to_bytes;
 ///
 /// // Cmd 10 with a payload
@@ -69,6 +75,7 @@ static POOL_VEC: Lazy<Arc<PoolSegQueue<Vec<u8>>>> = Lazy::new(|| Arc::new(PoolSe
 mod tests {
     use super::*;
     use std::convert::TryInto;
+
     #[test]
     fn test_to_bytes() {
         let content = [1, 1, 2];

@@ -10,11 +10,6 @@ criterion = {version = "0.3"}
 rayon = "1.5"
 
 [[bench]]
-name = "rand"
-path = "rand.rs"
-harness = false
-
-[[bench]]
 name = "flat_buffers"
 path = "flat_buffers.rs"
 harness = false

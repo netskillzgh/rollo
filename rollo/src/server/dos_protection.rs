@@ -54,7 +54,7 @@ impl DosProtection {
     }
 
     pub(crate) fn evaluate_cmd(&mut self, cmd: u16, limit: u16, time: i64) -> bool {
-        if let Some(mut packet_counter) = self.counters.get_mut(&cmd) {
+        if let Some(packet_counter) = self.counters.get_mut(&cmd) {
             let space = (packet_counter.last_receive_time + ONE_SECOND_IN_MS) >= time;
 
             if space {
