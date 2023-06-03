@@ -61,7 +61,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
         // If the message received is Login(1), send a response to the player.
         if packet.cmd == 1 {
             // Create a packet without payload
-            let new_packet = to_bytes(10, None);
+            let new_packet = to_bytes(1, None);
             let new_packet = new_packet;
             // Send it to the player
             world_session.socket_tools.send_data(new_packet.into());
