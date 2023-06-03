@@ -1,4 +1,4 @@
-<div align="center"><img src="/doc/rollo-logo.png" alt="logo" style="height: 65px; width:65px;"/>
+<div align="center"><img src="https://github.com/netskillzgh/rollo/blob/master/doc/rollo-logo.png?raw=true" alt="logo" style="height: 65px; width:65px;"/>
 <h2>Rollo</h2></div>
 <div align="center">
  <strong>
