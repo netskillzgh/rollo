@@ -1,5 +1,5 @@
-<div align="center"><img align="center" src="/doc/rollo-logo.png" alt="logo" style="height: 100px; width:100px;"/></div>
-<h1 align="center">Rollo</h1>
+<div align="center"><img src="/doc/rollo-logo.png" alt="logo" style="height: 65px; width:65px;"/>
+<h2>Rollo</h2></div>
 <div align="center">
  <strong>
     A Rust-based multiplayer framework.
@@ -33,6 +33,7 @@
 
 ## Features
 
+- [Unity Client](https://github.com/netskillzgh/Rollo-Unity)
 - TCP (with TLS support)
 - Packet (command/payload)
 - Game Loop (Update)
