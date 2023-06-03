@@ -48,6 +48,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
         tools: SocketTools,
         _world: &'static MyWorld,
     ) -> Result<std::sync::Arc<Self>, Error> {
+        println!("New session");
         Ok(Arc::new(Self {
             socket_tools: tools,
         }))
@@ -58,6 +59,7 @@ impl WorldSession<MyWorld> for MyWorldSession {
     }
 
     async fn on_message(world_session: &Arc<Self>, _world: &'static MyWorld, packet: Packet) {
+        println!("Message received : {:?}", packet.cmd);
         // If the message received is Login(1), send a response to the player.
         if packet.cmd == 1 {
             // Create a packet without payload
