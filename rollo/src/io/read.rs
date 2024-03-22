@@ -66,10 +66,10 @@ where
         R: AsyncReadExt + Unpin,
     {
         if size == 0 {
-            return Err(Error::PacketSize); // Ou une autre erreur appropriée
+            return Err(Error::PacketSize);
         }
 
-        self.payload.resize(size, 0); // Ajuster la taille du vecteur avant la lecture
+        self.payload.resize(size, 0);
 
         self.buffer
             .read_exact(&mut self.payload[0..size])
