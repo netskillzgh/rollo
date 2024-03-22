@@ -65,19 +65,19 @@ where
     where
         R: AsyncReadExt + Unpin,
     {
-        if size == 0 {
-            return Err(Error::PacketSize);
-        }
+        debug_assert!(size != 0);
+        debug_assert!(self.payload.len() == MAX_SIZE);
 
-        self.payload.resize(size, 0);
-
-        self.buffer
+        let size = self
+            .buffer
             .read_exact(&mut self.payload[0..size])
             .await
             .map_err(|_| Error::PacketSize)?;
 
         let mut payload = POOL_VEC_PACKET.create();
+        debug_assert!(payload.is_empty());
         payload.extend_from_slice(&self.payload[0..size]);
+        debug_assert!(payload.len() == size);
 
         Ok(Some(payload))
     }
